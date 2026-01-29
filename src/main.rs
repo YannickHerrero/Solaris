@@ -1,0 +1,92 @@
+mod app;
+mod format;
+mod game;
+mod input;
+mod save;
+mod ui;
+
+use std::io;
+use std::time::{Duration, Instant};
+
+use crossterm::{
+    event::{self, DisableMouseCapture, EnableMouseCapture},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::prelude::*;
+
+use app::App;
+
+pub const TICK_RATE_MS: u64 = 100; // 10 ticks/second for game logic
+pub const TICKS_PER_SECOND: f64 = 1000.0 / TICK_RATE_MS as f64;
+const FRAME_RATE_MS: u64 = 16; // ~60 FPS for rendering
+const AUTOSAVE_INTERVAL_SECS: u64 = 30;
+
+fn main() -> io::Result<()> {
+    // Setup terminal
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+
+    // Create app and run
+    let mut app = App::new();
+
+    // Load saved game if exists
+    if let Err(e) = app.load() {
+        eprintln!("Warning: Could not load save file: {}", e);
+    }
+
+    let result = run_app(&mut terminal, &mut app);
+
+    // Restore terminal
+    disable_raw_mode()?;
+    execute!(
+        terminal.backend_mut(),
+        LeaveAlternateScreen,
+        DisableMouseCapture
+    )?;
+    terminal.show_cursor()?;
+
+    if let Err(err) = result {
+        eprintln!("Error: {}", err);
+    }
+
+    Ok(())
+}
+
+fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+    let mut last_tick = Instant::now();
+    let mut last_save = Instant::now();
+
+    loop {
+        // Render every frame (~60 FPS)
+        terminal.draw(|f| ui::render(f, app))?;
+
+        // Handle events with short timeout for responsiveness
+        let timeout = Duration::from_millis(FRAME_RATE_MS);
+
+        if event::poll(timeout)? {
+            if let event::Event::Key(key) = event::read()? {
+                if input::handle_key(app, key) {
+                    // Save on quit
+                    let _ = app.save();
+                    return Ok(());
+                }
+            }
+        }
+
+        // Game tick at 10 Hz
+        if last_tick.elapsed() >= Duration::from_millis(TICK_RATE_MS) {
+            app.tick();
+            last_tick = Instant::now();
+        }
+
+        // Auto-save every 30 seconds
+        if last_save.elapsed() >= Duration::from_secs(AUTOSAVE_INTERVAL_SECS) {
+            let _ = app.save();
+            last_save = Instant::now();
+        }
+    }
+}
