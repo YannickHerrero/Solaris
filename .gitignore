@@ -16,5 +16,8 @@
 .DS_Store
 Thumbs.db
 
+# Claude Code
+.claude/
+
 # Save files (optional - uncomment if you don't want to track saves)
 # *.json
