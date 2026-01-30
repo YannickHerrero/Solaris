@@ -10,7 +10,7 @@ A terminal-based idle game where you build a solar energy empire, from humble so
 - **48 Upgrades**: Enhance your energy production with tiered upgrades
 - **Offline Progress**: Earn energy even while away (up to 8 hours)
 - **Auto-save**: Game saves automatically every 30 seconds
-- **Boss Mode**: Quick-hide spreadsheet view (press `B`)
+- **Boss Mode**: Quick-hide fake terminal view (press `` ` ``)
 - **TUI Interface**: Beautiful terminal interface with solar system visualization
 
 ## Installation
@@ -42,7 +42,7 @@ cargo run --release
 | `U` | Toggle upgrades panel |
 | `J/K` or `↑/↓` | Navigate upgrades |
 | `Enter/Space` | Purchase selected upgrade |
-| `B` | Toggle boss mode |
+| `` ` `` | Toggle boss mode |
 | `?` | Toggle help |
 | `Q` or `Esc` | Quit |
 
