@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 
 use crate::game::{GameState, Producer};
 use crate::save;
+use crate::ui::animation::AnimationState;
 use crate::TICKS_PER_SECOND;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -63,6 +64,7 @@ pub struct App {
     pub offline_report: Option<OfflineReport>,
     pub layout_mode: LayoutMode,
     pub show_help: bool,
+    pub animation: AnimationState,
 }
 
 pub struct OfflineReport {
@@ -82,6 +84,7 @@ impl App {
             offline_report: None,
             layout_mode: LayoutMode::default(),
             show_help: false,
+            animation: AnimationState::new(),
         }
     }
 
@@ -91,6 +94,7 @@ impl App {
 
     pub fn tick(&mut self) {
         self.game.tick();
+        self.animation.tick();
     }
 
     pub fn toggle_panel(&mut self, panel: Panel) {

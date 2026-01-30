@@ -1,3 +1,4 @@
+pub mod animation;
 mod boss;
 mod header;
 mod help;
