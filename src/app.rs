@@ -291,6 +291,12 @@ impl App {
                 if self.selected_upgrade < available.len() {
                     let upgrade_id = available[self.selected_upgrade].id;
                     if self.game.buy_upgrade(upgrade_id) {
+                        // Adjust selection if now out of bounds
+                        let new_available = self.game.available_upgrades();
+                        if self.selected_upgrade >= new_available.len() && !new_available.is_empty()
+                        {
+                            self.selected_upgrade = new_available.len() - 1;
+                        }
                         let _ = self.save(); // Save on purchase
                     }
                 }
