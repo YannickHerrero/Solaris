@@ -72,7 +72,7 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 
 ## Links
 
-- [GitHub Repository](https://github.com/your-username/solaris)
+- [GitHub Repository](https://github.com/YannickHerrero/solaris)
 - [Installation Instructions](../README.md)
 
 ---
