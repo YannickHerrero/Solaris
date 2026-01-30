@@ -17,5 +17,10 @@ impl GameState {
         if self.energy_produced_history.len() > 10 {
             self.energy_produced_history.pop_front();
         }
+
+        // Check for new achievements every second (every 10 ticks)
+        if self.ticks_played % 10 == 0 {
+            self.check_achievements();
+        }
     }
 }
