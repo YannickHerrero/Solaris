@@ -21,7 +21,7 @@ payback_time = cost / production_gain
 ### Upgrades vs Producers
 
 Upgrades are almost always better than producers when available:
-- Producer upgrades **double** output (2x)
+- Producer upgrades multiply output (2.0x for tiers 1-5, 1.7x for 6-10, 1.4x for 11-15)
 - A new producer adds linear output
 - Prioritize upgrades when their cost is reasonable
 
@@ -72,8 +72,8 @@ Typical path:
 ### Synergy Focus
 
 Synergies provide excellent value:
-- +5% per source producer to target
-- With 50 source producers: 3.5x multiplier
+- +2% per source producer to target (capped at 2.5x)
+- With 75+ source producers: 2.5x multiplier (cap reached)
 - Prioritize synergies for your highest-tier producers
 
 ### Global Upgrades
@@ -112,7 +112,7 @@ Build up your synergy chains:
 
 ### Achievement Hunting
 
-Focus on achievements for the +1% bonus each:
+Focus on achievements for the +0.5% bonus each:
 - **Producer achievements**: Get each producer to 100
 - **Time achievements**: Leave game running
 - **Click achievements**: Manual mine when idle
@@ -137,7 +137,7 @@ Focus on achievements for the +1% bonus each:
 **Priority 1 (Immediate Impact):**
 1. Stellar Foundation (1 chip) - Instant +5%
 2. Quick Start (3 chips) - Faster restarts
-3. Stellar Efficiency (30 chips) - +25%
+3. Stellar Efficiency (30 chips) - +15%
 
 **Priority 2 (Progression Speed):**
 4. Seasoned Explorer (10 chips) - Skip Solar grind
@@ -145,13 +145,13 @@ Focus on achievements for the +1% bonus each:
 6. Universal Knowledge (50 chips) - Start with 5 producers
 
 **Priority 3 (Multiplicative Growth):**
-7. Cosmic Mastery (150 chips) - +100%
+7. Cosmic Mastery (150 chips) - +50%
 8. Rapid Expansion (300 chips) - Start with 7 producers
-9. Infinite Power (1500 chips) - +500%
+9. Infinite Power (1500 chips) - +100%
 
 **Priority 4 (Long-term Value):**
-10. Cosmic Legacy (15 chips) - +1% per ascension
-11. Dimensional Echo (75 chips) - +1% per achievement
+10. Cosmic Legacy (15 chips) - +0.5% per ascension (capped at 2.0x total)
+11. Dimensional Echo (75 chips) - +0.25% per achievement
 
 ### Chip Efficiency
 
@@ -176,14 +176,14 @@ For producers 16-20:
 ### Stacking Multipliers
 
 Your total multiplier comes from:
-1. Producer upgrades: Up to 32,768x each
+1. Producer upgrades: Up to ~2,454x each
 2. Global upgrades: Up to 68.67x combined
-3. Achievements: Up to 13.2x at 260
-4. Prestige: Up to 173.25x base
-5. Per-ascension bonuses: Scales with ascensions
-6. Synergies: Scales with producer counts
+3. Achievements: Up to 3.67x at 260
+4. Prestige: Up to ~10.87x base
+5. Per-ascension bonuses: Up to 2.0x (capped)
+6. Synergies: Up to 2.5x per producer (capped)
 
-**Combined potential: Astronomical multipliers!**
+**Combined potential: Still very powerful multipliers!**
 
 ### Achievement Completion
 
@@ -255,9 +255,9 @@ Some achievements are easier than others:
 
 ### 4. Neglecting Synergies
 
-- Synergies provide massive bonuses
-- +5% per source producer adds up quickly
-- With 100 source producers: 6x multiplier!
+- Synergies provide valuable bonuses
+- +2% per source producer (capped at 2.5x)
+- With 75+ source producers: 2.5x multiplier (cap)
 
 ### 5. Forgetting Manual Mining
 

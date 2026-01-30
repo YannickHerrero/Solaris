@@ -15,10 +15,14 @@ Solaris runs at **10 ticks per second**. Each tick:
 
 ### Single Producer Cost
 
-The cost of the next producer increases by **15%** (1.15x) with each owned:
+The cost multiplier varies by producer tier:
+- **Producers 1-7**: 1.15x per owned
+- **Producers 8-12**: 1.18x per owned
+- **Producers 13-17**: 1.20x per owned
+- **Producers 18-20**: 1.22x per owned
 
 ```
-cost(n) = base_cost × 1.15^owned
+cost(n) = base_cost × cost_multiplier^owned
 ```
 
 Where:
@@ -91,14 +95,18 @@ total_eps = Σ (base_eps_i × count_i × producer_mult_i × global_mult)
 
 Each producer's multiplier comes from:
 
-1. **Producer Upgrades**: Each tier gives 2x
+1. **Producer Upgrades**: Tiered multipliers
+   - Tiers 1-5: 2.0x each
+   - Tiers 6-10: 1.7x each
+   - Tiers 11-15: 1.4x each
    ```
-   upgrade_mult = 2^(tiers_purchased)
+   upgrade_mult = (2.0^5) × (1.7^5) × (1.4^tiers_above_10)  // for tiers > 10
    ```
+   Maximum: ~2,454x from all 15 tiers
 
-2. **Synergy Bonus**: From adjacent producer synergies
+2. **Synergy Bonus**: From adjacent producer synergies (capped at 2.5x)
    ```
-   synergy_mult = 1 + (0.05 × source_producer_count)
+   synergy_mult = min(2.5, 1 + (0.02 × source_producer_count))
    ```
 
 Combined:
@@ -124,9 +132,9 @@ Where:
 
 2. **Achievement Bonus**:
    ```
-   achievement_mult = 1.01^(achievement_count)
+   achievement_mult = 1.005^(achievement_count)
    ```
-   At 260 achievements: **13.20x**
+   At 260 achievements: **3.67x**
 
 3. **Prestige Multiplier**: From production-boosting prestige upgrades
    ```
@@ -139,24 +147,25 @@ Where:
 base_mult = Π (prestige_production_multipliers)
 ```
 - Stellar Foundation: 1.05x
-- Stellar Efficiency: 1.25x
-- Cosmic Mastery: 2.00x
-- Infinite Power: 6.00x
-- Galactic Domination: 11.00x
-- **Maximum: 173.25x**
+- Stellar Efficiency: 1.15x
+- Cosmic Mastery: 1.50x
+- Infinite Power: 2.00x
+- Galactic Domination: 3.00x
+- **Maximum: 10.87x**
 
 ```
-ascension_mult = 1 + (bonus_per_ascension × total_ascensions)
+ascension_mult = min(2.0, 1 + (bonus_per_ascension × total_ascensions))
 ```
-- Cosmic Legacy: +1% per ascension
-- Legacy of Legends: +3% per ascension
-- Combined: +4% per ascension
+- Cosmic Legacy: +0.5% per ascension
+- Legacy of Legends: +1% per ascension
+- Combined: +1.5% per ascension
+- **Capped at 2.0x maximum**
 
 ```
-achievement_prestige_mult = 1 + (0.01 × achievement_count)
+achievement_prestige_mult = 1 + (0.0025 × achievement_count)
 ```
-- Dimensional Echo: +1% per achievement
-- At 260 achievements: 3.6x
+- Dimensional Echo: +0.25% per achievement
+- At 260 achievements: 1.65x
 
 ---
 
@@ -186,15 +195,15 @@ With all 10 manual upgrades: **1,024x** click power
 When a synergy upgrade is purchased:
 
 ```
-target_bonus = 1.0 + (0.05 × source_count)
+target_bonus = min(2.5, 1.0 + (0.02 × source_count))
 ```
 
 ### Example
 
 With 100 Mining Drones and Drone-Mine Synergy:
-- Asteroid Mine bonus = 1.0 + (0.05 × 100) = **6.0x**
+- Asteroid Mine bonus = min(2.5, 1.0 + (0.02 × 100)) = **2.5x** (capped)
 
-This multiplies with the Asteroid Mine's producer multiplier.
+This multiplies with the Asteroid Mine's producer multiplier. The synergy bonus caps at 2.5x regardless of source count.
 
 ---
 
@@ -203,7 +212,7 @@ This multiplies with the Asteroid Mine's producer multiplier.
 ### Formula
 
 ```
-achievement_bonus = 1.01^n
+achievement_bonus = 1.005^n
 ```
 
 Where `n` = number of achievements unlocked.
@@ -212,18 +221,18 @@ Where `n` = number of achievements unlocked.
 
 | Achievements | Multiplier |
 |--------------|------------|
-| 10 | 1.105x |
-| 25 | 1.282x |
-| 50 | 1.645x |
-| 75 | 2.109x |
-| 100 | 2.705x |
-| 125 | 3.467x |
-| 150 | 4.432x |
-| 175 | 5.668x |
-| 200 | 7.244x |
-| 225 | 9.257x |
-| 250 | 11.81x |
-| 260 | 13.20x |
+| 10 | 1.051x |
+| 25 | 1.133x |
+| 50 | 1.284x |
+| 75 | 1.454x |
+| 100 | 1.649x |
+| 125 | 1.868x |
+| 150 | 2.118x |
+| 175 | 2.400x |
+| 200 | 2.715x |
+| 225 | 3.077x |
+| 250 | 3.487x |
+| 260 | 3.67x |
 
 ---
 

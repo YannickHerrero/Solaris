@@ -16,27 +16,30 @@ Solaris features **339 upgrades** across four categories. Upgrades provide perma
 
 ## Producer Upgrades (300 total)
 
-Each of the 20 producers has **15 upgrade tiers**. Each tier **doubles (2x)** that producer's output.
+Each of the 20 producers has **15 upgrade tiers**. Multipliers vary by tier:
+- **Tiers 1-5**: 2.0x per tier
+- **Tiers 6-10**: 1.7x per tier
+- **Tiers 11-15**: 1.4x per tier
 
 ### Unlock Thresholds
 
-| Tier | Required Count | Multiplier |
-|------|----------------|------------|
-| 1 | 1 | 2x |
-| 2 | 5 | 4x (cumulative) |
-| 3 | 25 | 8x |
-| 4 | 50 | 16x |
-| 5 | 100 | 32x |
-| 6 | 150 | 64x |
-| 7 | 200 | 128x |
-| 8 | 250 | 256x |
-| 9 | 300 | 512x |
-| 10 | 350 | 1,024x |
-| 11 | 400 | 2,048x |
-| 12 | 450 | 4,096x |
-| 13 | 500 | 8,192x |
-| 14 | 550 | 16,384x |
-| 15 | 600 | 32,768x |
+| Tier | Required Count | Tier Mult | Cumulative |
+|------|----------------|-----------|------------|
+| 1 | 1 | 2.0x | 2x |
+| 2 | 5 | 2.0x | 4x |
+| 3 | 25 | 2.0x | 8x |
+| 4 | 50 | 2.0x | 16x |
+| 5 | 100 | 2.0x | 32x |
+| 6 | 150 | 1.7x | 54x |
+| 7 | 200 | 1.7x | 92x |
+| 8 | 250 | 1.7x | 157x |
+| 9 | 300 | 1.7x | 267x |
+| 10 | 350 | 1.7x | 454x |
+| 11 | 400 | 1.4x | 635x |
+| 12 | 450 | 1.4x | 889x |
+| 13 | 500 | 1.4x | 1,245x |
+| 14 | 550 | 1.4x | 1,743x |
+| 15 | 600 | 1.4x | 2,454x |
 
 ### Cost Formula
 
@@ -50,61 +53,61 @@ Upgrade Cost = base_cost × 5^tier
 
 | Tier | Name | Required | Cost | Effect |
 |------|------|----------|------|--------|
-| 1 | Better Silicon | 1 | 100 | 2x Solar Panels |
-| 2 | Anti-Reflective Coating | 5 | 500 | 2x Solar Panels |
-| 3 | Quantum Dots | 25 | 2,500 | 2x Solar Panels |
-| 4 | Perovskite Cells | 50 | 12,500 | 2x Solar Panels |
-| 5 | Stellar Collectors | 100 | 62,500 | 2x Solar Panels |
-| 6 | Galactic Arrays | 150 | 312,500 | 2x Solar Panels |
-| 7 | Cosmic Absorption | 200 | 1,562,500 | 2x Solar Panels |
-| 8 | Transcendent Photons | 250 | 7,812,500 | 2x Solar Panels |
-| 9 | Eternal Light Capture | 300 | 39,062,500 | 2x Solar Panels |
-| 10 | Infinite Spectrum | 350 | 195,312,500 | 2x Solar Panels |
-| 11 | Omega Radiance | 400 | 976,562,500 | 2x Solar Panels |
-| 12 | Ascendant Luminosity | 450 | 4,882,812,500 | 2x Solar Panels |
-| 13 | Divine Brilliance | 500 | 24,414,062,500 | 2x Solar Panels |
-| 14 | Absolute Efficiency | 550 | 122,070,312,500 | 2x Solar Panels |
-| 15 | Ultimate Solar Mastery | 600 | 610,351,562,500 | 2x Solar Panels |
+| 1 | Better Silicon | 1 | 100 | 2.0x Solar Panels |
+| 2 | Anti-Reflective Coating | 5 | 500 | 2.0x Solar Panels |
+| 3 | Quantum Dots | 25 | 2,500 | 2.0x Solar Panels |
+| 4 | Perovskite Cells | 50 | 12,500 | 2.0x Solar Panels |
+| 5 | Stellar Collectors | 100 | 62,500 | 2.0x Solar Panels |
+| 6 | Galactic Arrays | 150 | 312,500 | 1.7x Solar Panels |
+| 7 | Cosmic Absorption | 200 | 1,562,500 | 1.7x Solar Panels |
+| 8 | Transcendent Photons | 250 | 7,812,500 | 1.7x Solar Panels |
+| 9 | Eternal Light Capture | 300 | 39,062,500 | 1.7x Solar Panels |
+| 10 | Infinite Spectrum | 350 | 195,312,500 | 1.7x Solar Panels |
+| 11 | Omega Radiance | 400 | 976,562,500 | 1.4x Solar Panels |
+| 12 | Ascendant Luminosity | 450 | 4,882,812,500 | 1.4x Solar Panels |
+| 13 | Divine Brilliance | 500 | 24,414,062,500 | 1.4x Solar Panels |
+| 14 | Absolute Efficiency | 550 | 122,070,312,500 | 1.4x Solar Panels |
+| 15 | Ultimate Solar Mastery | 600 | 610,351,562,500 | 1.4x Solar Panels |
 
 ### Mining Drone Upgrades
 
 | Tier | Name | Required | Cost | Effect |
 |------|------|----------|------|--------|
-| 1 | Improved Thrusters | 1 | 500 | 2x Mining Drones |
-| 2 | AI Navigation | 5 | 2,500 | 2x Mining Drones |
-| 3 | Swarm Intelligence | 25 | 12,500 | 2x Mining Drones |
-| 4 | Quantum Pathfinding | 50 | 62,500 | 2x Mining Drones |
-| 5 | Stellar Mining | 100 | 312,500 | 2x Mining Drones |
-| 6 | Galactic Excavation | 150 | 1,562,500 | 2x Mining Drones |
-| 7 | Cosmic Drilling | 200 | 7,812,500 | 2x Mining Drones |
-| 8 | Transcendent Extraction | 250 | 39,062,500 | 2x Mining Drones |
-| 9 | Eternal Harvest | 300 | 195,312,500 | 2x Mining Drones |
-| 10 | Infinite Yield | 350 | 976,562,500 | 2x Mining Drones |
-| 11 | Omega Mining | 400 | 4,882,812,500 | 2x Mining Drones |
-| 12 | Ascendant Gathering | 450 | 24,414,062,500 | 2x Mining Drones |
-| 13 | Divine Collection | 500 | 122,070,312,500 | 2x Mining Drones |
-| 14 | Absolute Efficiency | 550 | 610,351,562,500 | 2x Mining Drones |
-| 15 | Ultimate Drone Mastery | 600 | 3,051,757,812,500 | 2x Mining Drones |
+| 1 | Improved Thrusters | 1 | 500 | 2.0x Mining Drones |
+| 2 | AI Navigation | 5 | 2,500 | 2.0x Mining Drones |
+| 3 | Swarm Intelligence | 25 | 12,500 | 2.0x Mining Drones |
+| 4 | Quantum Pathfinding | 50 | 62,500 | 2.0x Mining Drones |
+| 5 | Stellar Mining | 100 | 312,500 | 2.0x Mining Drones |
+| 6 | Galactic Excavation | 150 | 1,562,500 | 1.7x Mining Drones |
+| 7 | Cosmic Drilling | 200 | 7,812,500 | 1.7x Mining Drones |
+| 8 | Transcendent Extraction | 250 | 39,062,500 | 1.7x Mining Drones |
+| 9 | Eternal Harvest | 300 | 195,312,500 | 1.7x Mining Drones |
+| 10 | Infinite Yield | 350 | 976,562,500 | 1.7x Mining Drones |
+| 11 | Omega Mining | 400 | 4,882,812,500 | 1.4x Mining Drones |
+| 12 | Ascendant Gathering | 450 | 24,414,062,500 | 1.4x Mining Drones |
+| 13 | Divine Collection | 500 | 122,070,312,500 | 1.4x Mining Drones |
+| 14 | Absolute Efficiency | 550 | 610,351,562,500 | 1.4x Mining Drones |
+| 15 | Ultimate Drone Mastery | 600 | 3,051,757,812,500 | 1.4x Mining Drones |
 
 ### Asteroid Mine Upgrades
 
 | Tier | Name | Required | Cost | Effect |
 |------|------|----------|------|--------|
-| 1 | Deep Core Drilling | 1 | 2,500 | 2x Asteroid Mines |
-| 2 | Spectral Analysis | 5 | 12,500 | 2x Asteroid Mines |
-| 3 | Automated Refineries | 25 | 62,500 | 2x Asteroid Mines |
-| 4 | Quantum Tunneling | 50 | 312,500 | 2x Asteroid Mines |
-| 5 | Stellar Processing | 100 | 1,562,500 | 2x Asteroid Mines |
-| 6 | Galactic Extraction | 150 | 7,812,500 | 2x Asteroid Mines |
-| 7 | Cosmic Harvesting | 200 | 39,062,500 | 2x Asteroid Mines |
-| 8 | Transcendent Mining | 250 | 195,312,500 | 2x Asteroid Mines |
-| 9 | Eternal Excavation | 300 | 976,562,500 | 2x Asteroid Mines |
-| 10 | Infinite Resources | 350 | 4,882,812,500 | 2x Asteroid Mines |
-| 11 | Omega Yield | 400 | 24,414,062,500 | 2x Asteroid Mines |
-| 12 | Ascendant Collection | 450 | 122,070,312,500 | 2x Asteroid Mines |
-| 13 | Divine Extraction | 500 | 610,351,562,500 | 2x Asteroid Mines |
-| 14 | Absolute Mining | 550 | 3,051,757,812,500 | 2x Asteroid Mines |
-| 15 | Ultimate Asteroid Mastery | 600 | 15,258,789,062,500 | 2x Asteroid Mines |
+| 1 | Deep Core Drilling | 1 | 2,500 | 2.0x Asteroid Mines |
+| 2 | Spectral Analysis | 5 | 12,500 | 2.0x Asteroid Mines |
+| 3 | Automated Refineries | 25 | 62,500 | 2.0x Asteroid Mines |
+| 4 | Quantum Tunneling | 50 | 312,500 | 2.0x Asteroid Mines |
+| 5 | Stellar Processing | 100 | 1,562,500 | 2.0x Asteroid Mines |
+| 6 | Galactic Extraction | 150 | 7,812,500 | 1.7x Asteroid Mines |
+| 7 | Cosmic Harvesting | 200 | 39,062,500 | 1.7x Asteroid Mines |
+| 8 | Transcendent Mining | 250 | 195,312,500 | 1.7x Asteroid Mines |
+| 9 | Eternal Excavation | 300 | 976,562,500 | 1.7x Asteroid Mines |
+| 10 | Infinite Resources | 350 | 4,882,812,500 | 1.7x Asteroid Mines |
+| 11 | Omega Yield | 400 | 24,414,062,500 | 1.4x Asteroid Mines |
+| 12 | Ascendant Collection | 450 | 122,070,312,500 | 1.4x Asteroid Mines |
+| 13 | Divine Extraction | 500 | 610,351,562,500 | 1.4x Asteroid Mines |
+| 14 | Absolute Mining | 550 | 3,051,757,812,500 | 1.4x Asteroid Mines |
+| 15 | Ultimate Asteroid Mastery | 600 | 15,258,789,062,500 | 1.4x Asteroid Mines |
 
 ### Base Costs by Producer
 
@@ -138,15 +141,15 @@ Upgrade Cost = base_cost × 5^tier
 Synergy upgrades create production chains where one producer type boosts another.
 
 ### Effect
-Each synergy upgrade grants **+5% bonus per source producer** to the target producer.
+Each synergy upgrade grants **+2% bonus per source producer** to the target producer (capped at 2.5x maximum).
 
 ### Formula
 ```
-Target Multiplier = 1.0 + (0.05 × source_count)
+Target Multiplier = min(2.5, 1.0 + (0.02 × source_count))
 ```
 
 Example: With 100 Mining Drones and the Drone-Mine Synergy:
-- Asteroid Mine bonus = 1.0 + (0.05 × 100) = 6.0x multiplier
+- Asteroid Mine bonus = min(2.5, 1.0 + (0.02 × 100)) = 2.5x multiplier (capped)
 
 ### Synergy Table
 
