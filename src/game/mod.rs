@@ -190,7 +190,7 @@ impl GameState {
         };
 
         let owned = self.producer_count(id);
-        let cost = calculate_bulk_cost(producer.base_cost, owned, quantity);
+        let cost = calculate_bulk_cost(producer.base_cost, owned, quantity, id);
 
         if self.energy >= cost {
             self.energy -= cost;
@@ -202,12 +202,12 @@ impl GameState {
     }
 
     pub fn can_afford_producer(&self, producer: &Producer, owned: u64, quantity: u64) -> bool {
-        let cost = calculate_bulk_cost(producer.base_cost, owned, quantity);
+        let cost = calculate_bulk_cost(producer.base_cost, owned, quantity, producer.id);
         self.energy >= cost
     }
 
     pub fn max_affordable(&self, producer: &Producer, owned: u64, max_quantity: u64) -> u64 {
-        calculate_max_affordable(producer.base_cost, owned, self.energy, max_quantity)
+        calculate_max_affordable(producer.base_cost, owned, self.energy, max_quantity, producer.id)
     }
 
     // ============ Upgrade Management ============
@@ -311,7 +311,7 @@ impl GameState {
         multiplier
     }
 
-    /// Calculate synergy bonus for a producer
+    /// Calculate synergy bonus for a producer (capped at 2.5x)
     fn get_synergy_multiplier(&self, target_id: u32) -> f64 {
         let mut bonus = 1.0;
 
@@ -326,7 +326,8 @@ impl GameState {
             }
         }
 
-        bonus
+        // Cap synergy bonus at 2.5x to prevent late-game acceleration
+        bonus.min(2.5)
     }
 
     pub fn get_global_multiplier(&self) -> f64 {
@@ -366,7 +367,9 @@ impl GameState {
                         multiplier *= m;
                     }
                     PrestigeEffect::ProductionPerAscension(bonus) => {
-                        multiplier *= 1.0 + (bonus * self.total_ascensions as f64);
+                        // Cap per-ascension bonus at 2.0x (100% bonus) to prevent late-game acceleration
+                        let ascension_mult = (1.0 + (bonus * self.total_ascensions as f64)).min(2.0);
+                        multiplier *= ascension_mult;
                     }
                     PrestigeEffect::ProductionPerAchievement(bonus) => {
                         multiplier *= 1.0 + (bonus * self.achievements_unlocked.len() as f64);

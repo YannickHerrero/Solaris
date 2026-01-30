@@ -165,7 +165,18 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             let id = producer_id * 100 + (tier + 1) as u32;
             let name = PRODUCER_UPGRADE_NAMES[producer_idx][tier];
             let producer_name = PRODUCER_NAMES[producer_idx];
-            let description = Box::leak(format!("{} are twice as efficient", producer_name).into_boxed_str());
+
+            // Tiered multipliers: early game unchanged, mid/late game slower
+            // Tiers 1-5 (0-4): 2.0x, Tiers 6-10 (5-9): 1.7x, Tiers 11-15 (10-14): 1.4x
+            let multiplier = if tier < 5 {
+                2.0
+            } else if tier < 10 {
+                1.7
+            } else {
+                1.4
+            };
+
+            let description = Box::leak(format!("{} are {:.0}% more efficient", producer_name, (multiplier - 1.0) * 100.0).into_boxed_str());
 
             // Cost scales by 5x per tier
             let cost = base_cost * 5.0_f64.powi(tier as i32);
@@ -181,7 +192,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
                 },
                 effect: UpgradeEffect::ProducerMultiplier {
                     producer_id,
-                    multiplier: 2.0,
+                    multiplier,
                 },
             });
         }
@@ -214,7 +225,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         let synergy_id = 8001 + idx as u32;
         // Cost scales based on which producers are involved
         let cost = PRODUCER_BASE_COSTS[(*id_a - 1) as usize] * 100.0;
-        let description = Box::leak(format!("{}: +5% per {} to {}", desc, PRODUCER_NAMES[(*id_a - 1) as usize], PRODUCER_NAMES[(*id_b - 1) as usize]).into_boxed_str());
+        let description = Box::leak(format!("{}: +2% per {} to {}", desc, PRODUCER_NAMES[(*id_a - 1) as usize], PRODUCER_NAMES[(*id_b - 1) as usize]).into_boxed_str());
 
         upgrades.push(Upgrade {
             id: synergy_id,
@@ -230,7 +241,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             effect: UpgradeEffect::Synergy {
                 source_id: *id_a,
                 target_id: *id_b,
-                bonus_per_source: 0.05,
+                bonus_per_source: 0.02,
             },
         });
     }
