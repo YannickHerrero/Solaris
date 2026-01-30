@@ -219,12 +219,8 @@ impl App {
         match self.active_panel {
             Panel::Producers => {
                 let visible = self.game.visible_producers();
-                // Only allow selection of unlocked producers
-                let max_unlocked = visible.iter()
-                    .filter(|(_, _, unlocked)| *unlocked)
-                    .count()
-                    .saturating_sub(1);
-                if self.selected_producer < max_unlocked {
+                let max = visible.len().saturating_sub(1);
+                if self.selected_producer < max {
                     self.selected_producer += 1;
                 }
             }
@@ -250,13 +246,11 @@ impl App {
             Panel::Producers => {
                 let visible = self.game.visible_producers();
                 if self.selected_producer < visible.len() {
-                    let (_, producer, unlocked) = visible[self.selected_producer];
-                    if unlocked {
-                        let quantity = self.calculate_buy_quantity(producer);
-                        if quantity > 0 {
-                            self.game.buy_producer(producer.id, quantity);
-                            let _ = self.save(); // Save on purchase
-                        }
+                    let (_, producer) = visible[self.selected_producer];
+                    let quantity = self.calculate_buy_quantity(producer);
+                    if quantity > 0 {
+                        self.game.buy_producer(producer.id, quantity);
+                        let _ = self.save(); // Save on purchase
                     }
                 }
             }

@@ -110,27 +110,25 @@ Energy: 1,234,567.89 | +12,345.67/s | Producers: 42 | Achievements: 85/260
 
 ### Producers Panel
 
-Lists all unlocked producers and the next locked one:
+Lists all available producers:
 
 ```
 ┌─ Producers (p) ──────────────────────┐
 │ ▤ Solar Panel (25)    2.50 E/s   150│
 │►⛏ Mining Drone (10)   5.00 E/s   287│
 │ ☄ Asteroid Mine (3)   6.00 E/s   742│
-│ ◎ Orbital Station     [LOCKED]      │
 └──────────────────────────────────────┘
 ```
 
 - **Icon**: Producer's unique symbol
 - **Name (count)**: Producer name and owned quantity
 - **E/s**: Current production from this type
-- **Cost**: Price for next purchase (or "LOCKED")
+- **Cost**: Price for next purchase
 - **►**: Indicates currently selected item
 
 **Colors**:
 - Green: Can afford
 - Yellow: Selected but can't afford
-- Gray: Locked
 
 ### Upgrades Panel
 
