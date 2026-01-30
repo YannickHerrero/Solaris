@@ -335,8 +335,7 @@ impl App {
                 if self.game.can_afford_producer(producer, owned, 10) {
                     10
                 } else {
-                    // Buy as many as possible up to 10
-                    self.game.max_affordable(producer, owned, 10)
+                    0 // Can't afford 10, so can't buy anything
                 }
             }
             BuyAmount::Max => self.game.max_affordable(producer, owned, u64::MAX),
@@ -345,6 +344,17 @@ impl App {
 
     pub fn get_buy_quantity_for_producer(&self, producer: &Producer) -> u64 {
         self.calculate_buy_quantity(producer)
+    }
+
+    /// Returns the display quantity for UI cost calculations.
+    /// This shows the intended quantity (not what you can afford).
+    pub fn get_display_quantity_for_producer(&self, producer: &Producer) -> u64 {
+        let owned = self.game.producer_count(producer.id);
+        match self.buy_amount {
+            BuyAmount::One => 1,
+            BuyAmount::Ten => 10,
+            BuyAmount::Max => self.game.max_affordable(producer, owned, u64::MAX).max(1),
+        }
     }
 
     pub fn save(&self) -> io::Result<()> {
