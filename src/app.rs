@@ -72,6 +72,9 @@ pub struct App {
     pub animation: AnimationState,
     pub achievement_notification: Option<(String, String)>, // (name, description)
     pub achievement_notification_timer: u32,
+    pub upgrade_hover_timer: u32,
+    pub last_selected_upgrade: usize,
+    pub show_upgrade_tooltip: bool,
 }
 
 pub struct OfflineReport {
@@ -99,6 +102,9 @@ impl App {
             animation: AnimationState::new(),
             achievement_notification: None,
             achievement_notification_timer: 0,
+            upgrade_hover_timer: 0,
+            last_selected_upgrade: 0,
+            show_upgrade_tooltip: false,
         }
     }
 
@@ -142,6 +148,20 @@ impl App {
                 self.achievement_notification = None;
             }
         }
+
+        // Upgrade tooltip hover timer logic
+        if self.selected_upgrade != self.last_selected_upgrade {
+            self.upgrade_hover_timer = 0;
+            self.show_upgrade_tooltip = false;
+            self.last_selected_upgrade = self.selected_upgrade;
+        } else if self.active_panel == Panel::Upgrades && !self.show_prestige && !self.show_help {
+            if self.upgrade_hover_timer < 30 {
+                self.upgrade_hover_timer += 1;
+                if self.upgrade_hover_timer >= 30 {
+                    self.show_upgrade_tooltip = true;
+                }
+            }
+        }
     }
 
     pub fn toggle_panel(&mut self, panel: Panel) {
@@ -150,10 +170,14 @@ impl App {
         } else {
             self.active_panel = panel;
         }
+        self.upgrade_hover_timer = 0;
+        self.show_upgrade_tooltip = false;
     }
 
     pub fn focus_panel(&mut self, panel: Panel) {
         self.active_panel = panel;
+        self.upgrade_hover_timer = 0;
+        self.show_upgrade_tooltip = false;
     }
 
     pub fn cycle_focus_right(&mut self) {
@@ -164,6 +188,8 @@ impl App {
                 Panel::Upgrades => Panel::Producers,
                 Panel::Stats => Panel::Producers,
             };
+            self.upgrade_hover_timer = 0;
+            self.show_upgrade_tooltip = false;
         }
     }
 
@@ -175,6 +201,8 @@ impl App {
                 Panel::Upgrades => Panel::Visualization,
                 Panel::Stats => Panel::Producers,
             };
+            self.upgrade_hover_timer = 0;
+            self.show_upgrade_tooltip = false;
         }
     }
 
@@ -200,6 +228,8 @@ impl App {
             Panel::Upgrades => {
                 if self.selected_upgrade > 0 {
                     self.selected_upgrade -= 1;
+                    self.upgrade_hover_timer = 0;
+                    self.show_upgrade_tooltip = false;
                 }
             }
             _ => {}
@@ -229,6 +259,8 @@ impl App {
                 let max = available.len().saturating_sub(1);
                 if self.selected_upgrade < max {
                     self.selected_upgrade += 1;
+                    self.upgrade_hover_timer = 0;
+                    self.show_upgrade_tooltip = false;
                 }
             }
             _ => {}
