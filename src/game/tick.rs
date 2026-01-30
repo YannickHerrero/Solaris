@@ -1,4 +1,4 @@
-use super::GameState;
+use super::{GameState, Producer};
 use crate::TICKS_PER_SECOND;
 
 impl GameState {
@@ -6,11 +6,33 @@ impl GameState {
     pub fn tick(&mut self) {
         self.ticks_played += 1;
 
-        // Calculate energy production for this tick
-        let energy_per_second = self.total_energy_per_second();
-        let energy_per_tick = energy_per_second / TICKS_PER_SECOND;
+        // Calculate and track per-producer energy production
+        let global_mult = self.get_global_multiplier();
+        let mut total_energy_per_tick = 0.0;
 
-        self.add_energy(energy_per_tick);
+        for producer in Producer::all() {
+            let count = self.producer_count(producer.id);
+            if count == 0 {
+                continue;
+            }
+            let producer_mult = self.get_producer_multiplier(producer.id);
+            let producer_energy_per_tick =
+                producer.base_energy_per_second * count as f64 * producer_mult * global_mult
+                    / TICKS_PER_SECOND;
+
+            total_energy_per_tick += producer_energy_per_tick;
+
+            // Track lifetime energy for this producer
+            *self
+                .producer_lifetime_energy
+                .entry(producer.id)
+                .or_insert(0.0) += producer_energy_per_tick;
+        }
+
+        self.add_energy(total_energy_per_tick);
+
+        // Keep this for backward compatibility with total_energy_per_second calculation
+        let energy_per_tick = total_energy_per_tick;
 
         // Track actual production for rate display
         self.energy_produced_history.push_back(energy_per_tick);

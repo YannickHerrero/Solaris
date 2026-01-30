@@ -47,6 +47,10 @@ pub struct GameState {
     // Track newly unlocked achievements for notifications
     #[serde(skip)]
     pub new_achievements: Vec<u32>,
+
+    // Per-producer lifetime energy tracking (resets on ascension)
+    #[serde(default)]
+    pub producer_lifetime_energy: HashMap<u32, f64>,
 }
 
 fn default_manual_click_power() -> f64 {
@@ -75,6 +79,7 @@ impl GameState {
             total_ascensions: 0,
             prestige_upgrades: Vec::new(),
             new_achievements: Vec::new(),
+            producer_lifetime_energy: HashMap::new(),
         }
     }
 
@@ -139,6 +144,33 @@ impl GameState {
 
     pub fn total_producers_owned(&self) -> u64 {
         self.producers_owned.values().sum()
+    }
+
+    /// Get lifetime energy produced by a specific producer
+    pub fn producer_lifetime_production(&self, producer_id: u32) -> f64 {
+        *self.producer_lifetime_energy.get(&producer_id).unwrap_or(&0.0)
+    }
+
+    /// Get total production rate for a specific producer (count * rate * multipliers)
+    pub fn producer_total_rate(&self, producer_id: u32) -> f64 {
+        let producer = match Producer::all().iter().find(|p| p.id == producer_id) {
+            Some(p) => p,
+            None => return 0.0,
+        };
+        let count = self.producer_count(producer_id);
+        let producer_mult = self.get_producer_multiplier(producer_id);
+        let global_mult = self.get_global_multiplier();
+        producer.base_energy_per_second * count as f64 * producer_mult * global_mult
+    }
+
+    /// Get percentage of total production from a specific producer
+    pub fn producer_production_percentage(&self, producer_id: u32) -> f64 {
+        let total_rate = self.total_energy_per_second();
+        if total_rate <= 0.0 {
+            return 0.0;
+        }
+        let producer_rate = self.producer_total_rate(producer_id);
+        (producer_rate / total_rate) * 100.0
     }
 
     pub fn add_energy(&mut self, amount: f64) {
@@ -517,6 +549,7 @@ impl GameState {
         self.ticks_played = 0;
         self.total_manual_clicks = 0;
         self.energy_produced_history.clear();
+        self.producer_lifetime_energy.clear();
         // Keep: achievements_unlocked, stellar_chips, prestige_upgrades, total_ascensions
 
         // Note: Achievements are kept across ascensions!
