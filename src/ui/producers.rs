@@ -84,7 +84,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
         .map(|(_, p)| {
             let owned = app.game.producer_count(p.id);
             let qty = app.get_buy_quantity_for_producer(p).max(1);
-            format_cost(calculate_bulk_cost(p.base_cost, owned, qty)).len()
+            format_cost(calculate_bulk_cost(p.base_cost, owned, qty, p.id)).len()
         })
         .max()
         .unwrap_or(0)
@@ -133,7 +133,7 @@ fn render_producer_list(
         .map(|(display_idx, (_, producer))| {
             let owned = app.game.producer_count(producer.id);
             let quantity = app.get_buy_quantity_for_producer(producer);
-            let cost = calculate_bulk_cost(producer.base_cost, owned, quantity.max(1));
+            let cost = calculate_bulk_cost(producer.base_cost, owned, quantity.max(1), producer.id);
             let can_afford = app.game.energy >= cost && quantity > 0;
 
             let effective_rate = producer.base_energy_per_second
@@ -231,7 +231,7 @@ fn render_producer_indicator(
     let lifetime = app.game.producer_lifetime_production(producer.id);
 
     let quantity = app.get_buy_quantity_for_producer(producer).max(1);
-    let next_cost = calculate_bulk_cost(producer.base_cost, owned, quantity);
+    let next_cost = calculate_bulk_cost(producer.base_cost, owned, quantity, producer.id);
 
     // Calculate ROI (time to pay back next purchase)
     let effective_rate = producer.base_energy_per_second

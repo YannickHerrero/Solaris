@@ -26,8 +26,9 @@ impl Achievement {
     }
 }
 
-// Achievement bonus: 1% per achievement (multiplicative)
-pub const ACHIEVEMENT_BONUS: f64 = 1.01;
+// Achievement bonus: 0.5% per achievement (multiplicative)
+// Reduced from 1% to extend late-game playtime
+pub const ACHIEVEMENT_BONUS: f64 = 1.005;
 
 // Generate achievements programmatically
 static ACHIEVEMENTS: Lazy<Vec<Achievement>> = Lazy::new(|| {

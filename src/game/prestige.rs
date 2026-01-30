@@ -95,9 +95,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 6,
             name: "Cosmic Legacy",
-            description: "+1% production per ascension",
+            description: "+0.5% production per ascension",
             cost: 15,
-            effect: PrestigeEffect::ProductionPerAscension(0.01),
+            effect: PrestigeEffect::ProductionPerAscension(0.005),
             requirement: Some(PrestigeRequirement::TotalChips(10)),
         },
         PrestigeUpgrade {
@@ -111,9 +111,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 8,
             name: "Stellar Efficiency",
-            description: "+25% all production permanently",
+            description: "+15% all production permanently",
             cost: 30,
-            effect: PrestigeEffect::ProductionMultiplier(1.25),
+            effect: PrestigeEffect::ProductionMultiplier(1.15),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(1)),
         },
         PrestigeUpgrade {
@@ -137,9 +137,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 11,
             name: "Dimensional Echo",
-            description: "+1% production per achievement",
+            description: "+0.25% production per achievement",
             cost: 75,
-            effect: PrestigeEffect::ProductionPerAchievement(0.01),
+            effect: PrestigeEffect::ProductionPerAchievement(0.0025),
             requirement: Some(PrestigeRequirement::TotalChips(50)),
         },
         PrestigeUpgrade {
@@ -153,9 +153,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 13,
             name: "Cosmic Mastery",
-            description: "+100% all production permanently",
+            description: "+50% all production permanently",
             cost: 150,
-            effect: PrestigeEffect::ProductionMultiplier(2.0),
+            effect: PrestigeEffect::ProductionMultiplier(1.5),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(8)),
         },
         PrestigeUpgrade {
@@ -213,9 +213,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 20,
             name: "Infinite Power",
-            description: "+500% all production permanently",
+            description: "+100% all production permanently",
             cost: 1500,
-            effect: PrestigeEffect::ProductionMultiplier(6.0),
+            effect: PrestigeEffect::ProductionMultiplier(2.0),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(13)),
         },
 
@@ -223,9 +223,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 21,
             name: "Legacy of Legends",
-            description: "+3% production per ascension",
+            description: "+1% production per ascension",
             cost: 2000,
-            effect: PrestigeEffect::ProductionPerAscension(0.03),
+            effect: PrestigeEffect::ProductionPerAscension(0.01),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(6)),
         },
         PrestigeUpgrade {
@@ -247,9 +247,9 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
         PrestigeUpgrade {
             id: 24,
             name: "Galactic Domination",
-            description: "+1000% all production permanently",
+            description: "+200% all production permanently",
             cost: 5000,
-            effect: PrestigeEffect::ProductionMultiplier(11.0),
+            effect: PrestigeEffect::ProductionMultiplier(3.0),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(20)),
         },
     ]
