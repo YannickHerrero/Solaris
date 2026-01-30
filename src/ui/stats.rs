@@ -3,7 +3,7 @@ use ratatui::widgets::{Block, Borders, Paragraph};
 
 use crate::app::App;
 use crate::format::{format_duration, format_energy, format_rate};
-use crate::game::Producer;
+use crate::game::{Achievement, Producer};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let total_earned = format_energy(app.game.total_energy_earned);
@@ -36,30 +36,56 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
 
     // Count upgrades
     let upgrades_purchased = app.game.upgrades_purchased.len();
+    let total_upgrades = crate::game::Upgrade::all().len();
 
+    // Achievement stats
+    let achievements_unlocked = app.game.achievements_unlocked.len();
+    let total_achievements = Achievement::all().len();
+    let achievement_bonus = (app.game.get_achievement_multiplier() - 1.0) * 100.0;
+
+    // Manual mining stats
     let manual_clicks = app.game.total_manual_clicks;
     let manual_power = format_energy(app.game.effective_manual_power());
 
+    // Prestige stats
+    let stellar_chips = app.game.stellar_chips;
+    let potential_chips = app.game.calculate_potential_stellar_chips();
+    let ascensions = app.game.total_ascensions;
+    let prestige_upgrades = app.game.prestige_upgrades.len();
+
+    // Build the stats text
     let text = format!(
         r#"
   Statistics
   ----------
 
-  Current Energy:     {} ⚛
-  Total Earned:       {} ⚛
+  Current Energy:     {} E
+  Total Earned:       {} E
   Production Rate:    {}
 
   Time Played:        {}
 
   Total Producers:    {}
-  Upgrades Purchased: {}
+  Upgrades:           {}/{}
 
   Top Producer:       {}
 
   Manual Mining
   -------------
   Total Clicks:       {}
-  Click Power:        {} ⚛
+  Click Power:        {} E
+
+  Achievements
+  ------------
+  Unlocked:           {}/{}
+  Bonus:              +{:.1}%
+
+  Prestige
+  --------
+  Stellar Chips:      {}
+  Potential Chips:    {}{}
+  Ascensions:         {}
+  Prestige Upgrades:  {}
 "#,
         current,
         total_earned,
@@ -67,9 +93,18 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
         time_played,
         total_producers,
         upgrades_purchased,
+        total_upgrades,
         top_producer_str,
         manual_clicks,
-        manual_power
+        manual_power,
+        achievements_unlocked,
+        total_achievements,
+        achievement_bonus,
+        stellar_chips,
+        potential_chips,
+        if app.game.can_ascend() { " (Ready!)" } else { "" },
+        ascensions,
+        prestige_upgrades
     );
 
     let border_color = if focused { Color::Blue } else { Color::DarkGray };

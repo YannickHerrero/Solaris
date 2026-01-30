@@ -3,7 +3,7 @@ use std::io;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 
-use crate::game::{GameState, Producer};
+use crate::game::{GameState, Producer, PrestigeUpgrade};
 use crate::save;
 use crate::ui::animation::AnimationState;
 use crate::TICKS_PER_SECOND;
@@ -58,13 +58,20 @@ pub struct App {
     pub game: GameState,
     pub selected_producer: usize,
     pub selected_upgrade: usize,
+    pub selected_prestige_upgrade: usize,
+    pub selected_achievement: usize,
+    pub achievement_tab: usize,
     pub active_panel: Panel,
     pub buy_amount: BuyAmount,
     pub boss_mode: bool,
     pub offline_report: Option<OfflineReport>,
     pub layout_mode: LayoutMode,
     pub show_help: bool,
+    pub show_prestige: bool,
+    pub show_achievements: bool,
     pub animation: AnimationState,
+    pub achievement_notification: Option<(String, String)>, // (name, description)
+    pub achievement_notification_timer: u32,
 }
 
 pub struct OfflineReport {
@@ -78,13 +85,20 @@ impl App {
             game: GameState::new(),
             selected_producer: 0,
             selected_upgrade: 0,
+            selected_prestige_upgrade: 0,
+            selected_achievement: 0,
+            achievement_tab: 0,
             active_panel: Panel::Producers,
             buy_amount: BuyAmount::One,
             boss_mode: false,
             offline_report: None,
             layout_mode: LayoutMode::default(),
             show_help: false,
+            show_prestige: false,
+            show_achievements: false,
             animation: AnimationState::new(),
+            achievement_notification: None,
+            achievement_notification_timer: 0,
         }
     }
 
@@ -92,9 +106,42 @@ impl App {
         self.show_help = !self.show_help;
     }
 
+    pub fn toggle_prestige(&mut self) {
+        self.show_prestige = !self.show_prestige;
+    }
+
+    pub fn toggle_achievements(&mut self) {
+        self.show_achievements = !self.show_achievements;
+        if self.show_achievements {
+            self.selected_achievement = 0;
+        }
+    }
+
+    pub fn cycle_achievement_tab(&mut self) {
+        self.achievement_tab = (self.achievement_tab + 1) % 8;
+        self.selected_achievement = 0; // Reset selection when changing tabs
+    }
+
     pub fn tick(&mut self) {
         self.game.tick();
         self.animation.tick();
+
+        // Check for new achievements and show notification
+        if let Some(achievement) = self.game.pop_new_achievement() {
+            self.achievement_notification = Some((
+                achievement.name.to_string(),
+                achievement.description.to_string(),
+            ));
+            self.achievement_notification_timer = 30; // Show for 3 seconds (30 ticks)
+        }
+
+        // Decrement achievement notification timer
+        if self.achievement_notification_timer > 0 {
+            self.achievement_notification_timer -= 1;
+            if self.achievement_notification_timer == 0 {
+                self.achievement_notification = None;
+            }
+        }
     }
 
     pub fn toggle_panel(&mut self, panel: Panel) {
@@ -136,6 +183,14 @@ impl App {
     }
 
     pub fn move_selection_up(&mut self) {
+        if self.show_prestige {
+            // Navigate prestige upgrades
+            if self.selected_prestige_upgrade > 0 {
+                self.selected_prestige_upgrade -= 1;
+            }
+            return;
+        }
+
         match self.active_panel {
             Panel::Producers => {
                 if self.selected_producer > 0 {
@@ -152,10 +207,24 @@ impl App {
     }
 
     pub fn move_selection_down(&mut self) {
+        if self.show_prestige {
+            // Navigate prestige upgrades
+            let max = PrestigeUpgrade::all().len().saturating_sub(1);
+            if self.selected_prestige_upgrade < max {
+                self.selected_prestige_upgrade += 1;
+            }
+            return;
+        }
+
         match self.active_panel {
             Panel::Producers => {
-                let max = Producer::all().len().saturating_sub(1);
-                if self.selected_producer < max {
+                let visible = self.game.visible_producers();
+                // Only allow selection of unlocked producers
+                let max_unlocked = visible.iter()
+                    .filter(|(_, _, unlocked)| *unlocked)
+                    .count()
+                    .saturating_sub(1);
+                if self.selected_producer < max_unlocked {
                     self.selected_producer += 1;
                 }
             }
@@ -171,15 +240,23 @@ impl App {
     }
 
     pub fn purchase_selected(&mut self) {
+        if self.show_prestige {
+            // Try to buy prestige upgrade or ascend
+            self.purchase_prestige_or_ascend();
+            return;
+        }
+
         match self.active_panel {
             Panel::Producers => {
-                let producers = Producer::all();
-                if self.selected_producer < producers.len() {
-                    let producer = &producers[self.selected_producer];
-                    let quantity = self.calculate_buy_quantity(producer);
-                    if quantity > 0 {
-                        self.game.buy_producer(producer.id, quantity);
-                        let _ = self.save(); // Save on purchase
+                let visible = self.game.visible_producers();
+                if self.selected_producer < visible.len() {
+                    let (_, producer, unlocked) = visible[self.selected_producer];
+                    if unlocked {
+                        let quantity = self.calculate_buy_quantity(producer);
+                        if quantity > 0 {
+                            self.game.buy_producer(producer.id, quantity);
+                            let _ = self.save(); // Save on purchase
+                        }
                     }
                 }
             }
@@ -193,6 +270,28 @@ impl App {
                 }
             }
             _ => {}
+        }
+    }
+
+    fn purchase_prestige_or_ascend(&mut self) {
+        let all_upgrades = PrestigeUpgrade::all();
+
+        if self.selected_prestige_upgrade < all_upgrades.len() {
+            let upgrade = &all_upgrades[self.selected_prestige_upgrade];
+
+            // Try to buy the upgrade
+            if self.game.is_prestige_upgrade_available(upgrade) {
+                if self.game.buy_prestige_upgrade(upgrade.id) {
+                    let _ = self.save();
+                    return;
+                }
+            }
+        }
+
+        // If no upgrade purchased and at the top, try to ascend
+        if self.selected_prestige_upgrade == 0 && self.game.can_ascend() {
+            self.game.perform_ascension();
+            let _ = self.save();
         }
     }
 
@@ -246,7 +345,10 @@ impl App {
                 // Only show report if offline for more than a minute
                 let energy_per_tick = self.game.total_energy_per_second() / TICKS_PER_SECOND;
                 let ticks = capped_secs * TICKS_PER_SECOND as u64;
-                let energy_earned = energy_per_tick * ticks as f64;
+
+                // Apply offline bonus from prestige upgrades
+                let offline_bonus = self.game.get_offline_bonus_multiplier();
+                let energy_earned = energy_per_tick * ticks as f64 * offline_bonus;
 
                 self.game.add_energy(energy_earned);
 

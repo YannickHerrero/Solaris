@@ -1,12 +1,16 @@
 pub mod animation;
+mod achievements;
 mod boss;
 mod header;
 mod help;
 mod layout;
+mod prestige;
 mod producers;
 mod stats;
 mod upgrades;
 mod visualization;
+
+pub use achievements::filtered_achievement_count;
 
 use ratatui::prelude::*;
 
@@ -75,6 +79,19 @@ pub fn render(frame: &mut Frame, app: &mut App) {
         }
     }
 
+    // Prestige panel overlay
+    if app.show_prestige {
+        prestige::render(frame, size, app);
+    }
+
+    // Achievements panel overlay
+    if app.show_achievements {
+        achievements::render(frame, size, app);
+    }
+
+    // Achievement notification
+    render_achievement_notification(frame, size, app);
+
     // Help popup overlay (rendered last so it appears on top)
     help::render(frame, size, app);
 }
@@ -95,7 +112,7 @@ fn render_offline_report(frame: &mut Frame, area: Rect, report: &crate::app::Off
     let energy = crate::format::format_energy(report.energy_earned);
 
     let text = format!(
-        "\nWelcome back!\n\nYou were away for {}\nEarned: {} ⚛\n\nPress any key to continue",
+        "\nWelcome back!\n\nYou were away for {}\nEarned: {} E\n\nPress any key to continue",
         duration, energy
     );
 
@@ -109,4 +126,37 @@ fn render_offline_report(frame: &mut Frame, area: Rect, report: &crate::app::Off
         .alignment(Alignment::Center);
 
     frame.render_widget(paragraph, popup_area);
+}
+
+fn render_achievement_notification(frame: &mut Frame, area: Rect, app: &mut App) {
+    use ratatui::widgets::{Block, Borders, Paragraph, Clear};
+
+    // Check for new achievements to display
+    if let Some(achievement) = &app.achievement_notification {
+        let popup_width = 50.min(area.width.saturating_sub(2));
+        let popup_height = 5;
+        // Align to bottom right
+        let x = area.width.saturating_sub(popup_width).saturating_sub(1);
+        let y = area.height.saturating_sub(popup_height).saturating_sub(1);
+        let popup_area = Rect::new(x, y, popup_width, popup_height);
+
+        frame.render_widget(Clear, popup_area);
+
+        let text = format!(
+            "\n Achievement Unlocked!\n {}: {}",
+            achievement.0, achievement.1
+        );
+
+        let block = Block::default()
+            .title(" Achievement ")
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::LightYellow));
+
+        let paragraph = Paragraph::new(text)
+            .block(block)
+            .style(Style::default().fg(Color::Yellow))
+            .alignment(Alignment::Center);
+
+        frame.render_widget(paragraph, popup_area);
+    }
 }

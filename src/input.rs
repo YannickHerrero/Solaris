@@ -1,6 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::app::{App, LayoutMode, Panel};
+use crate::ui::filtered_achievement_count;
 
 /// Handle a key event, returns true if the app should quit
 pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
@@ -33,6 +34,42 @@ pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
             return true; // Ctrl+C still quits
         }
         app.toggle_help();
+        return false;
+    }
+
+    // When prestige panel is shown
+    if app.show_prestige {
+        match key.code {
+            KeyCode::Char('a') | KeyCode::Esc => app.toggle_prestige(),
+            KeyCode::Char('j') | KeyCode::Down => app.move_selection_down(),
+            KeyCode::Char('k') | KeyCode::Up => app.move_selection_up(),
+            KeyCode::Enter => app.purchase_selected(),
+            KeyCode::Char('q') => return true,
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return true,
+            _ => {}
+        }
+        return false;
+    }
+
+    // When achievements panel is shown
+    if app.show_achievements {
+        match key.code {
+            KeyCode::Char('x') | KeyCode::Char('q') | KeyCode::Esc => app.toggle_achievements(),
+            KeyCode::Tab => app.cycle_achievement_tab(),
+            KeyCode::Char('j') | KeyCode::Down => {
+                let max = filtered_achievement_count(app).saturating_sub(1);
+                if app.selected_achievement < max {
+                    app.selected_achievement += 1;
+                }
+            }
+            KeyCode::Char('k') | KeyCode::Up => {
+                if app.selected_achievement > 0 {
+                    app.selected_achievement -= 1;
+                }
+            }
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return true,
+            _ => {}
+        }
         return false;
     }
 
@@ -84,6 +121,12 @@ pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
                 app.toggle_panel(Panel::Visualization);
             }
         }
+
+        // Prestige/Ascension panel
+        KeyCode::Char('a') => app.toggle_prestige(),
+
+        // Achievements panel
+        KeyCode::Char('x') => app.toggle_achievements(),
 
         // Manual mining
         KeyCode::Char(' ') => app.manual_mine(),

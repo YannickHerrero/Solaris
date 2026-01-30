@@ -28,13 +28,21 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
         .iter()
         .enumerate()
         .map(|(i, upgrade)| {
-            let can_afford = app.game.energy >= upgrade.cost;
+            let cost = app.game.get_upgrade_cost(upgrade);
+            let can_afford = app.game.energy >= cost;
+
+            // Truncate description if needed
+            let desc = if upgrade.description.len() > 35 {
+                format!("{}...", &upgrade.description[..32])
+            } else {
+                upgrade.description.to_string()
+            };
 
             let line = format!(
                 "{:<25} {:>14}  {}",
                 upgrade.name,
-                format_cost(upgrade.cost),
-                upgrade.description
+                format_cost(cost),
+                desc
             );
 
             let style = if i == app.selected_upgrade {
