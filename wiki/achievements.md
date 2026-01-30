@@ -1,26 +1,26 @@
 # Achievements
 
-Solaris features **260 achievements** across 8 categories. Each achievement unlocked provides a **+1% multiplicative production bonus**.
+Solaris features **260 achievements** across 8 categories. Each achievement unlocked provides a **+0.5% multiplicative production bonus**.
 
 ## Achievement Bonus
 
 The achievement bonus applies to all production:
 
 ```
-Achievement Multiplier = 1.01^n
+Achievement Multiplier = 1.005^n
 ```
 
 Where `n` is the number of achievements unlocked.
 
 | Achievements | Bonus |
 |--------------|-------|
-| 10 | +10.5% (1.105x) |
-| 25 | +28.2% (1.282x) |
-| 50 | +64.5% (1.645x) |
-| 100 | +170.5% (2.705x) |
-| 150 | +344.3% (4.432x) |
-| 200 | +624.1% (7.244x) |
-| 260 | +1,220% (13.20x) |
+| 10 | +5.1% (1.051x) |
+| 25 | +13.3% (1.133x) |
+| 50 | +28.4% (1.284x) |
+| 100 | +64.9% (1.649x) |
+| 150 | +111.8% (2.118x) |
+| 200 | +171.5% (2.715x) |
+| 260 | +267% (3.67x) |
 
 ---
 

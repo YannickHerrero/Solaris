@@ -98,10 +98,14 @@ Additionally, prestige upgrades can unlock multiple producers at the start:
 
 ## Cost Scaling
 
-Each producer's cost increases by **15%** (1.15x) with each purchase:
+Producer costs scale progressively based on tier:
+- **Producers 1-7**: 1.15x per owned
+- **Producers 8-12**: 1.18x per owned
+- **Producers 13-17**: 1.20x per owned
+- **Producers 18-20**: 1.22x per owned
 
 ```
-Cost(n) = base_cost × 1.15^owned
+Cost(n) = base_cost × cost_multiplier^owned
 ```
 
 ### Bulk Purchase Formula
@@ -141,19 +145,22 @@ Where:
 
 ### Producer Multiplier Sources
 
-1. **Producer Upgrades**: 15 tiers, each tier gives 2x multiplier
-   - Maximum: 2^15 = 32,768x from upgrades alone
+1. **Producer Upgrades**: 15 tiers with tiered multipliers
+   - Tiers 1-5: 2.0x each
+   - Tiers 6-10: 1.7x each
+   - Tiers 11-15: 1.4x each
+   - Maximum: ~2,454x from all 15 upgrades
 
-2. **Synergy Upgrades**: +5% per source producer owned
-   - Example: With 100 Mining Drones and the Drone-Mine Synergy upgrade, Asteroid Mines get +500% (6x) bonus
+2. **Synergy Upgrades**: +2% per source producer owned (capped at 2.5x)
+   - Example: With 100 Mining Drones and the Drone-Mine Synergy upgrade, Asteroid Mines get 2.5x bonus (capped)
 
 ### Global Multiplier Sources
 
 1. **Global Upgrades**: 10 total, ranging from +5% to +200%
-2. **Achievement Bonus**: 1.01^n where n = number of achievements
-   - At 100 achievements: ~2.7x multiplier
-   - At 260 achievements: ~13.2x multiplier
-3. **Prestige Multipliers**: Various production bonuses from prestige upgrades
+2. **Achievement Bonus**: 1.005^n where n = number of achievements
+   - At 100 achievements: ~1.65x multiplier
+   - At 260 achievements: ~3.67x multiplier
+3. **Prestige Multipliers**: Various production bonuses from prestige upgrades (up to ~10.87x)
 
 ---
 
@@ -163,21 +170,21 @@ Each producer has **15 upgrade tiers** that unlock at specific ownership thresho
 
 | Tier | Required Count | Effect |
 |------|----------------|--------|
-| 1 | 1 | 2x production |
-| 2 | 5 | 2x production |
-| 3 | 25 | 2x production |
-| 4 | 50 | 2x production |
-| 5 | 100 | 2x production |
-| 6 | 150 | 2x production |
-| 7 | 200 | 2x production |
-| 8 | 250 | 2x production |
-| 9 | 300 | 2x production |
-| 10 | 350 | 2x production |
-| 11 | 400 | 2x production |
-| 12 | 450 | 2x production |
-| 13 | 500 | 2x production |
-| 14 | 550 | 2x production |
-| 15 | 600 | 2x production |
+| 1 | 1 | 2.0x production |
+| 2 | 5 | 2.0x production |
+| 3 | 25 | 2.0x production |
+| 4 | 50 | 2.0x production |
+| 5 | 100 | 2.0x production |
+| 6 | 150 | 1.7x production |
+| 7 | 200 | 1.7x production |
+| 8 | 250 | 1.7x production |
+| 9 | 300 | 1.7x production |
+| 10 | 350 | 1.7x production |
+| 11 | 400 | 1.4x production |
+| 12 | 450 | 1.4x production |
+| 13 | 500 | 1.4x production |
+| 14 | 550 | 1.4x production |
+| 15 | 600 | 1.4x production |
 
 See [Upgrades](upgrades.md) for complete upgrade details.
 
@@ -212,7 +219,7 @@ The complete chain:
 18. Entropy Reversers boost Big Bang Catalysts
 19. **Solar Panels boost Big Bang Catalysts** (completing the circle!)
 
-Each synergy provides **+5% per source producer owned** to the target producer.
+Each synergy provides **+2% per source producer owned** to the target producer (maximum 2.5x).
 
 ---
 

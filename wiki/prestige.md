@@ -89,9 +89,9 @@ You can only ascend if you would earn at least **1 Stellar Chip**.
 
 | ID | Name | Cost | Effect | Requirement |
 |----|------|------|--------|-------------|
-| 6 | Cosmic Legacy | 15 | +1% production per ascension | 10 total chips earned |
+| 6 | Cosmic Legacy | 15 | +0.5% production per ascension | 10 total chips earned |
 | 7 | Accelerated Start | 20 | Start with first 3 producers unlocked | Seasoned Explorer |
-| 8 | Stellar Efficiency | 30 | +25% all production permanently | Stellar Foundation |
+| 8 | Stellar Efficiency | 30 | +15% all production permanently | Stellar Foundation |
 | 9 | Bargain Hunter | 40 | Upgrades cost 10% less | None |
 | 10 | Universal Knowledge | 50 | Start with first 5 producers unlocked | Accelerated Start |
 
@@ -99,9 +99,9 @@ You can only ascend if you would earn at least **1 Stellar Chip**.
 
 | ID | Name | Cost | Effect | Requirement |
 |----|------|------|--------|-------------|
-| 11 | Dimensional Echo | 75 | +1% production per achievement | 50 total chips earned |
+| 11 | Dimensional Echo | 75 | +0.25% production per achievement | 50 total chips earned |
 | 12 | Transcendent Memory | 100 | Keep 1% of energy after ascension | 5 ascensions |
-| 13 | Cosmic Mastery | 150 | +100% all production permanently | Stellar Efficiency |
+| 13 | Cosmic Mastery | 150 | +50% all production permanently | Stellar Efficiency |
 | 14 | Eternal Progression | 200 | +5% Stellar Chips earned | 10 ascensions |
 
 ### Tier 4 (300-500 chips) - Advanced Bonuses
@@ -118,16 +118,16 @@ You can only ascend if you would earn at least **1 Stellar Chip**.
 |----|------|------|--------|-------------|
 | 18 | Universal Unlock | 750 | Start with first 10 producers unlocked | Rapid Expansion |
 | 19 | Perfect Memory | 1,000 | Keep 5% of energy after ascension | Transcendent Memory |
-| 20 | Infinite Power | 1,500 | +500% all production permanently | Cosmic Mastery |
+| 20 | Infinite Power | 1,500 | +100% all production permanently | Cosmic Mastery |
 
 ### Tier 6 (2,000-5,000 chips) - End-Game
 
 | ID | Name | Cost | Effect | Requirement |
 |----|------|------|--------|-------------|
-| 21 | Legacy of Legends | 2,000 | +3% production per ascension | Cosmic Legacy |
+| 21 | Legacy of Legends | 2,000 | +1% production per ascension | Cosmic Legacy |
 | 22 | Discount Master | 3,000 | Upgrades cost 25% less | Bargain Hunter |
 | 23 | Eternal Offline | 4,000 | +50% offline earnings | Persistent Memory |
-| 24 | Galactic Domination | 5,000 | +1000% all production permanently | Infinite Power |
+| 24 | Galactic Domination | 5,000 | +200% all production permanently | Infinite Power |
 
 ---
 
@@ -166,24 +166,25 @@ Production multipliers from prestige upgrades stack **multiplicatively**:
 | Upgrade | Multiplier |
 |---------|------------|
 | Stellar Foundation | 1.05x |
-| Stellar Efficiency | 1.25x |
-| Cosmic Mastery | 2.00x |
-| Infinite Power | 6.00x |
-| Galactic Domination | 11.00x |
-| **Combined** | **173.25x** |
+| Stellar Efficiency | 1.15x |
+| Cosmic Mastery | 1.50x |
+| Infinite Power | 2.00x |
+| Galactic Domination | 3.00x |
+| **Combined** | **10.87x** |
 
 ### Per-Ascension Bonus
 
-With both Cosmic Legacy (+1%) and Legacy of Legends (+3%):
-- Total: +4% per ascension
-- At 100 ascensions: 1.04^100 = **50.5x multiplier**
+With both Cosmic Legacy (+0.5%) and Legacy of Legends (+1%):
+- Total: +1.5% per ascension
+- **Capped at 2.0x maximum**
+- At 67+ ascensions: reaches 2.0x cap
 
 ### Per-Achievement Bonus
 
-Dimensional Echo grants +1% per achievement on top of the base achievement bonus:
-- Base: 1.01^n
-- With Dimensional Echo: 1.01^n × (1 + 0.01 × n)
-- At 260 achievements: 13.2x × 3.6x = **47.5x multiplier**
+Dimensional Echo grants +0.25% per achievement on top of the base achievement bonus:
+- Base: 1.005^n
+- With Dimensional Echo: 1.005^n × (1 + 0.0025 × n)
+- At 260 achievements: 3.67x × 1.65x = **6.06x multiplier**
 
 ### Double Energy Chance
 
