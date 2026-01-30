@@ -51,7 +51,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
 
     // Render header
     let header = format!(
-        "  {:<19} {:>4}  {:>10}  {:>12}",
+        "  {:<19} {:>6}  {:>18}  {:>19}",
         "Producer", "Own", "Rate", "Cost"
     );
     let header_widget = Paragraph::new(header)
@@ -99,7 +99,7 @@ fn render_producer_list(
             };
 
             let line = format!(
-                "{} {:<19} {:>4}  {:>10}  {:>12} {}",
+                "{} {:<19} {:>6}  {:>18}  {:>19} {}",
                 producer.icon,
                 producer.name,
                 owned,
