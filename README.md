@@ -27,9 +27,16 @@ A terminal-based idle game where you harness the power of the cosmos to generate
 
 ## Quick Start
 
-### From Source
+### Install with Cargo
 
 Requires Rust 1.70 or later.
+
+```bash
+cargo install --git https://github.com/YannickHerrero/solaris.git
+solaris
+```
+
+### From Source
 
 ```bash
 git clone https://github.com/YannickHerrero/solaris.git
