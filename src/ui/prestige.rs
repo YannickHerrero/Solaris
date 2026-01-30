@@ -2,7 +2,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Clear};
 
 use crate::app::App;
-use crate::game::PrestigeUpgrade;
+use crate::game::{PrestigeUpgrade, PrestigeRequirement};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     // Create a centered popup
@@ -88,14 +88,16 @@ fn render_prestige_upgrades(frame: &mut Frame, area: Rect, app: &App) {
             let is_available = !is_purchased && app.game.is_prestige_upgrade_available(upgrade);
             let can_afford = app.game.stellar_chips >= upgrade.cost;
 
-            let status = if is_purchased {
-                "[OWNED]"
+            let (status, description) = if is_purchased {
+                ("[OWNED]".to_string(), upgrade.description.to_string())
             } else if is_available && can_afford {
-                "[BUY]"
+                ("[BUY]".to_string(), upgrade.description.to_string())
             } else if is_available {
-                "[LOCKED]"
+                ("[NEED $]".to_string(), upgrade.description.to_string())
             } else {
-                "[???]"
+                // Show what requirement is missing
+                let req_str = get_requirement_string(upgrade, app);
+                (format!("[REQ]"), req_str)
             };
 
             let cost_str = if is_purchased {
@@ -109,7 +111,7 @@ fn render_prestige_upgrades(frame: &mut Frame, area: Rect, app: &App) {
                 status,
                 upgrade.name,
                 cost_str,
-                upgrade.description
+                description
             );
 
             let style = if is_purchased {
@@ -150,6 +152,26 @@ fn render_prestige_upgrades(frame: &mut Frame, area: Rect, app: &App) {
     let mut state = ListState::default();
     state.select(Some(app.selected_prestige_upgrade.min(all_upgrades.len().saturating_sub(1))));
     frame.render_stateful_widget(list, chunks[1], &mut state);
+}
+
+/// Get a string describing what requirement is missing for a prestige upgrade
+fn get_requirement_string(upgrade: &PrestigeUpgrade, app: &App) -> String {
+    match upgrade.requirement {
+        None => upgrade.description.to_string(),
+        Some(PrestigeRequirement::Ascensions(count)) => {
+            format!("Requires {} ascensions (have {})", count, app.game.total_ascensions)
+        }
+        Some(PrestigeRequirement::TotalChips(count)) => {
+            format!("Requires {} total chips earned (have {})", count, app.game.total_stellar_chips_earned)
+        }
+        Some(PrestigeRequirement::PrestigeUpgrade(req_id)) => {
+            if let Some(req_upgrade) = PrestigeUpgrade::by_id(req_id) {
+                format!("Requires: {}", req_upgrade.name)
+            } else {
+                format!("Requires upgrade #{}", req_id)
+            }
+        }
+    }
 }
 
 /// Helper function to create a centered rect
