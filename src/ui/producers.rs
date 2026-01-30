@@ -49,17 +49,63 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
             .split(inner)
     };
 
+    // Calculate dynamic column widths
+    let name_width = visible
+        .iter()
+        .map(|(_, p)| p.name.len())
+        .max()
+        .unwrap_or(0)
+        .max("Producer".len())
+        + 1;
+
+    let owned_width = visible
+        .iter()
+        .map(|(_, p)| app.game.producer_count(p.id).to_string().len())
+        .max()
+        .unwrap_or(0)
+        .max("Own".len())
+        + 1;
+
+    let rate_width = visible
+        .iter()
+        .map(|(_, p)| {
+            let rate = p.base_energy_per_second
+                * app.game.get_producer_multiplier(p.id)
+                * app.game.get_global_multiplier();
+            format_rate(rate).len()
+        })
+        .max()
+        .unwrap_or(0)
+        .max("Rate".len())
+        + 1;
+
+    let cost_width = visible
+        .iter()
+        .map(|(_, p)| {
+            let owned = app.game.producer_count(p.id);
+            let qty = app.get_buy_quantity_for_producer(p).max(1);
+            format_cost(calculate_bulk_cost(p.base_cost, owned, qty)).len()
+        })
+        .max()
+        .unwrap_or(0)
+        .max("Cost".len())
+        + 1;
+
     // Render header
     let header = format!(
-        "  {:<19} {:>6}  {:>18}  {:>19}",
-        "Producer", "Own", "Rate", "Cost"
+        "  {:<name_width$} {:>owned_width$}  {:>rate_width$}  {:>cost_width$}",
+        "Producer", "Own", "Rate", "Cost",
+        name_width = name_width,
+        owned_width = owned_width,
+        rate_width = rate_width,
+        cost_width = cost_width
     );
     let header_widget = Paragraph::new(header)
         .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
     frame.render_widget(header_widget, chunks[0]);
 
     // Render producer list
-    render_producer_list(frame, chunks[1], app, &visible);
+    render_producer_list(frame, chunks[1], app, &visible, name_width, owned_width, rate_width, cost_width);
 
     // Render indicator section if applicable
     if show_indicator && chunks.len() > 2 {
@@ -76,6 +122,10 @@ fn render_producer_list(
     area: Rect,
     app: &App,
     visible: &[(usize, &Producer)],
+    name_width: usize,
+    owned_width: usize,
+    rate_width: usize,
+    cost_width: usize,
 ) {
     let mut items: Vec<ListItem> = visible
         .iter()
@@ -99,13 +149,17 @@ fn render_producer_list(
             };
 
             let line = format!(
-                "{} {:<19} {:>6}  {:>18}  {:>19} {}",
+                "{} {:<name_width$} {:>owned_width$}  {:>rate_width$}  {:>cost_width$} {}",
                 producer.icon,
                 producer.name,
                 owned,
                 format_rate(effective_rate),
                 format_cost(cost),
-                buy_label
+                buy_label,
+                name_width = name_width,
+                owned_width = owned_width,
+                rate_width = rate_width,
+                cost_width = cost_width
             );
 
             let style = if display_idx == app.selected_producer {
