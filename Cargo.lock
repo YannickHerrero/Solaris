@@ -659,6 +659,7 @@ dependencies = [
  "chrono",
  "crossterm",
  "directories",
+ "once_cell",
  "ratatui",
  "serde",
  "serde_json",
