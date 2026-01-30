@@ -1,9 +1,13 @@
+mod achievement;
 mod economy;
+mod prestige;
 mod producer;
 mod tick;
 mod upgrade;
 
+pub use achievement::*;
 pub use economy::*;
+pub use prestige::*;
 pub use producer::*;
 pub use upgrade::*;
 
@@ -25,6 +29,24 @@ pub struct GameState {
     pub total_manual_clicks: u64,
     #[serde(skip)]
     pub energy_produced_history: VecDeque<f64>,
+
+    // Achievement system
+    #[serde(default)]
+    pub achievements_unlocked: Vec<u32>,
+
+    // Prestige system
+    #[serde(default)]
+    pub stellar_chips: u64,
+    #[serde(default)]
+    pub total_stellar_chips_earned: u64,
+    #[serde(default)]
+    pub total_ascensions: u64,
+    #[serde(default)]
+    pub prestige_upgrades: Vec<u32>,
+
+    // Track newly unlocked achievements for notifications
+    #[serde(skip)]
+    pub new_achievements: Vec<u32>,
 }
 
 fn default_manual_click_power() -> f64 {
@@ -47,11 +69,80 @@ impl GameState {
             manual_multiplier: 1.0,
             total_manual_clicks: 0,
             energy_produced_history: VecDeque::with_capacity(10),
+            achievements_unlocked: Vec::new(),
+            stellar_chips: 0,
+            total_stellar_chips_earned: 0,
+            total_ascensions: 0,
+            prestige_upgrades: Vec::new(),
+            new_achievements: Vec::new(),
         }
     }
 
+    // ============ Producer Visibility System ============
+
+    /// Check if a producer is unlocked
+    /// A producer is unlocked if:
+    /// - It's the first producer (Solar Panel)
+    /// - OR the previous producer has been purchased at least once
+    /// - OR a prestige upgrade unlocks it
+    pub fn is_producer_unlocked(&self, producer_id: u32) -> bool {
+        if producer_id == 1 {
+            return true;
+        }
+
+        // Check prestige unlock
+        let prestige_unlock_level = self.get_prestige_unlock_level();
+        if producer_id <= prestige_unlock_level {
+            return true;
+        }
+
+        // Check if previous producer owned
+        self.producer_count(producer_id - 1) >= 1
+    }
+
+    /// Get the number of producers unlocked by prestige upgrades
+    fn get_prestige_unlock_level(&self) -> u32 {
+        let mut max_unlock = 1u32; // Always have Solar Panel
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::UnlockProducers(count) = upgrade.effect {
+                    max_unlock = max_unlock.max(count);
+                }
+            }
+        }
+
+        max_unlock
+    }
+
+    /// Get all visible producers (unlocked + next locked one with hint)
+    pub fn visible_producers(&self) -> Vec<(usize, &Producer, bool)> {
+        let all_producers = Producer::all();
+        let mut visible = Vec::new();
+
+        for (idx, producer) in all_producers.iter().enumerate() {
+            let unlocked = self.is_producer_unlocked(producer.id);
+
+            if unlocked {
+                visible.push((idx, producer, true));
+            } else {
+                // Show the next locked producer as a hint
+                visible.push((idx, producer, false));
+                break; // Only show one locked producer
+            }
+        }
+
+        visible
+    }
+
+    // ============ Producer Management ============
+
     pub fn producer_count(&self, id: u32) -> u64 {
         *self.producers_owned.get(&id).unwrap_or(&0)
+    }
+
+    pub fn total_producers_owned(&self) -> u64 {
+        self.producers_owned.values().sum()
     }
 
     pub fn add_energy(&mut self, amount: f64) {
@@ -60,6 +151,11 @@ impl GameState {
     }
 
     pub fn buy_producer(&mut self, id: u32, quantity: u64) -> bool {
+        // Check if producer is unlocked
+        if !self.is_producer_unlocked(id) {
+            return false;
+        }
+
         let producer = match Producer::all().iter().find(|p| p.id == id) {
             Some(p) => p,
             None => return false,
@@ -86,6 +182,8 @@ impl GameState {
         calculate_max_affordable(producer.base_cost, owned, self.energy, max_quantity)
     }
 
+    // ============ Upgrade Management ============
+
     pub fn buy_upgrade(&mut self, id: u32) -> bool {
         if self.upgrades_purchased.contains(&id) {
             return false;
@@ -100,13 +198,36 @@ impl GameState {
             return false;
         }
 
-        if self.energy >= upgrade.cost {
-            self.energy -= upgrade.cost;
+        let cost = self.get_upgrade_cost(upgrade);
+
+        if self.energy >= cost {
+            self.energy -= cost;
             self.upgrades_purchased.push(id);
             true
         } else {
             false
         }
+    }
+
+    /// Get the cost of an upgrade, with prestige discounts applied
+    pub fn get_upgrade_cost(&self, upgrade: &Upgrade) -> f64 {
+        let discount = self.get_upgrade_cost_reduction();
+        upgrade.cost * (1.0 - discount)
+    }
+
+    /// Get total upgrade cost reduction from prestige
+    fn get_upgrade_cost_reduction(&self) -> f64 {
+        let mut reduction = 0.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::UpgradeCostReduction(r) = upgrade.effect {
+                    reduction += r;
+                }
+            }
+        }
+
+        reduction.min(0.50) // Cap at 50% reduction
     }
 
     pub fn is_upgrade_available(&self, upgrade: &Upgrade) -> bool {
@@ -124,6 +245,9 @@ impl GameState {
             UpgradeRequirement::ManualClicks(clicks) => {
                 self.total_manual_clicks >= clicks
             }
+            UpgradeRequirement::ProducersPair { id_a, count_a, id_b, count_b } => {
+                self.producer_count(id_a) >= count_a && self.producer_count(id_b) >= count_b
+            }
         }
     }
 
@@ -133,6 +257,8 @@ impl GameState {
             .filter(|u| self.is_upgrade_available(u))
             .collect()
     }
+
+    // ============ Multiplier Calculations ============
 
     pub fn get_producer_multiplier(&self, producer_id: u32) -> f64 {
         let mut multiplier = 1.0;
@@ -146,21 +272,78 @@ impl GameState {
                             multiplier *= m;
                         }
                     }
-                    UpgradeEffect::GlobalMultiplier(_) | UpgradeEffect::ManualMultiplier(_) => {}
+                    _ => {}
                 }
             }
         }
 
+        // Synergy bonuses
+        multiplier *= self.get_synergy_multiplier(producer_id);
+
         multiplier
+    }
+
+    /// Calculate synergy bonus for a producer
+    fn get_synergy_multiplier(&self, target_id: u32) -> f64 {
+        let mut bonus = 1.0;
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::Synergy { source_id, target_id: tid, bonus_per_source } = upgrade.effect {
+                    if tid == target_id {
+                        let source_count = self.producer_count(source_id);
+                        bonus *= 1.0 + (bonus_per_source * source_count as f64);
+                    }
+                }
+            }
+        }
+
+        bonus
     }
 
     pub fn get_global_multiplier(&self) -> f64 {
         let mut multiplier = 1.0;
 
+        // Global upgrades
         for upgrade_id in &self.upgrades_purchased {
             if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
                 if let UpgradeEffect::GlobalMultiplier(m) = upgrade.effect {
                     multiplier *= m;
+                }
+            }
+        }
+
+        // Achievement bonus (1% per achievement)
+        multiplier *= self.get_achievement_multiplier();
+
+        // Prestige bonuses
+        multiplier *= self.get_prestige_production_multiplier();
+
+        multiplier
+    }
+
+    /// Get achievement bonus multiplier (1.01^n)
+    pub fn get_achievement_multiplier(&self) -> f64 {
+        ACHIEVEMENT_BONUS.powi(self.achievements_unlocked.len() as i32)
+    }
+
+    /// Get prestige production multiplier
+    fn get_prestige_production_multiplier(&self) -> f64 {
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                match upgrade.effect {
+                    PrestigeEffect::ProductionMultiplier(m) => {
+                        multiplier *= m;
+                    }
+                    PrestigeEffect::ProductionPerAscension(bonus) => {
+                        multiplier *= 1.0 + (bonus * self.total_ascensions as f64);
+                    }
+                    PrestigeEffect::ProductionPerAchievement(bonus) => {
+                        multiplier *= 1.0 + (bonus * self.achievements_unlocked.len() as f64);
+                    }
+                    _ => {}
                 }
             }
         }
@@ -227,4 +410,205 @@ impl GameState {
         let eps_bonus = self.total_energy_per_second() * 0.05;
         (self.manual_click_power * manual_mult) + eps_bonus
     }
+
+    // ============ Achievement System ============
+
+    /// Check for new achievements and unlock them
+    pub fn check_achievements(&mut self) {
+        for achievement in Achievement::all() {
+            if self.achievements_unlocked.contains(&achievement.id) {
+                continue;
+            }
+
+            let earned = match achievement.requirement {
+                AchievementRequirement::ProducerCount { producer_id, count } => {
+                    self.producer_count(producer_id) >= count
+                }
+                AchievementRequirement::TotalEnergyPerSecond(rate) => {
+                    self.total_energy_per_second() >= rate
+                }
+                AchievementRequirement::TotalEnergyEarned(amount) => {
+                    self.total_energy_earned >= amount
+                }
+                AchievementRequirement::TotalClicks(clicks) => {
+                    self.total_manual_clicks >= clicks
+                }
+                AchievementRequirement::UpgradesPurchased(count) => {
+                    self.upgrades_purchased.len() >= count as usize
+                }
+                AchievementRequirement::TimePlayed(secs) => {
+                    self.time_played_seconds() >= secs
+                }
+                AchievementRequirement::TotalProducers(count) => {
+                    self.total_producers_owned() >= count
+                }
+                AchievementRequirement::Ascensions(count) => {
+                    self.total_ascensions >= count
+                }
+            };
+
+            if earned {
+                self.achievements_unlocked.push(achievement.id);
+                self.new_achievements.push(achievement.id);
+            }
+        }
+    }
+
+    /// Pop a new achievement for notification display
+    pub fn pop_new_achievement(&mut self) -> Option<&'static Achievement> {
+        let id = self.new_achievements.pop()?;
+        Achievement::all().iter().find(|a| a.id == id)
+    }
+
+    // ============ Prestige System ============
+
+    /// Calculate stellar chips that would be earned on ascension
+    pub fn calculate_potential_stellar_chips(&self) -> u64 {
+        let base_chips = calculate_stellar_chips(self.total_energy_earned);
+
+        // Apply chip bonus from prestige upgrades
+        let chip_multiplier = self.get_chip_multiplier();
+        let total_chips = (base_chips as f64 * chip_multiplier) as u64;
+
+        total_chips.saturating_sub(self.total_stellar_chips_earned)
+    }
+
+    /// Get the chip earning multiplier from prestige upgrades
+    fn get_chip_multiplier(&self) -> f64 {
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::ChipBonus(bonus) = upgrade.effect {
+                    multiplier *= bonus;
+                }
+            }
+        }
+
+        multiplier
+    }
+
+    /// Check if player can ascend (would earn at least 1 chip)
+    pub fn can_ascend(&self) -> bool {
+        self.calculate_potential_stellar_chips() >= 1
+    }
+
+    /// Perform ascension - reset game state but keep prestige progress
+    pub fn perform_ascension(&mut self) {
+        let chips_earned = self.calculate_potential_stellar_chips();
+
+        if chips_earned == 0 {
+            return;
+        }
+
+        // Calculate energy to keep (if prestige upgrade purchased)
+        let keep_percent = self.get_energy_keep_percent();
+        let kept_energy = self.energy * keep_percent;
+
+        // Calculate starting energy from prestige upgrades
+        let starting_energy = self.get_starting_energy();
+
+        // Grant chips
+        self.stellar_chips += chips_earned;
+        self.total_stellar_chips_earned += chips_earned;
+        self.total_ascensions += 1;
+
+        // Reset game state
+        self.energy = starting_energy + kept_energy;
+        self.total_energy_earned = 0.0;
+        self.producers_owned.clear();
+        self.upgrades_purchased.clear();
+        self.ticks_played = 0;
+        self.total_manual_clicks = 0;
+        self.energy_produced_history.clear();
+        // Keep: achievements_unlocked, stellar_chips, prestige_upgrades, total_ascensions
+
+        // Note: Achievements are kept across ascensions!
+    }
+
+    /// Get percentage of energy to keep after ascension
+    fn get_energy_keep_percent(&self) -> f64 {
+        let mut percent = 0.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::KeepEnergyPercent(p) = upgrade.effect {
+                    percent += p;
+                }
+            }
+        }
+
+        percent.min(0.10) // Cap at 10%
+    }
+
+    /// Get starting energy from prestige upgrades
+    fn get_starting_energy(&self) -> f64 {
+        let mut energy = 0.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::StartingEnergy(e) = upgrade.effect {
+                    energy += e;
+                }
+            }
+        }
+
+        energy
+    }
+
+    /// Get offline bonus multiplier from prestige
+    pub fn get_offline_bonus_multiplier(&self) -> f64 {
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.prestige_upgrades {
+            if let Some(upgrade) = PrestigeUpgrade::by_id(*upgrade_id) {
+                if let PrestigeEffect::OfflineBonus(bonus) = upgrade.effect {
+                    multiplier *= bonus;
+                }
+            }
+        }
+
+        multiplier
+    }
+
+    /// Check if a prestige upgrade is available
+    pub fn is_prestige_upgrade_available(&self, upgrade: &PrestigeUpgrade) -> bool {
+        if self.prestige_upgrades.contains(&upgrade.id) {
+            return false;
+        }
+
+        if self.stellar_chips < upgrade.cost {
+            return false;
+        }
+
+        match upgrade.requirement {
+            None => true,
+            Some(PrestigeRequirement::Ascensions(count)) => {
+                self.total_ascensions >= count
+            }
+            Some(PrestigeRequirement::TotalChips(count)) => {
+                self.total_stellar_chips_earned >= count
+            }
+            Some(PrestigeRequirement::PrestigeUpgrade(required_id)) => {
+                self.prestige_upgrades.contains(&required_id)
+            }
+        }
+    }
+
+    /// Buy a prestige upgrade
+    pub fn buy_prestige_upgrade(&mut self, id: u32) -> bool {
+        let upgrade = match PrestigeUpgrade::by_id(id) {
+            Some(u) => u,
+            None => return false,
+        };
+
+        if !self.is_prestige_upgrade_available(upgrade) {
+            return false;
+        }
+
+        self.stellar_chips -= upgrade.cost;
+        self.prestige_upgrades.push(id);
+        true
+    }
+
 }
