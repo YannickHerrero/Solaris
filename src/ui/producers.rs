@@ -77,7 +77,7 @@ fn render_producer_list(
     app: &App,
     visible: &[(usize, &Producer)],
 ) {
-    let items: Vec<ListItem> = visible
+    let mut items: Vec<ListItem> = visible
         .iter()
         .enumerate()
         .map(|(display_idx, (_, producer))| {
@@ -124,10 +124,24 @@ fn render_producer_list(
         })
         .collect();
 
+    // Add empty padding items so the last producer can be centered
+    let visible_height = area.height as usize;
+    let half_height = visible_height / 2;
+    let padding_needed = half_height;
+    for _ in 0..padding_needed {
+        items.push(ListItem::new(""));
+    }
+
     let list = List::new(items);
     let mut state = ListState::default();
     let max_selection = visible.len().saturating_sub(1);
-    state.select(Some(app.selected_producer.min(max_selection)));
+    let selected = app.selected_producer.min(max_selection);
+    state.select(Some(selected));
+
+    // Center the selected item - no max_offset clamp needed with padding
+    let offset = selected.saturating_sub(half_height);
+    *state.offset_mut() = offset;
+
     frame.render_stateful_widget(list, area, &mut state);
 }
 
