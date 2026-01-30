@@ -281,18 +281,22 @@ The current mode is shown in the UI. Max mode is especially useful for:
 
 Press `` ` `` (backtick) to toggle boss mode.
 
-Boss mode disguises the game as a spreadsheet:
+Boss mode disguises the game as fake terminal/build output:
 
 ```
-┌─────────────────────────────────────────────┐
-│ Q4 Revenue Projections - CONFIDENTIAL       │
-├──────────────────┬──────────────────────────┤
-│ Revenue Stream   │ Projected    │ Actual    │
-├──────────────────┼──────────────┼───────────┤
-│ Solar Division   │ $1,234,567   │ $1,198... │
-│ Mining Division  │ $5,678,901   │ $5,432... │
-│ Orbital Ops      │ $9,012,345   │ $8,901... │
-└──────────────────┴──────────────┴───────────┘
+$ cargo build --release
+   Compiling solaris v0.1.0 (/home/user/projects/solaris)
+    Finished release [optimized] target(s) in 2.34s
+
+$ cargo test
+   ...
+test result: ok. 12 passed; 0 failed; ...
+
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
 ```
 
 - Game continues running in the background
