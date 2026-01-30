@@ -115,20 +115,16 @@ impl GameState {
         max_unlock
     }
 
-    /// Get all visible producers (unlocked + next locked one with hint)
-    pub fn visible_producers(&self) -> Vec<(usize, &Producer, bool)> {
+    /// Get all unlocked producers
+    pub fn visible_producers(&self) -> Vec<(usize, &Producer)> {
         let all_producers = Producer::all();
         let mut visible = Vec::new();
 
         for (idx, producer) in all_producers.iter().enumerate() {
-            let unlocked = self.is_producer_unlocked(producer.id);
-
-            if unlocked {
-                visible.push((idx, producer, true));
+            if self.is_producer_unlocked(producer.id) {
+                visible.push((idx, producer));
             } else {
-                // Show the next locked producer as a hint
-                visible.push((idx, producer, false));
-                break; // Only show one locked producer
+                break;
             }
         }
 

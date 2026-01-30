@@ -11,65 +11,47 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let items: Vec<ListItem> = visible
         .iter()
         .enumerate()
-        .map(|(display_idx, (_, producer, unlocked))| {
-            if *unlocked {
-                // Regular unlocked producer
-                let owned = app.game.producer_count(producer.id);
-                let quantity = app.get_buy_quantity_for_producer(producer);
-                let cost = calculate_bulk_cost(producer.base_cost, owned, quantity.max(1));
-                let can_afford = app.game.energy >= cost && quantity > 0;
+        .map(|(display_idx, (_, producer))| {
+            let owned = app.game.producer_count(producer.id);
+            let quantity = app.get_buy_quantity_for_producer(producer);
+            let cost = calculate_bulk_cost(producer.base_cost, owned, quantity.max(1));
+            let can_afford = app.game.energy >= cost && quantity > 0;
 
-                let effective_rate = producer.base_energy_per_second
-                    * app.game.get_producer_multiplier(producer.id)
-                    * app.game.get_global_multiplier();
+            let effective_rate = producer.base_energy_per_second
+                * app.game.get_producer_multiplier(producer.id)
+                * app.game.get_global_multiplier();
 
-                let buy_label = if quantity == 0 {
-                    format!("({})", app.buy_amount.label())
-                } else if quantity == 1 {
-                    String::new()
-                } else {
-                    format!("(x{})", quantity)
-                };
-
-                let line = format!(
-                    "{} {:<19} {:>4}  {:>10}  {:>12} {}",
-                    producer.icon,
-                    producer.name,
-                    owned,
-                    format_rate(effective_rate),
-                    format_cost(cost),
-                    buy_label
-                );
-
-                let style = if display_idx == app.selected_producer {
-                    if can_afford {
-                        Style::default().fg(Color::Black).bg(Color::Green)
-                    } else {
-                        Style::default().fg(Color::Black).bg(Color::Red)
-                    }
-                } else if can_afford {
-                    Style::default().fg(Color::Green)
-                } else {
-                    Style::default().fg(Color::DarkGray)
-                };
-
-                ListItem::new(line).style(style)
+            let buy_label = if quantity == 0 {
+                format!("({})", app.buy_amount.label())
+            } else if quantity == 1 {
+                String::new()
             } else {
-                // Locked producer - just show locked icon, no hint
-                let line = format!(
-                    "🔒 {:<19} {:>4}  {:>10}  {:>12}",
-                    "???",
-                    "-",
-                    "-",
-                    "-"
-                );
+                format!("(x{})", quantity)
+            };
 
-                let style = Style::default()
-                    .fg(Color::DarkGray)
-                    .add_modifier(Modifier::ITALIC);
+            let line = format!(
+                "{} {:<19} {:>4}  {:>10}  {:>12} {}",
+                producer.icon,
+                producer.name,
+                owned,
+                format_rate(effective_rate),
+                format_cost(cost),
+                buy_label
+            );
 
-                ListItem::new(line).style(style)
-            }
+            let style = if display_idx == app.selected_producer {
+                if can_afford {
+                    Style::default().fg(Color::Black).bg(Color::Green)
+                } else {
+                    Style::default().fg(Color::Black).bg(Color::Red)
+                }
+            } else if can_afford {
+                Style::default().fg(Color::Green)
+            } else {
+                Style::default().fg(Color::DarkGray)
+            };
+
+            ListItem::new(line).style(style)
         })
         .collect();
 
