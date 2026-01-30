@@ -6,7 +6,7 @@ use directories::ProjectDirs;
 
 use crate::app::SaveData;
 
-fn get_save_path() -> io::Result<PathBuf> {
+pub fn get_save_path() -> io::Result<PathBuf> {
     let proj_dirs = ProjectDirs::from("", "", "solaris")
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Could not find data directory"))?;
 
@@ -35,4 +35,15 @@ pub fn load_game() -> io::Result<Option<SaveData>> {
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
 
     Ok(Some(save_data))
+}
+
+pub fn delete_save() -> io::Result<bool> {
+    let path = get_save_path()?;
+
+    if !path.exists() {
+        return Ok(false);
+    }
+
+    fs::remove_file(path)?;
+    Ok(true)
 }

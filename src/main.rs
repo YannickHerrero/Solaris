@@ -5,7 +5,7 @@ mod input;
 mod save;
 mod ui;
 
-use std::io;
+use std::io::{self, Write};
 use std::time::{Duration, Instant};
 
 use crossterm::{
@@ -23,6 +23,31 @@ const FRAME_RATE_MS: u64 = 16; // ~60 FPS for rendering
 const AUTOSAVE_INTERVAL_SECS: u64 = 30;
 
 fn main() -> io::Result<()> {
+    // Handle command line arguments
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "--reset" => {
+                return handle_reset();
+            }
+            "--help" | "-h" => {
+                println!("Solaris - Terminal-based idle game");
+                println!();
+                println!("Usage: solaris [OPTIONS]");
+                println!();
+                println!("Options:");
+                println!("  --reset    Reset the save file (with confirmation)");
+                println!("  --help     Show this help message");
+                return Ok(());
+            }
+            arg => {
+                eprintln!("Unknown option: {}", arg);
+                eprintln!("Use --help for usage information");
+                return Ok(());
+            }
+        }
+    }
+
     // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -51,6 +76,35 @@ fn main() -> io::Result<()> {
 
     if let Err(err) = result {
         eprintln!("Error: {}", err);
+    }
+
+    Ok(())
+}
+
+fn handle_reset() -> io::Result<()> {
+    let save_path = save::get_save_path()?;
+
+    if !save_path.exists() {
+        println!("No save file found. Nothing to reset.");
+        return Ok(());
+    }
+
+    println!("This will permanently delete your save file:");
+    println!("  {}", save_path.display());
+    println!();
+    print!("Are you sure you want to reset? [y/N] ");
+    io::stdout().flush()?;
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+
+    let response = input.trim().to_lowercase();
+    if response == "y" || response == "yes" {
+        if save::delete_save()? {
+            println!("Save file deleted. Your progress has been reset.");
+        }
+    } else {
+        println!("Reset cancelled.");
     }
 
     Ok(())
