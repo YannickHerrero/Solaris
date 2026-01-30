@@ -24,6 +24,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
   u             Toggle Upgrades panel
   s             Toggle Stats panel
   v             Toggle Visualization panel
+  a             Toggle Ascension panel
+  x             Toggle Achievements panel
 
   Actions
   -------
@@ -54,6 +56,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
   p             Focus Producers panel
   u             Focus Upgrades panel
   v             Focus Visualization panel
+  a             Toggle Ascension panel
+  x             Toggle Achievements panel
 
   Actions
   -------
@@ -71,7 +75,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
 
     // Calculate popup size and position (clamp to fit terminal)
     let popup_width = 44.min(area.width.saturating_sub(4));
-    let popup_height = 24.min(area.height.saturating_sub(4));
+    let popup_height = 26.min(area.height.saturating_sub(4));
 
     // Ensure we have minimum viable size
     if popup_width < 20 || popup_height < 10 {
