@@ -18,6 +18,8 @@ Thumbs.db
 
 # Claude Code
 .claude/
+.opencode/
+AGENTS.md
 
 # Save files (optional - uncomment if you don't want to track saves)
 # *.json
