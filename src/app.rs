@@ -1,9 +1,9 @@
 use std::io;
 
-use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
-use crate::game::{GameState, Producer, PrestigeUpgrade};
+use crate::game::{GameState, PrestigeUpgrade, Producer};
 use crate::save;
 use crate::ui::animation::AnimationState;
 use crate::TICKS_PER_SECOND;
@@ -75,6 +75,7 @@ pub struct App {
     pub upgrade_hover_timer: u32,
     pub last_selected_upgrade: usize,
     pub show_upgrade_tooltip: bool,
+    pub show_producer_detail: bool,
 }
 
 pub struct OfflineReport {
@@ -105,6 +106,7 @@ impl App {
             upgrade_hover_timer: 0,
             last_selected_upgrade: 0,
             show_upgrade_tooltip: false,
+            show_producer_detail: true,
         }
     }
 
@@ -118,6 +120,10 @@ impl App {
 
     pub fn toggle_achievements(&mut self) {
         self.show_achievements = !self.show_achievements;
+    }
+
+    pub fn toggle_producer_detail(&mut self) {
+        self.show_producer_detail = !self.show_producer_detail;
         if self.show_achievements {
             self.selected_achievement = 0;
         }
