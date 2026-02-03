@@ -12,12 +12,20 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 |----------|-------|
 | Producers | 20 |
 | Producer Upgrades | 300 |
-| Synergy Upgrades | 19 |
+| Synergy Upgrades | 38 |
 | Global Upgrades | 10 |
 | Manual Upgrades | 10 |
-| **Total Upgrades** | **339** |
+| Click CPS Upgrades | 10 |
+| Per-Building CPS Upgrades | 20 |
+| Total Building CPS Upgrades | 5 |
+| Milestone Upgrades | 10 |
+| Research Upgrades | 15 |
+| Cosmic Cat Upgrades | 15 |
+| Stellar Essence Upgrades | 5 |
+| Drone Network Upgrades | 36 |
+| **Total Upgrades** | **474** |
 | Achievements | 260 |
-| Prestige Upgrades | 24 |
+| Prestige Upgrades | 100 |
 
 ---
 
@@ -28,9 +36,9 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 
 ### Game Content
 - [Producers](producers.md) - All 20 energy producers with stats and unlock conditions
-- [Upgrades](upgrades.md) - Complete list of 339 upgrades (producer, synergy, global, manual)
+- [Upgrades](upgrades.md) - Complete list of 474 upgrades across 13 categories
 - [Achievements](achievements.md) - All 260 achievements across 8 categories
-- [Prestige System](prestige.md) - Stellar Ascension, chips, and 24 prestige upgrades
+- [Prestige System](prestige.md) - Stellar Ascension, chips, and 100 prestige upgrades
 
 ### Reference
 - [Controls](controls.md) - Keybindings, UI panels, and layout modes
@@ -42,14 +50,19 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 ## Key Features
 
 ### Energy Production
-- **20 Unique Producers**: Each with 5x scaling in cost and production
-- **Producer Upgrades**: 15 tiers per producer, each doubling production
-- **Synergy System**: Adjacent producers boost each other's output
+- **20 Unique Producers**: Cookie Clicker-inspired cost and CPS ratios
+- **Producer Upgrades**: 15 tiers per producer, each doubling production (2x)
+- **Synergy System**: 38 bidirectional synergies between adjacent producers
+
+### Special Mechanics
+- **Thousand Rays System**: Solar Panels gain +0.1 energy per non-panel building owned
+- **Drone Network System**: Mining Drones are boosted by all other building types
+- **Stellar Essence & Cosmic Cats**: Achievements (4% each) power kitten-style multipliers
 
 ### Prestige System
-- **Stellar Chips**: Earned by ascending, calculated from total energy
-- **24 Prestige Upgrades**: Permanent bonuses that persist across runs
-- **Multiple Progression Paths**: Production multipliers, starting bonuses, unlock shortcuts
+- **Stellar Chips**: Earned by ascending, using cubic formula for slower progression
+- **100 Prestige Upgrades**: Permanent bonuses across 15 tiers
+- **Multiple Progression Paths**: Production, starting bonuses, chip bonuses, luck, and more
 
 ### Quality of Life
 - **Offline Progress**: Earn energy while away (up to 8 hours)
@@ -61,12 +74,12 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 
 ## Producer Tiers
 
-| Tier | Producers | Energy Range |
-|------|-----------|--------------|
-| Early Game | Solar Panel → Orbital Station | 0.1 - 10 E/s |
-| Mid Game | Lunar Colony → Star Forge | 50 - 150K E/s |
-| Late Game | Neutron Harvester → Dark Matter Engine | 750K - 468M E/s |
-| End Game | Cosmic String → Big Bang Catalyst | 2.3B - 1.46T E/s |
+| Tier | Producers | Base Energy Range |
+|------|-----------|-------------------|
+| Early Game | Solar Panel → Orbital Station | 0.1 - 47 E/s |
+| Mid Game | Lunar Colony → Star Forge | 260 - 1.6M E/s |
+| Late Game | Neutron Harvester → Dark Matter Engine | 10M - 21B E/s |
+| End Game | Cosmic String → Big Bang Catalyst | 150B - 510T E/s |
 
 ---
 
