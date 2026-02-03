@@ -1,9 +1,9 @@
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Widget};
 
+use super::animation::{orbit, OrbitalBody, StarField};
 use crate::app::App;
 use crate::game::Producer;
-use super::animation::{orbit, OrbitalBody, StarField};
 
 /// A cell in the render buffer
 #[derive(Clone, Copy)]
@@ -72,7 +72,11 @@ impl RenderBuffer {
 }
 
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App, focused: bool) {
-    let border_color = if focused { Color::Cyan } else { Color::DarkGray };
+    let border_color = if focused {
+        Color::Cyan
+    } else {
+        Color::DarkGray
+    };
     let title = if focused { " System *" } else { " System " };
 
     let block = Block::default()
@@ -87,15 +91,25 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App, focused: bool) {
         return;
     }
 
-    // Create render buffer for the inner area
-    let mut buffer = RenderBuffer::new(inner.width, inner.height);
+    // Reserve space for stellar essence gauge on the right (5 chars: bar + space + "999%")
+    let gauge_width: u16 = 5;
+    let viz_width = if inner.width > gauge_width + 10 {
+        inner.width - gauge_width
+    } else {
+        inner.width // Too narrow, skip gauge
+    };
 
-    // Calculate center position
-    let center_x = inner.width / 2;
+    // Create render buffer for the visualization area (excluding gauge)
+    let mut buffer = RenderBuffer::new(viz_width, inner.height);
+
+    // Calculate center position (centered in viz area, not full inner)
+    let center_x = viz_width / 2;
     let center_y = inner.height / 2;
 
     // Update star field size if needed
-    app.animation.stars.ensure_size(inner.width, inner.height, &mut app.animation.rng);
+    app.animation
+        .stars
+        .ensure_size(inner.width, inner.height, &mut app.animation.rng);
 
     // Collect owned producer tiers and create orbital bodies
     let producers = Producer::all();
@@ -126,10 +140,33 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App, focused: bool) {
     render_sun(&mut buffer, center_x, center_y);
 
     // Layer 4: Orbiting producer icons
-    render_producers(&mut buffer, center_x, center_y, app.animation.frame_count, &orbital_bodies);
+    render_producers(
+        &mut buffer,
+        center_x,
+        center_y,
+        app.animation.frame_count,
+        &orbital_bodies,
+    );
 
-    // Render buffer to frame
-    render_buffer_to_frame(frame, inner, &buffer);
+    // Render buffer to frame (only the viz area, not the gauge space)
+    let viz_area = Rect {
+        x: inner.x,
+        y: inner.y,
+        width: viz_width,
+        height: inner.height,
+    };
+    render_buffer_to_frame(frame, viz_area, &buffer);
+
+    // Render stellar essence gauge on the right side (if space permits)
+    if inner.width > gauge_width + 10 {
+        let gauge_area = Rect {
+            x: inner.x + viz_width,
+            y: inner.y,
+            width: gauge_width,
+            height: inner.height,
+        };
+        render_stellar_gauge(frame, gauge_area, app);
+    }
 }
 
 fn render_stars(buffer: &mut RenderBuffer, stars: &StarField, frame_count: u64) {
@@ -157,7 +194,12 @@ fn render_sun(buffer: &mut RenderBuffer, center_x: u16, center_y: u16) {
 }
 
 /// Render subtle dotted orbit paths for owned producer tiers
-fn render_orbit_paths(buffer: &mut RenderBuffer, center_x: u16, center_y: u16, owned_tiers: &[usize]) {
+fn render_orbit_paths(
+    buffer: &mut RenderBuffer,
+    center_x: u16,
+    center_y: u16,
+    owned_tiers: &[usize],
+) {
     for &tier in owned_tiers {
         let radius = orbit::radius_for_tier(tier);
         let color = Color::Rgb(40, 40, 50); // Very subtle dark color
@@ -236,4 +278,92 @@ fn render_buffer_to_frame(frame: &mut Frame, area: Rect, buffer: &RenderBuffer) 
     }
 
     frame.render_widget(BufferWidget { buffer }, area);
+}
+
+/// Render vertical Stellar Essence gauge
+/// Shows essence level with layered shading for overflow beyond 100%
+fn render_stellar_gauge(frame: &mut Frame, area: Rect, app: &App) {
+    if area.height < 3 {
+        return;
+    }
+
+    // Get stellar essence (0.04 per achievement, so 25 achievements = 100%)
+    let essence = app.game.get_stellar_essence();
+    let essence_percent = essence * 100.0;
+
+    // Reserve bottom 2 rows for labels
+    let bar_height = area.height.saturating_sub(2);
+    if bar_height == 0 {
+        return;
+    }
+
+    // Each "layer" represents 100% of essence
+    // Layer colors get progressively darker as you overflow
+    let layer_chars = ['█', '▓', '▒', '░'];
+    let layer_colors = [
+        Color::Rgb(150, 220, 255), // Layer 1 (0-100%): Bright cyan
+        Color::Rgb(100, 180, 220), // Layer 2 (100-200%): Medium cyan
+        Color::Rgb(60, 140, 180),  // Layer 3 (200-300%): Darker cyan
+        Color::Rgb(40, 100, 140),  // Layer 4 (300%+): Dark cyan
+    ];
+
+    // Determine which layer (100% bracket) we're in
+    // Layer 0: 0-100%, Layer 1: 100-200%, etc.
+    let current_layer = ((essence_percent / 100.0).floor() as usize).min(layer_chars.len() - 1);
+
+    // Calculate fill within current 100% bracket
+    let layer_fill = if essence_percent > 0.0 {
+        let fill = (essence_percent % 100.0) / 100.0;
+        // If exactly at boundary (e.g., 200%), show full bar
+        if fill == 0.0 {
+            1.0
+        } else {
+            fill
+        }
+    } else {
+        0.0
+    };
+
+    // Calculate filled rows (from bottom up)
+    let filled_rows = ((bar_height as f64) * layer_fill).ceil() as u16;
+
+    // Get character and color for current layer
+    let ch = layer_chars[current_layer];
+    let color = layer_colors[current_layer];
+
+    // Render the bar from bottom to top
+    for row in 0..bar_height {
+        let y = area.y + bar_height - 1 - row; // Start from bottom
+        let x = area.x;
+
+        if row < filled_rows {
+            frame
+                .buffer_mut()
+                .set_string(x, y, ch.to_string(), Style::default().fg(color));
+        }
+        // Unfilled rows stay blank
+    }
+
+    // Render moon icon at bottom of bar area
+    let icon_y = area.y + bar_height;
+    frame.buffer_mut().set_string(
+        area.x,
+        icon_y,
+        "☽",
+        Style::default().fg(Color::Rgb(200, 200, 255)),
+    );
+
+    // Render percentage below the icon
+    let label_y = area.y + bar_height + 1;
+    if label_y < area.y + area.height {
+        let label = format!("{:.0}%", essence_percent);
+        let label_color = if essence_percent >= 100.0 {
+            Color::Rgb(150, 220, 255) // Bright when over 100%
+        } else {
+            Color::Gray
+        };
+        frame
+            .buffer_mut()
+            .set_string(area.x, label_y, &label, Style::default().fg(label_color));
+    }
 }
