@@ -15,8 +15,8 @@ impl Producer {
     }
 }
 
-// 20 Producers matching Cookie Clicker's cost/CPS ratios
-// Each producer has progressively longer payback times (cost/CPS)
+// 20 Producers matching Cookie Clicker's cost/E/s ratios
+// Each producer has progressively longer payback times (cost/E/s)
 // This creates the characteristic CC slow-down as you progress
 static PRODUCERS: [Producer; 20] = [
     // Producer 1: Solar Panel

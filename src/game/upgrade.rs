@@ -30,27 +30,27 @@ pub enum UpgradeEffect {
         bonus_per_source: f64,
     },
     // Solar Panel special effects (Thousand Rays mechanic)
-    CursorBaseMultiplier(f64), // First 3 upgrades: 2x base CPS AND click
+    CursorBaseMultiplier(f64), // First 3 upgrades: 2x base E/s AND click
     ThousandFingers(f64),      // +X per non-panel building owned (Thousand Rays)
     ThousandFingersMultiplier(f64), // Multiplies Thousand Rays effect
     // Mining Drone special effects (Drone Network)
     GrandmaType {
         building_id: u32,
-    }, // Unlocks drone network type, doubles drone CPS
+    }, // Unlocks drone network type, doubles drone E/s
     GrandmaPerBuilding {
         building_id: u32,
         grandmas_per_bonus: u64,
-    }, // +1% drone CPS per X drones
+    }, // +1% drone E/s per X drones
     // Flavor upgrades - general bonuses
     CpsPerBuilding {
         producer_id: u32,
         bonus_percent: f64,
-    }, // +X% CPS per building of type owned
-    CpsPerTotalBuildings(f64), // +X% CPS per total buildings owned
-    ClickCpsPercent(f64),      // Manual mining gains +X% of CPS (adds to the 5% base)
+    }, // +X% E/s per building of type owned
+    CpsPerTotalBuildings(f64), // +X% E/s per total buildings owned
+    ClickCpsPercent(f64),      // Manual mining gains +X% of E/s (adds to the 5% base)
     // Milk/Kitten system (renamed to Stellar Essence/Cosmic Cat)
     MilkMultiplier(f64), // Multiplies the effect of stellar essence
-    KittenBonus(f64),    // CPS multiplied by (1 + stellar_essence * bonus)
+    KittenBonus(f64),    // E/s multiplied by (1 + stellar_essence * bonus)
 }
 
 #[derive(Debug, Clone)]
@@ -515,7 +515,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     let mut upgrades = Vec::new();
 
     // ============ SOLAR PANEL (Producer 1) - Thousand Rays System ============
-    // First 3 upgrades: 2x base CPS AND click power
+    // First 3 upgrades: 2x base E/s AND click power
     for tier in 0..3 {
         let id = 100 + (tier + 1) as u32;
         let name = PRODUCER_UPGRADE_NAMES[0][tier];
@@ -629,7 +629,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     // ============ DRONE NETWORK UPGRADES ============
     // Each unlocks a "type" of drone network for buildings 3-20 (18 types)
     // Requires: 1 Mining Drone + 15 of the associated building
-    // Effect: 2x Drone CPS + 1% per X drones
+    // Effect: 2x Drone E/s + 1% per X drones
     let drone_network_types: [(u32, &str, u64); 18] = [
         // (building_id, name, drones_per_bonus)
         (3, "Asteroid Mining Network", 50), // +1% per 50 drones
@@ -661,7 +661,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         let building_name = PRODUCER_NAMES[(*building_id - 1) as usize];
         let description = Box::leak(
             format!(
-                "Mining Drones are twice as efficient. Mining Drones gain +1% CPS per {} drones. {} gain +1% CPS per {} drones.",
+                "Mining Drones are twice as efficient. Mining Drones gain +1% E/s per {} drones. {} gain +1% E/s per {} drones.",
                 drones_per_bonus,
                 building_name,
                 drones_per_bonus
@@ -692,7 +692,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             name: Box::leak(format!("{} Workforce", building_name).into_boxed_str()),
             description: Box::leak(
                 format!(
-                    "{} gain +1% CPS for every {} Mining Drones you own.",
+                    "{} gain +1% E/s for every {} Mining Drones you own.",
                     building_name, drones_per_bonus
                 )
                 .into_boxed_str(),
@@ -770,7 +770,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         let source_name = PRODUCER_NAMES[(*id_a - 1) as usize];
         let target_name = PRODUCER_NAMES[(*id_b - 1) as usize];
         let description = Box::leak(
-            format!("{} gain +2% CPS per {} owned.", target_name, source_name).into_boxed_str(),
+            format!("{} gain +2% E/s per {} owned.", target_name, source_name).into_boxed_str(),
         );
 
         upgrades.push(Upgrade {
@@ -916,12 +916,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     // ============ FLAVOR UPGRADES (Cookie Clicker style) ============
     // These provide various bonuses based on building ownership, clicks, etc.
 
-    // Click CPS bonuses - increase the % of CPS gained per click
+    // Click E/s bonuses - increase the % of E/s gained per click
     let click_cps_upgrades: [(u32, &str, &str, f64, u64, f64); 10] = [
         (
             9201,
             "Energy Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             50_000.0,
             1_000,
             0.01,
@@ -929,7 +929,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9202,
             "Plasma Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             5_000_000.0,
             10_000,
             0.01,
@@ -937,7 +937,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9203,
             "Fusion Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             500_000_000.0,
             100_000,
             0.01,
@@ -945,7 +945,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9204,
             "Stellar Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             50_000_000_000.0,
             1_000_000,
             0.01,
@@ -953,7 +953,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9205,
             "Quantum Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             5_000_000_000_000.0,
             10_000_000,
             0.01,
@@ -961,7 +961,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9206,
             "Neutron Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             500_000_000_000_000.0,
             50_000_000,
             0.01,
@@ -969,7 +969,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9207,
             "Void Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             500_000_000_000_000_000.0,
             100_000_000,
             0.01,
@@ -977,7 +977,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9208,
             "Antimatter Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             500_000_000_000_000_000_000.0,
             250_000_000,
             0.01,
@@ -985,7 +985,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9209,
             "Dark Energy Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             5e23,
             500_000_000,
             0.01,
@@ -993,7 +993,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9210,
             "Singularity Tap",
-            "Manual mining gains +1% of your CPS",
+            "Manual mining gains +1% of your E/s",
             5e27,
             1_000_000_000,
             0.01,
@@ -1011,7 +1011,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         });
     }
 
-    // Per-building CPS bonuses - +1% CPS per building of a type
+    // Per-building E/s bonuses - +1% E/s per building of a type
     // These unlock at high building counts and encourage diverse building strategies
     let per_building_upgrades: [(u32, u32, &str, u64, f64); 20] = [
         (9301, 1, "Solar Network", 300, 1e12),
@@ -1039,7 +1039,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     for (id, producer_id, name, count, cost) in per_building_upgrades {
         let producer_name = PRODUCER_NAMES[(producer_id - 1) as usize];
         let description =
-            Box::leak(format!("+1% CPS for every {} you own.", producer_name).into_boxed_str());
+            Box::leak(format!("+1% E/s for every {} you own.", producer_name).into_boxed_str());
         upgrades.push(Upgrade {
             id,
             name,
@@ -1053,12 +1053,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         });
     }
 
-    // Total buildings CPS bonuses - +X% CPS per total building
+    // Total buildings E/s bonuses - +X% E/s per total building
     let total_building_upgrades: [(u32, &str, &str, u64, f64, f64); 5] = [
         (
             9401,
             "Empire of Energy",
-            "+0.1% CPS per building owned",
+            "+0.1% E/s per building owned",
             100,
             1e15,
             0.001,
@@ -1066,7 +1066,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9402,
             "Cosmic Dominion",
-            "+0.1% CPS per building owned",
+            "+0.1% E/s per building owned",
             500,
             1e20,
             0.001,
@@ -1074,7 +1074,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9403,
             "Universal Authority",
-            "+0.1% CPS per building owned",
+            "+0.1% E/s per building owned",
             1000,
             1e25,
             0.001,
@@ -1082,7 +1082,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9404,
             "Multiversal Hegemony",
-            "+0.1% CPS per building owned",
+            "+0.1% E/s per building owned",
             2500,
             1e30,
             0.001,
@@ -1090,7 +1090,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9405,
             "Omniversal Empire",
-            "+0.1% CPS per building owned",
+            "+0.1% E/s per building owned",
             5000,
             1e35,
             0.001,
@@ -1113,70 +1113,70 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9501,
             "First Contact",
-            "You've made contact with the cosmos. +10% CPS",
+            "You've made contact with the cosmos. +10% E/s",
             1e6,
             1.10,
         ),
         (
             9502,
             "Stellar Awakening",
-            "The stars notice you. +10% CPS",
+            "The stars notice you. +10% E/s",
             1e9,
             1.10,
         ),
         (
             9503,
             "Galactic Presence",
-            "You are known throughout the galaxy. +10% CPS",
+            "You are known throughout the galaxy. +10% E/s",
             1e12,
             1.10,
         ),
         (
             9504,
             "Universal Awareness",
-            "The universe acknowledges you. +10% CPS",
+            "The universe acknowledges you. +10% E/s",
             1e15,
             1.10,
         ),
         (
             9505,
             "Cosmic Transcendence",
-            "You have transcended. +10% CPS",
+            "You have transcended. +10% E/s",
             1e18,
             1.10,
         ),
         (
             9506,
             "Dimensional Mastery",
-            "Dimensions bow before you. +10% CPS",
+            "Dimensions bow before you. +10% E/s",
             1e21,
             1.10,
         ),
         (
             9507,
             "Reality Dominion",
-            "Reality is yours to command. +10% CPS",
+            "Reality is yours to command. +10% E/s",
             1e24,
             1.10,
         ),
         (
             9508,
             "Existential Authority",
-            "Existence itself obeys. +10% CPS",
+            "Existence itself obeys. +10% E/s",
             1e27,
             1.10,
         ),
         (
             9509,
             "Omnipotent Vision",
-            "You see all that is. +10% CPS",
+            "You see all that is. +10% E/s",
             1e30,
             1.10,
         ),
         (
             9510,
             "Absolute Supremacy",
-            "You are everything. +10% CPS",
+            "You are everything. +10% E/s",
             1e33,
             1.10,
         ),
@@ -1198,105 +1198,105 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         (
             9601,
             "Basic Thermodynamics",
-            "Understanding heat transfer. +5% CPS",
+            "Understanding heat transfer. +5% E/s",
             1e4,
             1.05,
         ),
         (
             9602,
             "Advanced Materials",
-            "Stronger, lighter, better. +5% CPS",
+            "Stronger, lighter, better. +5% E/s",
             1e6,
             1.05,
         ),
         (
             9603,
             "Quantum Mechanics",
-            "The very small, very strange. +5% CPS",
+            "The very small, very strange. +5% E/s",
             1e8,
             1.05,
         ),
         (
             9604,
             "Relativistic Physics",
-            "Time and space bend. +5% CPS",
+            "Time and space bend. +5% E/s",
             1e10,
             1.05,
         ),
         (
             9605,
             "Unified Field Theory",
-            "All forces as one. +5% CPS",
+            "All forces as one. +5% E/s",
             1e12,
             1.05,
         ),
         (
             9606,
             "Zero-Point Energy",
-            "Energy from nothing. +5% CPS",
+            "Energy from nothing. +5% E/s",
             1e14,
             1.05,
         ),
         (
             9607,
             "Exotic Matter",
-            "Negative mass exists. +5% CPS",
+            "Negative mass exists. +5% E/s",
             1e16,
             1.05,
         ),
         (
             9608,
             "Spacetime Engineering",
-            "Warp reality itself. +5% CPS",
+            "Warp reality itself. +5% E/s",
             1e18,
             1.05,
         ),
         (
             9609,
             "Dimensional Mathematics",
-            "Beyond 3D. +5% CPS",
+            "Beyond 3D. +5% E/s",
             1e20,
             1.05,
         ),
         (
             9610,
             "Multiverse Theory",
-            "Infinite possibilities. +5% CPS",
+            "Infinite possibilities. +5% E/s",
             1e22,
             1.05,
         ),
         (
             9611,
             "Entropy Reversal",
-            "Undoing disorder. +5% CPS",
+            "Undoing disorder. +5% E/s",
             1e24,
             1.05,
         ),
         (
             9612,
             "Causality Loops",
-            "Effect before cause. +5% CPS",
+            "Effect before cause. +5% E/s",
             1e26,
             1.05,
         ),
         (
             9613,
             "Reality Compilation",
-            "Rewriting existence. +5% CPS",
+            "Rewriting existence. +5% E/s",
             1e28,
             1.05,
         ),
         (
             9614,
             "Omniscience Protocols",
-            "Knowing everything. +5% CPS",
+            "Knowing everything. +5% E/s",
             1e30,
             1.05,
         ),
         (
             9615,
             "Creation Algorithms",
-            "Making universes. +5% CPS",
+            "Making universes. +5% E/s",
             1e32,
             1.05,
         ),
@@ -1314,112 +1314,112 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     }
 
     // ============ COSMIC CAT UPGRADES (Cookie Clicker Kitten style) ============
-    // CPS is multiplied by (1 + stellar_essence * bonus) for each kitten upgrade
+    // E/s is multiplied by (1 + stellar_essence * bonus) for each kitten upgrade
     // Stellar Essence = 4% per achievement (like Cookie Clicker's milk)
     // These stack multiplicatively!
     let kitten_upgrades: [(u32, &str, &str, f64, f64); 15] = [
         (
             9701,
             "Cosmic Kittens",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9_000_000.0,
             0.05,
         ),
         (
             9702,
             "Astro Cats",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9_000_000_000.0,
             0.05,
         ),
         (
             9703,
             "Nebula Felines",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9_000_000_000_000.0,
             0.05,
         ),
         (
             9704,
             "Pulsar Prowlers",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9_000_000_000_000_000.0,
             0.05,
         ),
         (
             9705,
             "Quasar Whiskers",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e18,
             0.05,
         ),
         (
             9706,
             "Void Tabbies",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e21,
             0.05,
         ),
         (
             9707,
             "Singularity Siamese",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e24,
             0.05,
         ),
         (
             9708,
             "Dimension Calicos",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e27,
             0.05,
         ),
         (
             9709,
             "Reality Persians",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e30,
             0.05,
         ),
         (
             9710,
             "Multiverse Maus",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e33,
             0.05,
         ),
         (
             9711,
             "Omniverse Ocicats",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e36,
             0.05,
         ),
         (
             9712,
             "Eternal Egyptians",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e39,
             0.05,
         ),
         (
             9713,
             "Infinite Abyssinians",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e42,
             0.05,
         ),
         (
             9714,
             "Transcendent Tabbies",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e45,
             0.05,
         ),
         (
             9715,
             "Absolute Angoras",
-            "CPS +5% per 4% Stellar Essence",
+            "E/s +5% per 4% Stellar Essence",
             9e48,
             0.05,
         ),

@@ -310,7 +310,7 @@ impl GameState {
     // ============ Multiplier Calculations ============
 
     /// Get the base multiplier for Solar Panels (producer 1) from CursorBaseMultiplier upgrades
-    /// The first 3 solar panel upgrades double both panel CPS AND click power
+    /// The first 3 solar panel upgrades double both panel E/s AND click power
     fn get_cursor_base_multiplier(&self) -> f64 {
         let mut multiplier = 1.0;
 
@@ -325,7 +325,7 @@ impl GameState {
         multiplier
     }
 
-    /// Get the Thousand Rays bonus (flat CPS added per non-panel building)
+    /// Get the Thousand Rays bonus (flat E/s added per non-panel building)
     /// This is the base value * all multipliers from ThousandFingersMultiplier upgrades
     fn get_thousand_fingers_bonus(&self) -> f64 {
         let mut base_bonus = 0.0;
@@ -372,14 +372,14 @@ impl GameState {
                             multiplier *= m;
                         }
                     }
-                    // Drone Network upgrades: 2x Drone CPS when purchased
+                    // Drone Network upgrades: 2x Drone E/s when purchased
                     UpgradeEffect::GrandmaType { building_id: _ } => {
                         if producer_id == 2 {
                             // Mining Drone
                             multiplier *= 2.0;
                         }
                     }
-                    // Drone Network Per Building: +1% drone CPS per X drones for target building
+                    // Drone Network Per Building: +1% drone E/s per X drones for target building
                     UpgradeEffect::GrandmaPerBuilding {
                         building_id,
                         grandmas_per_bonus,
@@ -412,7 +412,7 @@ impl GameState {
     }
 
     /// Calculate Mining Drone's self-bonus from GrandmaPerBuilding upgrades
-    /// Drones gain +1% CPS per X drones for each building type unlocked
+    /// Drones gain +1% E/s per X drones for each building type unlocked
     fn get_grandma_self_bonus(&self) -> f64 {
         let mut bonus = 1.0;
         let drone_count = self.producer_count(2);
@@ -472,12 +472,12 @@ impl GameState {
                         producer_id,
                         bonus_percent,
                     } => {
-                        // +X% CPS per building of this type owned
+                        // +X% E/s per building of this type owned
                         let count = self.producer_count(producer_id);
                         multiplier *= 1.0 + (bonus_percent * count as f64);
                     }
                     UpgradeEffect::CpsPerTotalBuildings(bonus_percent) => {
-                        // +X% CPS per total buildings owned
+                        // +X% E/s per total buildings owned
                         let total = self.total_producers_owned();
                         multiplier *= 1.0 + (bonus_percent * total as f64);
                     }
@@ -522,7 +522,7 @@ impl GameState {
     }
 
     /// Get Kitten (Cosmic Cat) multiplier based on stellar essence
-    /// Each KittenBonus upgrade multiplies CPS by (1 + stellar_essence * bonus)
+    /// Each KittenBonus upgrade multiplies E/s by (1 + stellar_essence * bonus)
     fn get_kitten_multiplier(&self) -> f64 {
         let essence = self.get_stellar_essence();
         let mut multiplier = 1.0;
@@ -580,7 +580,7 @@ impl GameState {
                 let thousand_fingers_bonus = if p.id == 1 {
                     let tf_bonus = self.get_thousand_fingers_bonus();
                     let non_collector_count = self.get_non_collector_building_count();
-                    // Thousand Rays adds flat CPS per Solar Panel per non-panel building
+                    // Thousand Rays adds flat E/s per Solar Panel per non-panel building
                     tf_bonus * count as f64 * non_collector_count as f64
                 } else {
                     0.0
@@ -609,10 +609,10 @@ impl GameState {
         multiplier
     }
 
-    /// Get the click CPS percent bonus from ClickCpsPercent upgrades
+    /// Get the click E/s percent bonus from ClickCpsPercent upgrades
     /// Base is 5% (0.05), upgrades add to this
     fn get_click_cps_percent(&self) -> f64 {
-        let mut bonus = 0.05; // Base 5% of CPS per click
+        let mut bonus = 0.05; // Base 5% of E/s per click
 
         for upgrade_id in &self.upgrades_purchased {
             if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
