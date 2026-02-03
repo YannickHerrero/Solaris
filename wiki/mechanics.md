@@ -15,14 +15,10 @@ Solaris runs at **10 ticks per second**. Each tick:
 
 ### Single Producer Cost
 
-The cost multiplier varies by producer tier:
-- **Producers 1-7**: 1.15x per owned
-- **Producers 8-12**: 1.18x per owned
-- **Producers 13-17**: 1.20x per owned
-- **Producers 18-20**: 1.22x per owned
+All producers use a flat **1.15x cost multiplier** (Cookie Clicker style):
 
 ```
-cost(n) = base_cost × cost_multiplier^owned
+cost(n) = base_cost × 1.15^owned
 ```
 
 Where:
@@ -33,11 +29,6 @@ Where:
 
 When buying multiple producers, the total cost uses a geometric series:
 
-```
-total_cost = base_cost × 1.15^owned × (1.15^quantity - 1) / (1.15 - 1)
-```
-
-Simplified:
 ```
 total_cost = base_cost × 1.15^owned × (1.15^quantity - 1) / 0.15
 ```
@@ -55,10 +46,10 @@ total_cost = base_cost × 1.15^owned × (1.15^quantity - 1) / 0.15
 
 ### Upgrade Cost
 
-Upgrade costs scale by **5x** per tier:
+Upgrade costs scale by **10x** per tier (Cookie Clicker style):
 
 ```
-upgrade_cost = base_upgrade_cost × 5^tier
+upgrade_cost = base_upgrade_cost × 10^tier
 ```
 
 ### Upgrade Cost Reduction
@@ -95,23 +86,25 @@ total_eps = Σ (base_eps_i × count_i × producer_mult_i × global_mult)
 
 Each producer's multiplier comes from:
 
-1. **Producer Upgrades**: Tiered multipliers
-   - Tiers 1-5: 2.0x each
-   - Tiers 6-10: 1.7x each
-   - Tiers 11-15: 1.4x each
+1. **Producer Upgrades**: All tiers give 2x multiplier
    ```
-   upgrade_mult = (2.0^5) × (1.7^5) × (1.4^tiers_above_10)  // for tiers > 10
+   upgrade_mult = 2^(upgrades_purchased)
    ```
-   Maximum: ~2,454x from all 15 tiers
+   Maximum: **32,768x** from all 15 tiers
 
 2. **Synergy Bonus**: From adjacent producer synergies (capped at 2.5x)
    ```
    synergy_mult = min(2.5, 1 + (0.02 × source_producer_count))
    ```
 
+3. **Drone Network Bonus** (Mining Drone only): +1% per 50 drones per network type
+   ```
+   drone_network_mult = 1 + (0.01 × (drone_count / 50) × network_types_owned)
+   ```
+
 Combined:
 ```
-producer_multiplier = upgrade_mult × synergy_mult
+producer_multiplier = upgrade_mult × synergy_mult × special_bonuses
 ```
 
 ### Global Multiplier
@@ -119,7 +112,7 @@ producer_multiplier = upgrade_mult × synergy_mult
 The global multiplier affects all producers:
 
 ```
-global_multiplier = upgrade_global_mult × achievement_mult × prestige_mult
+global_multiplier = upgrade_global_mult × achievement_mult × prestige_mult × kitten_mult × misc_mult
 ```
 
 Where:
@@ -136,36 +129,81 @@ Where:
    ```
    At 260 achievements: **3.67x**
 
-3. **Prestige Multiplier**: From production-boosting prestige upgrades
+3. **Cosmic Cat (Kitten) Multiplier**: Based on Stellar Essence
    ```
-   prestige_mult = base_mult × ascension_mult × achievement_prestige_mult
+   kitten_mult = (1 + stellar_essence × 0.05)^(kitten_upgrades_owned)
    ```
 
-### Prestige Production Multiplier
+4. **Miscellaneous Multipliers**: Milestone, Research, Per-Building CPS, etc.
 
-```
-base_mult = Π (prestige_production_multipliers)
-```
-- Stellar Foundation: 1.05x
-- Stellar Efficiency: 1.15x
-- Cosmic Mastery: 1.50x
-- Infinite Power: 2.00x
-- Galactic Domination: 3.00x
-- **Maximum: 10.87x**
+---
 
-```
-ascension_mult = min(2.0, 1 + (bonus_per_ascension × total_ascensions))
-```
-- Cosmic Legacy: +0.5% per ascension
-- Legacy of Legends: +1% per ascension
-- Combined: +1.5% per ascension
-- **Capped at 2.0x maximum**
+## Special Mechanics
 
+### Thousand Rays (Solar Panel)
+
+Solar Panels have a unique upgrade system that scales with your total non-panel buildings:
+
+**Base Calculation:**
 ```
-achievement_prestige_mult = 1 + (0.0025 × achievement_count)
+thousand_rays_base = 0.1 × non_panel_building_count
 ```
-- Dimensional Echo: +0.25% per achievement
-- At 260 achievements: 1.65x
+
+**With Multipliers:**
+```
+thousand_rays_bonus = thousand_rays_base × multiplier_chain
+```
+
+Multiplier chain:
+- Million Rays: 5x
+- Billion Rays: 10x
+- Tiers 7-15: 20x each (9 upgrades)
+
+**Total with all upgrades:**
+```
+multiplier_chain = 5 × 10 × 20^9 = 2.56 × 10^13
+```
+
+This bonus is added to both Solar Panel CPS and manual mining per click.
+
+### Drone Network (Mining Drone)
+
+Mining Drones gain synergies from all building types through the Drone Network system:
+
+**Network Types (18 total):**
+Each network upgrade provides:
+1. 2x multiplier to Mining Drone CPS
+2. +1% CPS per 50 drones for that network type
+
+**Workforce Upgrades (18 total):**
+Each workforce upgrade gives the target building +1% CPS per 50 Mining Drones.
+
+**Example with 200 Drones and 10 network types:**
+```
+drone_network_bonus = 2^10 × (1 + 0.01 × 200/50 × 10) = 1024 × 1.40 = 1,433.6x
+```
+
+### Stellar Essence & Cosmic Cats
+
+**Stellar Essence** is Solaris's equivalent of Cookie Clicker's "milk":
+```
+stellar_essence = 0.04 × achievement_count
+```
+
+At 260 achievements: 10.4 Stellar Essence
+
+**Cosmic Cat Bonus:**
+```
+single_kitten_mult = 1 + (stellar_essence × 0.05 × essence_multiplier)
+total_kitten_mult = single_kitten_mult^(kitten_upgrades_owned)
+```
+
+**Example with 260 achievements, all 15 cats, and all 5 essence upgrades:**
+```
+essence_multiplier = 1.05^5 = 1.276
+single_kitten_mult = 1 + (10.4 × 0.05 × 1.276) = 1.663
+total_kitten_mult = 1.663^15 = 5,847x
+```
 
 ---
 
@@ -174,17 +212,23 @@ achievement_prestige_mult = 1 + (0.0025 × achievement_count)
 ### Energy Per Click
 
 ```
-click_energy = (click_power × manual_multiplier) + (0.05 × total_eps)
+click_energy = (click_power × manual_multiplier × cursor_multiplier) + (click_cps_percent × total_eps) + thousand_rays_bonus
 ```
 
 Where:
 - `click_power` = 1 (base)
 - `manual_multiplier` = 2^(manual_upgrades_purchased)
+- `cursor_multiplier` = 2^(first_3_solar_upgrades) (from Thousand Rays tiers 1-3)
+- `click_cps_percent` = 0.05 + (0.01 × click_cps_upgrades) (base 5% + 1% per upgrade)
 - `total_eps` = current total energy per second
+- `thousand_rays_bonus` = calculated Thousand Rays bonus (if tier 4+ owned)
 
 ### Manual Multiplier Cap
 
 With all 10 manual upgrades: **1,024x** click power
+With first 3 Solar Panel upgrades: additional **8x** click power
+
+Combined: **8,192x** base click power
 
 ---
 
@@ -198,12 +242,19 @@ When a synergy upgrade is purchased:
 target_bonus = min(2.5, 1.0 + (0.02 × source_count))
 ```
 
+### Bidirectional Synergies
+
+There are 38 total synergies (19 forward + 19 reverse). Each adjacent producer pair has:
+- Forward: Producer N boosts Producer N+1
+- Reverse: Producer N+1 boosts Producer N
+
 ### Example
 
-With 100 Mining Drones and Drone-Mine Synergy:
-- Asteroid Mine bonus = min(2.5, 1.0 + (0.02 × 100)) = **2.5x** (capped)
+With 100 Mining Drones and both synergies affecting Asteroid Mines:
+- From Drone-Mine Link: min(2.5, 1.0 + (0.02 × 100)) = **2.5x** (capped)
+- Total synergy bonus to Asteroid Mines: 2.5x
 
-This multiplies with the Asteroid Mine's producer multiplier. The synergy bonus caps at 2.5x regardless of source count.
+This multiplies with the Asteroid Mine's producer multiplier.
 
 ---
 
@@ -238,36 +289,43 @@ Where `n` = number of achievements unlocked.
 
 ## Prestige System
 
-### Stellar Chips Formula
+### Stellar Chips Formula (Cubic)
+
+Solaris uses a **cubic formula** for slower prestige progression (matching Cookie Clicker's feel):
 
 ```
-chips = floor(sqrt(total_energy_earned) / 1,000,000)
+chips = floor(cbrt(total_energy_earned / 1,000,000,000,000))
+```
+
+This is equivalent to:
+```
+chips = floor((total_energy_earned)^(1/3) / 10,000)
 ```
 
 ### Energy Required for Chips
 
 | Chips | Total Energy Required |
 |-------|----------------------|
-| 1 | 10^12 (1 trillion) |
-| 2 | 4 × 10^12 |
-| 5 | 25 × 10^12 |
-| 10 | 10^14 (100 trillion) |
-| 100 | 10^16 |
-| 1,000 | 10^18 (1 quintillion) |
+| 1 | 1 trillion (10^12) |
+| 8 | 512 trillion (5.12 × 10^14) |
+| 27 | 19.7 quadrillion (1.97 × 10^16) |
+| 100 | 1 quintillion (10^18) |
+| 1,000 | 1 sextillion (10^21) |
+| 10,000 | 1 octillion (10^27) |
 
 ### Chip Bonus Multiplier
 
+Prestige upgrades can increase chip earnings:
 ```
 chip_multiplier = Π (chip_bonus_upgrades)
 ```
-- Eternal Progression: 1.05x
-- Stellar Accumulation: 1.15x
-- Combined: **1.2075x**
+
+Maximum possible with all chip bonus upgrades: **~26x**
 
 ### Net Chips Per Ascension
 
 ```
-net_chips = (floor(sqrt(total_energy) / 1,000,000) × chip_multiplier) - previously_earned_chips
+net_chips = (floor(cbrt(total_energy / 1e12)) × chip_multiplier) - previously_earned_chips
 ```
 
 ---
@@ -297,9 +355,8 @@ Where:
 ```
 offline_multiplier = Π (offline_bonus_upgrades)
 ```
-- Persistent Memory: 1.10x
-- Eternal Offline: 1.50x
-- Combined: **1.65x**
+
+Maximum possible with all offline prestige upgrades: **~26x**
 
 ---
 
@@ -307,11 +364,13 @@ offline_multiplier = Π (offline_bonus_upgrades)
 
 ### Lucky Stars Effect
 
-With Lucky Stars (+1%) and Enhanced Luck (+5%):
+With Lucky Stars and all luck prestige upgrades:
 
 ```
-double_chance = 0.01 + 0.05 = 0.06 (6%)
+double_chance = sum(all_double_energy_chance_upgrades)
 ```
+
+Maximum possible: up to **~95%** with late-game prestige upgrades
 
 Each tick has this chance to generate double energy.
 
@@ -319,6 +378,7 @@ Each tick has this chance to generate double energy.
 
 Average production increase = double_chance × 100%
 - At 6% chance: **+6% average production**
+- At 50% chance: **+50% average production**
 
 ---
 
@@ -326,23 +386,23 @@ Average production increase = double_chance × 100%
 
 ### Energy Retention
 
-With Transcendent Memory (1%) and Perfect Memory (5%):
+With energy retention prestige upgrades:
 
 ```
 retained_energy = current_energy × retention_percent
 ```
 
-Combined retention: 6% (capped at **10%**)
+Maximum retention: **10%** (capped)
 
 ### Starting Energy
 
-From Quick Start prestige upgrade:
+From Quick Start prestige upgrades:
 
 ```
-starting_energy = prestige_starting_bonus + retained_energy
+starting_energy = sum(prestige_starting_bonuses) + retained_energy
 ```
 
-- Quick Start: 100 energy
+Maximum starting energy: **100,000,000** (with Quick Start VII)
 
 ### Producer Unlock Level
 
@@ -352,54 +412,41 @@ unlock_level = max(prestige_unlock_upgrades)
 
 - Seasoned Explorer: 2
 - Accelerated Start: 3
+- Galaxy Starter: 4
 - Universal Knowledge: 5
+- Stellar Starter: 6
 - Rapid Expansion: 7
+- Cosmic Starter: 8
 - Universal Unlock: 10
+- Dimensional Mastery: 12
+- Universal Unlock II: 15
+- Complete Mastery: 20
 
 ---
 
-## Time Calculations
+## Per-Ascension Bonus
 
-### Time Played
-
-```
-time_played_seconds = ticks_played / 10
-```
-
-### Time to Afford
-
-Approximate time to afford a producer:
+With production per-ascension prestige upgrades:
 
 ```
-time_to_afford = (cost - current_energy) / total_eps
+ascension_bonus = min(cap, 1 + (bonus_per_ascension × total_ascensions))
 ```
 
-(Assumes constant production rate)
+Maximum bonus per ascension: **~87.5%** (with all per-ascension upgrades)
+Cap: Implementation-dependent but effectively very high
 
 ---
 
-## Efficiency Calculations
+## Per-Achievement Bonus
 
-### Producer Efficiency
-
-To compare producers, calculate energy per cost:
+With Dimensional Echo and related prestige upgrades:
 
 ```
-efficiency = eps_gained / cost
+achievement_prestige_mult = 1 + (bonus_per_achievement × achievement_count)
 ```
 
-### Payback Time
-
-Time for a producer to "pay for itself":
-
-```
-payback_time = cost / (base_eps × multipliers)
-```
-
-### Rule of Thumb
-
-- If payback time < 10 minutes: Buy it
-- If an upgrade doubles production: Buy if cost < 15 minutes of production
+Maximum bonus per achievement: **~18.75%** (with all per-achievement upgrades)
+At 260 achievements with all upgrades: **~49.75x** multiplier
 
 ---
 
@@ -417,6 +464,13 @@ The game uses these suffixes for large numbers:
 | Qi | 10^18 | Quintillion |
 | Sx | 10^21 | Sextillion |
 | Sp | 10^24 | Septillion |
+| Oc | 10^27 | Octillion |
+| No | 10^30 | Nonillion |
+| Dc | 10^33 | Decillion |
+| Un | 10^36 | Undecillion |
+| Du | 10^39 | Duodecillion |
+| Tr | 10^42 | Tredecillion |
+| Qa | 10^45 | Quattuordecillion |
 
 ---
 
