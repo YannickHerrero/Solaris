@@ -10,12 +10,12 @@ Solaris features **474 upgrades** across 13 categories. Upgrades provide permane
 | Synergy Upgrades | 38 | Source producers boost target (+2% each) |
 | Global Upgrades | 10 | Boost all production |
 | Manual Upgrades | 10 | 2x manual mining power |
-| Click CPS Upgrades | 10 | +1% of CPS per click each |
-| Per-Building CPS | 20 | +1% CPS per building of type |
-| Total Building CPS | 5 | +0.1% CPS per total buildings |
-| Milestone Upgrades | 10 | +10% CPS at thresholds |
-| Research Upgrades | 15 | +5% CPS each |
-| Cosmic Cat Upgrades | 15 | CPS × (1 + stellar_essence × 0.05) |
+| Click E/s Upgrades | 10 | +1% of E/s per click each |
+| Per-Building E/s | 20 | +1% E/s per building of type |
+| Total Building E/s | 5 | +0.1% E/s per total buildings |
+| Milestone Upgrades | 10 | +10% E/s at thresholds |
+| Research Upgrades | 15 | +5% E/s each |
+| Cosmic Cat Upgrades | 15 | E/s × (1 + stellar_essence × 0.05) |
 | Stellar Essence Upgrades | 5 | +5% Stellar Essence effect |
 | Drone Network Upgrades | 36 | Mining Drone synergies |
 | **Total** | **474** | |
@@ -76,7 +76,7 @@ Solar Panel upgrades work differently from other producers:
 | 14 | Decillion Rays | 500 | 10Oc | 20x Thousand Rays bonus |
 | 15 | Undecillion Rays | 550 | 10No | 20x Thousand Rays bonus |
 
-**Key mechanic**: The first 3 upgrades boost both Solar Panel CPS AND manual mining power. Tier 4+ adds energy based on your total non-panel buildings, then subsequent tiers multiply that bonus.
+**Key mechanic**: The first 3 upgrades boost both Solar Panel E/s AND manual mining power. Tier 4+ adds energy based on your total non-panel buildings, then subsequent tiers multiply that bonus.
 
 ### Mining Drone Upgrades
 
@@ -158,16 +158,16 @@ Each building (3-20) has a corresponding network upgrade:
 
 ### Workforce Upgrades (18)
 
-Each network also has a Workforce upgrade that gives the target building +1% CPS per 50 drones:
+Each network also has a Workforce upgrade that gives the target building +1% E/s per 50 drones:
 
 | ID | Name | Requirement | Cost | Effect |
 |----|------|-------------|------|--------|
-| 7101 | Asteroid Mine Workforce | 50 Drones + 15 Mines | 33K | +1% Mine CPS per 50 drones |
-| 7102 | Orbital Station Workforce | 50 Drones + 15 Stations | 360K | +1% Station CPS per 50 drones |
+| 7101 | Asteroid Mine Workforce | 50 Drones + 15 Mines | 33K | +1% Mine E/s per 50 drones |
+| 7102 | Orbital Station Workforce | 50 Drones + 15 Stations | 360K | +1% Station E/s per 50 drones |
 | ... | ... | ... | ... | ... |
-| 7118 | Big Bang Catalyst Workforce | 50 Drones + 15 Catalysts | 16.2Oc | +1% Catalyst CPS per 50 drones |
+| 7118 | Big Bang Catalyst Workforce | 50 Drones + 15 Catalysts | 16.2Oc | +1% Catalyst E/s per 50 drones |
 
-**Strategy**: With 200 Mining Drones and all Workforce upgrades, every building gets +4% CPS bonus!
+**Strategy**: With 200 Mining Drones and all Workforce upgrades, every building gets +4% E/s bonus!
 
 ---
 
@@ -277,26 +277,26 @@ With all manual upgrades:
 
 ---
 
-## Click CPS Upgrades (10 total)
+## Click E/s Upgrades (10 total)
 
-These upgrades add a percentage of your CPS to each manual click, stacking with the base 5% bonus.
+These upgrades add a percentage of your E/s to each manual click, stacking with the base 5% bonus.
 
 | ID | Name | Required Clicks | Cost | Effect |
 |----|------|-----------------|------|--------|
-| 9201 | Energy Tap | 1K | 50K | +1% of CPS per click |
-| 9202 | Plasma Tap | 10K | 5M | +1% of CPS per click |
-| 9203 | Fusion Tap | 100K | 500M | +1% of CPS per click |
-| 9204 | Stellar Tap | 1M | 50B | +1% of CPS per click |
-| 9205 | Quantum Tap | 10M | 5T | +1% of CPS per click |
-| 9206 | Neutron Tap | 50M | 500T | +1% of CPS per click |
-| 9207 | Void Tap | 100M | 500Q | +1% of CPS per click |
-| 9208 | Antimatter Tap | 250M | 500Qi | +1% of CPS per click |
-| 9209 | Dark Energy Tap | 500M | 5Sp | +1% of CPS per click |
-| 9210 | Singularity Tap | 1B | 5No | +1% of CPS per click |
+| 9201 | Energy Tap | 1K | 50K | +1% of E/s per click |
+| 9202 | Plasma Tap | 10K | 5M | +1% of E/s per click |
+| 9203 | Fusion Tap | 100K | 500M | +1% of E/s per click |
+| 9204 | Stellar Tap | 1M | 50B | +1% of E/s per click |
+| 9205 | Quantum Tap | 10M | 5T | +1% of E/s per click |
+| 9206 | Neutron Tap | 50M | 500T | +1% of E/s per click |
+| 9207 | Void Tap | 100M | 500Q | +1% of E/s per click |
+| 9208 | Antimatter Tap | 250M | 500Qi | +1% of E/s per click |
+| 9209 | Dark Energy Tap | 500M | 5Sp | +1% of E/s per click |
+| 9210 | Singularity Tap | 1B | 5No | +1% of E/s per click |
 
 ### Click Energy Formula
 
-With all click CPS upgrades:
+With all click E/s upgrades:
 ```
 Click Energy = (click_power × manual_multiplier) + (0.15 × total_eps)
 ```
@@ -305,69 +305,69 @@ The base 5% becomes 15% with all 10 upgrades!
 
 ---
 
-## Per-Building CPS Upgrades (20 total)
+## Per-Building E/s Upgrades (20 total)
 
-These upgrades grant +1% CPS for each building of a specific type you own.
+These upgrades grant +1% E/s for each building of a specific type you own.
 
 | ID | Name | Required Count | Cost | Effect |
 |----|------|----------------|------|--------|
-| 9301 | Solar Network | 300 Panels | 1T | +1% CPS per Panel |
-| 9302 | Grandma Collective | 300 Drones | 10T | +1% CPS per Drone |
-| 9303 | Mining Consortium | 300 Mines | 100T | +1% CPS per Mine |
-| 9304 | Orbital Alliance | 300 Stations | 1Q | +1% CPS per Station |
-| 9305 | Lunar Federation | 300 Colonies | 10Q | +1% CPS per Colony |
-| 9306 | Planetary Union | 300 Harvesters | 100Q | +1% CPS per Harvester |
-| 9307 | Fusion Coalition | 300 Reactors | 1Qi | +1% CPS per Reactor |
-| 9308 | Swarm Intelligence | 300 Swarms | 10Qi | +1% CPS per Swarm |
-| 9309 | Sphere Collective | 300 Spheres | 100Qi | +1% CPS per Sphere |
-| 9310 | Forge Brotherhood | 300 Forges | 1Sx | +1% CPS per Forge |
-| 9311 | Neutron Order | 300 N.Harvesters | 10Sx | +1% CPS per N.Harvester |
-| 9312 | Void Consortium | 300 Taps | 100Sx | +1% CPS per Tap |
-| 9313 | Vacuum Assembly | 300 Vacuums | 1Sp | +1% CPS per Vacuum |
-| 9314 | Core Council | 300 Cores | 10Sp | +1% CPS per Core |
-| 9315 | Dark Collective | 300 Engines | 100Sp | +1% CPS per Engine |
-| 9316 | String Harmony | 300 Strings | 1Oc | +1% CPS per String |
-| 9317 | Gate Syndicate | 300 Gates | 10Oc | +1% CPS per Gate |
-| 9318 | Compiler Guild | 300 Compilers | 100Oc | +1% CPS per Compiler |
-| 9319 | Entropy Monks | 300 Reversers | 1No | +1% CPS per Reverser |
-| 9320 | Catalyst Cabal | 300 Catalysts | 10No | +1% CPS per Catalyst |
+| 9301 | Solar Network | 300 Panels | 1T | +1% E/s per Panel |
+| 9302 | Grandma Collective | 300 Drones | 10T | +1% E/s per Drone |
+| 9303 | Mining Consortium | 300 Mines | 100T | +1% E/s per Mine |
+| 9304 | Orbital Alliance | 300 Stations | 1Q | +1% E/s per Station |
+| 9305 | Lunar Federation | 300 Colonies | 10Q | +1% E/s per Colony |
+| 9306 | Planetary Union | 300 Harvesters | 100Q | +1% E/s per Harvester |
+| 9307 | Fusion Coalition | 300 Reactors | 1Qi | +1% E/s per Reactor |
+| 9308 | Swarm Intelligence | 300 Swarms | 10Qi | +1% E/s per Swarm |
+| 9309 | Sphere Collective | 300 Spheres | 100Qi | +1% E/s per Sphere |
+| 9310 | Forge Brotherhood | 300 Forges | 1Sx | +1% E/s per Forge |
+| 9311 | Neutron Order | 300 N.Harvesters | 10Sx | +1% E/s per N.Harvester |
+| 9312 | Void Consortium | 300 Taps | 100Sx | +1% E/s per Tap |
+| 9313 | Vacuum Assembly | 300 Vacuums | 1Sp | +1% E/s per Vacuum |
+| 9314 | Core Council | 300 Cores | 10Sp | +1% E/s per Core |
+| 9315 | Dark Collective | 300 Engines | 100Sp | +1% E/s per Engine |
+| 9316 | String Harmony | 300 Strings | 1Oc | +1% E/s per String |
+| 9317 | Gate Syndicate | 300 Gates | 10Oc | +1% E/s per Gate |
+| 9318 | Compiler Guild | 300 Compilers | 100Oc | +1% E/s per Compiler |
+| 9319 | Entropy Monks | 300 Reversers | 1No | +1% E/s per Reverser |
+| 9320 | Catalyst Cabal | 300 Catalysts | 10No | +1% E/s per Catalyst |
 
-With 400 of each building type: +400% CPS per upgrade = +8,000% total!
+With 400 of each building type: +400% E/s per upgrade = +8,000% total!
 
 ---
 
-## Total Building CPS Upgrades (5 total)
+## Total Building E/s Upgrades (5 total)
 
-These upgrades grant a small CPS bonus for your total building count across all types.
+These upgrades grant a small E/s bonus for your total building count across all types.
 
 | ID | Name | Required E/s | Cost | Effect |
 |----|------|--------------|------|--------|
-| 9401 | Empire of Energy | 10T | 1Q | +0.1% CPS per building |
-| 9402 | Cosmic Dominion | 100Q | 100Qi | +0.1% CPS per building |
-| 9403 | Universal Authority | 100Sx | 100Sp | +0.1% CPS per building |
-| 9404 | Multiversal Hegemony | 100Oc | 100No | +0.1% CPS per building |
-| 9405 | Omniversal Empire | 100Dc | 100Dc | +0.1% CPS per building |
+| 9401 | Empire of Energy | 10T | 1Q | +0.1% E/s per building |
+| 9402 | Cosmic Dominion | 100Q | 100Qi | +0.1% E/s per building |
+| 9403 | Universal Authority | 100Sx | 100Sp | +0.1% E/s per building |
+| 9404 | Multiversal Hegemony | 100Oc | 100No | +0.1% E/s per building |
+| 9405 | Omniversal Empire | 100Dc | 100Dc | +0.1% E/s per building |
 
-With 5,000 total buildings and all 5 upgrades: +2,500% CPS!
+With 5,000 total buildings and all 5 upgrades: +2,500% E/s!
 
 ---
 
 ## Milestone Upgrades (10 total)
 
-Milestone upgrades provide +10% CPS each when you reach certain energy production thresholds.
+Milestone upgrades provide +10% E/s each when you reach certain energy production thresholds.
 
 | ID | Name | Required E/s | Cost | Effect |
 |----|------|--------------|------|--------|
-| 9501 | First Contact | 1K | 1M | +10% CPS |
-| 9502 | Stellar Awakening | 1M | 1B | +10% CPS |
-| 9503 | Galactic Presence | 1B | 1T | +10% CPS |
-| 9504 | Universal Awareness | 1T | 1Q | +10% CPS |
-| 9505 | Cosmic Transcendence | 1Q | 1Qi | +10% CPS |
-| 9506 | Dimensional Mastery | 1Qi | 1Sx | +10% CPS |
-| 9507 | Reality Dominion | 1Sx | 1Sp | +10% CPS |
-| 9508 | Existential Authority | 1Sp | 1Oc | +10% CPS |
-| 9509 | Omnipotent Vision | 1Oc | 1No | +10% CPS |
-| 9510 | Absolute Supremacy | 1No | 1Dc | +10% CPS |
+| 9501 | First Contact | 1K | 1M | +10% E/s |
+| 9502 | Stellar Awakening | 1M | 1B | +10% E/s |
+| 9503 | Galactic Presence | 1B | 1T | +10% E/s |
+| 9504 | Universal Awareness | 1T | 1Q | +10% E/s |
+| 9505 | Cosmic Transcendence | 1Q | 1Qi | +10% E/s |
+| 9506 | Dimensional Mastery | 1Qi | 1Sx | +10% E/s |
+| 9507 | Reality Dominion | 1Sx | 1Sp | +10% E/s |
+| 9508 | Existential Authority | 1Sp | 1Oc | +10% E/s |
+| 9509 | Omnipotent Vision | 1Oc | 1No | +10% E/s |
+| 9510 | Absolute Supremacy | 1No | 1Dc | +10% E/s |
 
 All 10 milestones: 1.10^10 = **2.59x** cumulative multiplier
 
@@ -375,25 +375,25 @@ All 10 milestones: 1.10^10 = **2.59x** cumulative multiplier
 
 ## Research Upgrades (15 total)
 
-Research upgrades provide +5% CPS each and unlock at specific E/s thresholds.
+Research upgrades provide +5% E/s each and unlock at specific E/s thresholds.
 
 | ID | Name | Required E/s | Cost | Effect |
 |----|------|--------------|------|--------|
-| 9601 | Basic Thermodynamics | 100 | 10K | +5% CPS |
-| 9602 | Advanced Materials | 10K | 1M | +5% CPS |
-| 9603 | Quantum Mechanics | 1M | 100M | +5% CPS |
-| 9604 | Relativistic Physics | 100M | 10B | +5% CPS |
-| 9605 | Unified Field Theory | 10B | 1T | +5% CPS |
-| 9606 | Zero-Point Energy | 1T | 100T | +5% CPS |
-| 9607 | Exotic Matter | 100T | 10Q | +5% CPS |
-| 9608 | Spacetime Engineering | 10Q | 1Qi | +5% CPS |
-| 9609 | Dimensional Mathematics | 1Qi | 100Qi | +5% CPS |
-| 9610 | Multiverse Theory | 100Qi | 10Sx | +5% CPS |
-| 9611 | Entropy Reversal | 10Sx | 1Sp | +5% CPS |
-| 9612 | Causality Loops | 1Sp | 100Sp | +5% CPS |
-| 9613 | Reality Compilation | 100Sp | 10Oc | +5% CPS |
-| 9614 | Omniscience Protocols | 10Oc | 1No | +5% CPS |
-| 9615 | Creation Algorithms | 1No | 100No | +5% CPS |
+| 9601 | Basic Thermodynamics | 100 | 10K | +5% E/s |
+| 9602 | Advanced Materials | 10K | 1M | +5% E/s |
+| 9603 | Quantum Mechanics | 1M | 100M | +5% E/s |
+| 9604 | Relativistic Physics | 100M | 10B | +5% E/s |
+| 9605 | Unified Field Theory | 10B | 1T | +5% E/s |
+| 9606 | Zero-Point Energy | 1T | 100T | +5% E/s |
+| 9607 | Exotic Matter | 100T | 10Q | +5% E/s |
+| 9608 | Spacetime Engineering | 10Q | 1Qi | +5% E/s |
+| 9609 | Dimensional Mathematics | 1Qi | 100Qi | +5% E/s |
+| 9610 | Multiverse Theory | 100Qi | 10Sx | +5% E/s |
+| 9611 | Entropy Reversal | 10Sx | 1Sp | +5% E/s |
+| 9612 | Causality Loops | 1Sp | 100Sp | +5% E/s |
+| 9613 | Reality Compilation | 100Sp | 10Oc | +5% E/s |
+| 9614 | Omniscience Protocols | 10Oc | 1No | +5% E/s |
+| 9615 | Creation Algorithms | 1No | 100No | +5% E/s |
 
 All 15 research upgrades: 1.05^15 = **2.08x** cumulative multiplier
 
@@ -401,7 +401,7 @@ All 15 research upgrades: 1.05^15 = **2.08x** cumulative multiplier
 
 ## Cosmic Cat Upgrades (15 total)
 
-Cosmic Cats are the Solaris equivalent of Cookie Clicker's "Kitten" upgrades. They multiply your CPS based on your **Stellar Essence** (which is 4% per achievement).
+Cosmic Cats are the Solaris equivalent of Cookie Clicker's "Kitten" upgrades. They multiply your E/s based on your **Stellar Essence** (which is 4% per achievement).
 
 ### Stellar Essence Formula
 ```
@@ -412,28 +412,28 @@ At 260 achievements: 10.4 Stellar Essence (1,040%)
 
 ### Cosmic Cat Effect
 ```
-CPS Multiplier = 1 + (stellar_essence × bonus)
+E/s Multiplier = 1 + (stellar_essence × bonus)
 ```
 
 Each Cosmic Cat upgrade adds 0.05 (5%) per 4% Stellar Essence.
 
 | ID | Name | Required E/s | Cost | Effect |
 |----|------|--------------|------|--------|
-| 9701 | Cosmic Kittens | 9K | 9M | +5% CPS per 4% Essence |
-| 9702 | Astro Cats | 9M | 9B | +5% CPS per 4% Essence |
-| 9703 | Nebula Felines | 9B | 9T | +5% CPS per 4% Essence |
-| 9704 | Pulsar Prowlers | 9T | 9Q | +5% CPS per 4% Essence |
-| 9705 | Quasar Whiskers | 9Q | 9Qi | +5% CPS per 4% Essence |
-| 9706 | Void Tabbies | 9Qi | 9Sx | +5% CPS per 4% Essence |
-| 9707 | Singularity Siamese | 9Sx | 9Sp | +5% CPS per 4% Essence |
-| 9708 | Dimension Calicos | 9Sp | 9Oc | +5% CPS per 4% Essence |
-| 9709 | Reality Persians | 9Oc | 9No | +5% CPS per 4% Essence |
-| 9710 | Multiverse Maus | 9No | 9Dc | +5% CPS per 4% Essence |
-| 9711 | Omniverse Ocicats | 9Dc | 9Un | +5% CPS per 4% Essence |
-| 9712 | Eternal Egyptians | 9Un | 9Du | +5% CPS per 4% Essence |
-| 9713 | Infinite Abyssinians | 9Du | 9Tr | +5% CPS per 4% Essence |
-| 9714 | Transcendent Tabbies | 9Tr | 9Qa | +5% CPS per 4% Essence |
-| 9715 | Absolute Angoras | 9Qa | 9Qi | +5% CPS per 4% Essence |
+| 9701 | Cosmic Kittens | 9K | 9M | +5% E/s per 4% Essence |
+| 9702 | Astro Cats | 9M | 9B | +5% E/s per 4% Essence |
+| 9703 | Nebula Felines | 9B | 9T | +5% E/s per 4% Essence |
+| 9704 | Pulsar Prowlers | 9T | 9Q | +5% E/s per 4% Essence |
+| 9705 | Quasar Whiskers | 9Q | 9Qi | +5% E/s per 4% Essence |
+| 9706 | Void Tabbies | 9Qi | 9Sx | +5% E/s per 4% Essence |
+| 9707 | Singularity Siamese | 9Sx | 9Sp | +5% E/s per 4% Essence |
+| 9708 | Dimension Calicos | 9Sp | 9Oc | +5% E/s per 4% Essence |
+| 9709 | Reality Persians | 9Oc | 9No | +5% E/s per 4% Essence |
+| 9710 | Multiverse Maus | 9No | 9Dc | +5% E/s per 4% Essence |
+| 9711 | Omniverse Ocicats | 9Dc | 9Un | +5% E/s per 4% Essence |
+| 9712 | Eternal Egyptians | 9Un | 9Du | +5% E/s per 4% Essence |
+| 9713 | Infinite Abyssinians | 9Du | 9Tr | +5% E/s per 4% Essence |
+| 9714 | Transcendent Tabbies | 9Tr | 9Qa | +5% E/s per 4% Essence |
+| 9715 | Absolute Angoras | 9Qa | 9Qi | +5% E/s per 4% Essence |
 
 ### Example Calculation
 

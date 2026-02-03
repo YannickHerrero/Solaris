@@ -15,9 +15,9 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 | Synergy Upgrades | 38 |
 | Global Upgrades | 10 |
 | Manual Upgrades | 10 |
-| Click CPS Upgrades | 10 |
-| Per-Building CPS Upgrades | 20 |
-| Total Building CPS Upgrades | 5 |
+| Click E/s Upgrades | 10 |
+| Per-Building E/s Upgrades | 20 |
+| Total Building E/s Upgrades | 5 |
 | Milestone Upgrades | 10 |
 | Research Upgrades | 15 |
 | Cosmic Cat Upgrades | 15 |
@@ -50,7 +50,7 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 ## Key Features
 
 ### Energy Production
-- **20 Unique Producers**: Cookie Clicker-inspired cost and CPS ratios
+- **20 Unique Producers**: Cookie Clicker-inspired cost and E/s ratios
 - **Producer Upgrades**: 15 tiers per producer, each doubling production (2x)
 - **Synergy System**: 38 bidirectional synergies between adjacent producers
 

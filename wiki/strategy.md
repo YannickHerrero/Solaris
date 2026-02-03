@@ -41,8 +41,8 @@ All producer costs increase by 15% each (flat across all tiers). This means:
 Solar Panels have unique upgrades that scale with your total buildings:
 
 **Early Game (Tiers 1-3):**
-- Buy these ASAP - they boost both Solar Panel CPS AND manual mining 2x each
-- With all 3: 8x manual mining and 8x Solar Panel base CPS
+- Buy these ASAP - they boost both Solar Panel E/s AND manual mining 2x each
+- With all 3: 8x manual mining and 8x Solar Panel base E/s
 
 **Mid Game (Tier 4 - Thousand Rays):**
 - Becomes valuable once you have ~100+ non-panel buildings
@@ -64,12 +64,12 @@ Mining Drones synergize with ALL other building types:
 
 **Workforce Upgrades:**
 - Buy when you have 50+ drones and 15+ of the building
-- The target building gains +1% CPS per 50 drones
+- The target building gains +1% E/s per 50 drones
 
 **Strategy:**
 1. Rush to 50+ Mining Drones early
 2. Buy network upgrades as buildings unlock
-3. With 200 drones and all networks: Every building gets +4% CPS bonus!
+3. With 200 drones and all networks: Every building gets +4% E/s bonus!
 
 ### Stellar Essence & Cosmic Cats
 
@@ -80,7 +80,7 @@ This is Cookie Clicker's "milk and kittens" system:
 - At 260 achievements: 10.4 Stellar Essence (1040%)
 
 **Cosmic Cats:**
-- Each cat multiplies CPS by (1 + essence × 0.05)
+- Each cat multiplies E/s by (1 + essence × 0.05)
 - With 260 achievements: each cat = 1.52x multiplier
 - With all 15 cats: 1.52^15 = **695x** multiplier!
 
@@ -190,7 +190,7 @@ Focus on achievements for multiple bonuses:
 
 Buy Cosmic Cat upgrades as they become affordable:
 - **Cosmic Kittens** (9M cost): First cat upgrade
-- Each subsequent cat multiplies CPS by ~1.5x (with full achievements)
+- Each subsequent cat multiplies E/s by ~1.5x (with full achievements)
 
 ---
 
@@ -284,7 +284,7 @@ For late-game producers:
 Press `u` regularly to see new upgrades:
 - Upgrades unlock based on producer count
 - Easy to miss them while focusing on other things
-- New categories: Click CPS, Per-Building, Cosmic Cats!
+- New categories: Click E/s, Per-Building, Cosmic Cats!
 
 ### 3. Overnight Progress
 
@@ -344,7 +344,7 @@ Some achievements are easier than others:
 
 ### 5. Forgetting Manual Mining
 
-- Manual mining scales with E/s (5% + Click CPS upgrades)
+- Manual mining scales with E/s (5% + Click E/s upgrades)
 - Click upgrades make it very powerful
 - Thousand Rays adds building-based bonus to clicks
 - Good for active play sessions
@@ -379,7 +379,7 @@ Some achievements are easier than others:
 3. **Global upgrades** when E/s requirement met
 4. **Synergy upgrades** when both producers at 15+
 5. **Manual upgrades** when click count met
-6. **Click CPS upgrades** for active play
+6. **Click E/s upgrades** for active play
 7. **Per-Building upgrades** at 300+ of type
 
 ### Prestige Priority
