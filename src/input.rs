@@ -12,12 +12,12 @@ pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
     }
 
     // Boss mode toggle
-    if key.code == KeyCode::Char('`') {
+    if key.code == KeyCode::Char('b') {
         app.boss_mode = !app.boss_mode;
         return false;
     }
 
-    // In boss mode, only backtick works
+    // In boss mode, only 'b' works
     if app.boss_mode {
         return false;
     }
@@ -127,6 +127,13 @@ pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
 
         // Achievements panel
         KeyCode::Char('x') => app.toggle_achievements(),
+
+        // Producer detail toggle (only when Producers panel is focused)
+        KeyCode::Char('d') => {
+            if app.active_panel == Panel::Producers {
+                app.toggle_producer_detail();
+            }
+        }
 
         // Manual mining
         KeyCode::Char(' ') => app.manual_mine(),

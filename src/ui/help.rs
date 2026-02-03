@@ -31,7 +31,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
   -------
   Space         Manual mine
   Tab           Cycle buy amount (1/10/Max)
-  `             Toggle boss mode
+  d             Toggle producer detail (in Producers)
+  b             Toggle boss mode
   ?             Toggle this help
 
   q / Ctrl+C    Quit
@@ -63,7 +64,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
   -------
   Space         Manual mine
   Tab           Cycle buy amount (1/10/Max)
-  `             Toggle boss mode
+  d             Toggle producer detail (in Producers)
+  b             Toggle boss mode
   ?             Toggle this help
 
   q / Ctrl+C    Quit

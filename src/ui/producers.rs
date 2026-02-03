@@ -133,7 +133,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
 }
 
 fn should_show_indicator(app: &App) -> bool {
-    app.game.total_producers_owned() > 0
+    app.show_producer_detail && app.game.total_producers_owned() > 0
 }
 
 fn render_producer_list(
