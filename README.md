@@ -19,9 +19,12 @@ A terminal-based idle game where you harness the power of the cosmos to generate
 ## Features
 
 - **20 Producer Types** — Progress from Solar Panels to Big Bang Catalysts
-- **339 Upgrades** — Producer, synergy, global, and manual upgrades
+- **474 Upgrades** — Producer, synergy, global, manual, and specialty upgrades
 - **260 Achievements** — Track your cosmic accomplishments
-- **Prestige System** — Ascend to earn Stellar Chips and permanent bonuses
+- **100 Prestige Upgrades** — Ascend to earn Stellar Chips and permanent bonuses
+- **Thousand Rays System** — Solar Panels gain bonus energy per building owned
+- **Drone Network System** — Mining Drones synergize with all other buildings
+- **Cosmic Cats & Stellar Essence** — Achievements power your production multipliers
 - **Offline Progress** — Earn energy while away (up to 8 hours)
 - **Boss Mode** — Quick-hide spreadsheet disguise (press `` ` ``)
 
@@ -57,7 +60,7 @@ For comprehensive guides and reference material, see the **[Wiki](wiki/README.md
 
 - **[Getting Started Guide](wiki/getting-started.md)** — First steps and early game tips
 - **[Producers](wiki/producers.md)** — All 20 energy producers with stats
-- **[Upgrades](wiki/upgrades.md)** — Complete list of 339 upgrades
+- **[Upgrades](wiki/upgrades.md)** — Complete list of 474 upgrades
 - **[Achievements](wiki/achievements.md)** — All 260 achievements
 - **[Prestige System](wiki/prestige.md)** — Stellar Ascension mechanics
 - **[Strategy Guide](wiki/strategy.md)** — Optimization and progression tips
