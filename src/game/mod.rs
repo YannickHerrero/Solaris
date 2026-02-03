@@ -327,7 +327,7 @@ impl GameState {
 
     /// Get the Thousand Rays bonus (flat E/s added per non-panel building)
     /// This is the base value * all multipliers from ThousandFingersMultiplier upgrades
-    fn get_thousand_fingers_bonus(&self) -> f64 {
+    pub fn get_thousand_fingers_bonus(&self) -> f64 {
         let mut base_bonus = 0.0;
         let mut multiplier = 1.0;
 
@@ -349,7 +349,7 @@ impl GameState {
     }
 
     /// Get the total count of non-panel buildings (for Thousand Rays calculation)
-    fn get_non_collector_building_count(&self) -> u64 {
+    pub fn get_non_collector_building_count(&self) -> u64 {
         self.producers_owned
             .iter()
             .filter(|(&id, _)| id != 1) // Exclude Solar Panel (id 1)
