@@ -46,7 +46,7 @@ Stellar Essence = 0.04 × achievement_count
 
 ### Cosmic Cat Multiplier
 
-Each Cosmic Cat upgrade multiplies your CPS by:
+Each Cosmic Cat upgrade multiplies your E/s by:
 ```
 Per Cat = 1 + (stellar_essence × 0.05)
 ```

@@ -4,7 +4,7 @@ Solaris features 20 unique energy producers, each representing increasingly adva
 
 ## Producer Table
 
-All producers use Cookie Clicker-inspired cost and CPS ratios with progressively longer payback times.
+All producers use Cookie Clicker-inspired cost and E/s ratios with progressively longer payback times.
 
 | ID | Icon | Name | Base E/s | Base Cost | Description |
 |----|------|------|----------|-----------|-------------|
@@ -159,7 +159,7 @@ Where:
 2. **Achievement Bonus**: 1.005^n where n = number of achievements
    - At 100 achievements: ~1.65x multiplier
    - At 260 achievements: ~3.67x multiplier
-3. **Stellar Essence & Cosmic Cats**: +5% CPS per 4% Stellar Essence per Cosmic Cat upgrade
+3. **Stellar Essence & Cosmic Cats**: +5% E/s per 4% Stellar Essence per Cosmic Cat upgrade
 4. **Prestige Multipliers**: Various production bonuses from 100 prestige upgrades
 
 ---
@@ -199,8 +199,8 @@ See [Upgrades](upgrades.md) for complete upgrade details.
 Solar Panels use a unique upgrade system inspired by Cookie Clicker's "Thousand Fingers" mechanic. Instead of standard 2x multipliers, Solar Panel upgrades provide scaling bonuses based on your total buildings:
 
 **First 3 Upgrades (Tiers 1-3):**
-- Each upgrade provides **2x to both Solar Panel CPS AND manual mining power**
-- These stack multiplicatively: all 3 = 8x base Solar Panel CPS and 8x click power
+- Each upgrade provides **2x to both Solar Panel E/s AND manual mining power**
+- These stack multiplicatively: all 3 = 8x base Solar Panel E/s and 8x click power
 
 **Tier 4: Thousand Rays**
 - Grants **+0.1 energy per non-panel building owned** to both Solar Panels and manual mining
@@ -228,18 +228,18 @@ Mining Drones have a unique synergy system where they gain bonuses from ALL othe
 Each building type (3-20) has a corresponding Drone Network upgrade:
 - **Requirement**: 1 Mining Drone + 15 of the associated building
 - **Effect**: Mining Drones are **2x** more efficient
-- **Bonus**: Mining Drones gain **+1% CPS per 50 drones** for that network type
+- **Bonus**: Mining Drones gain **+1% E/s per 50 drones** for that network type
 
 **Workforce Upgrades (18 total):**
 Each building also has a "Workforce" upgrade:
 - **Requirement**: 50+ Mining Drones + 15 of the building
-- **Effect**: That building gains **+1% CPS per 50 Mining Drones owned**
+- **Effect**: That building gains **+1% E/s per 50 Mining Drones owned**
 
 **Example:**
 With Asteroid Mining Network and 200 Mining Drones:
 - Mining Drones get 2x multiplier (from network unlock)
-- Mining Drones get +4% CPS (200 ÷ 50 = 4)
-- With Asteroid Mine Workforce: Asteroid Mines also get +4% CPS
+- Mining Drones get +4% E/s (200 ÷ 50 = 4)
+- With Asteroid Mine Workforce: Asteroid Mines also get +4% E/s
 
 This creates a powerful feedback loop where investing in Mining Drones boosts all your other buildings!
 

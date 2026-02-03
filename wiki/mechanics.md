@@ -134,7 +134,7 @@ Where:
    kitten_mult = (1 + stellar_essence × 0.05)^(kitten_upgrades_owned)
    ```
 
-4. **Miscellaneous Multipliers**: Milestone, Research, Per-Building CPS, etc.
+4. **Miscellaneous Multipliers**: Milestone, Research, Per-Building E/s, etc.
 
 ---
 
@@ -164,7 +164,7 @@ Multiplier chain:
 multiplier_chain = 5 × 10 × 20^9 = 2.56 × 10^13
 ```
 
-This bonus is added to both Solar Panel CPS and manual mining per click.
+This bonus is added to both Solar Panel E/s and manual mining per click.
 
 ### Drone Network (Mining Drone)
 
@@ -172,11 +172,11 @@ Mining Drones gain synergies from all building types through the Drone Network s
 
 **Network Types (18 total):**
 Each network upgrade provides:
-1. 2x multiplier to Mining Drone CPS
-2. +1% CPS per 50 drones for that network type
+1. 2x multiplier to Mining Drone E/s
+2. +1% E/s per 50 drones for that network type
 
 **Workforce Upgrades (18 total):**
-Each workforce upgrade gives the target building +1% CPS per 50 Mining Drones.
+Each workforce upgrade gives the target building +1% E/s per 50 Mining Drones.
 
 **Example with 200 Drones and 10 network types:**
 ```

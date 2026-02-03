@@ -86,13 +86,13 @@ Upgrades appear when you meet their requirements:
 Two producers have unique mechanics that make them valuable throughout the game:
 
 **Solar Panels (Thousand Rays):**
-- First 3 upgrades boost both Solar Panel CPS AND manual mining 2x each
+- First 3 upgrades boost both Solar Panel E/s AND manual mining 2x each
 - Later upgrades add bonus energy based on your total non-panel buildings
 - Don't neglect Solar Panels - they scale with your entire empire!
 
 **Mining Drones (Drone Network):**
 - Gain synergies from ALL other building types
-- With 50+ drones and network upgrades: every building gets bonus CPS
+- With 50+ drones and network upgrades: every building gets bonus E/s
 - Invest in Mining Drones early for empire-wide bonuses
 
 ### Unlocking New Producers
@@ -124,7 +124,7 @@ Your production is affected by multiple bonuses:
 2. **Global Upgrades**: Boost all production
 3. **Synergy Bonuses**: Adjacent producers boost each other (bidirectional!)
 4. **Achievements**: +0.5% per achievement unlocked
-5. **Cosmic Cats**: Multiply CPS based on your achievement count (very powerful!)
+5. **Cosmic Cats**: Multiply E/s based on your achievement count (very powerful!)
 
 ---
 
