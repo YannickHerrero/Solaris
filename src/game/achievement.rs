@@ -37,23 +37,48 @@ static ACHIEVEMENTS: Lazy<Vec<Achievement>> = Lazy::new(|| {
 
     // Producer milestones (1, 10, 25, 50, 100, 150, 200, 250, 300) for each producer
     let producer_names = [
-        "Solar Panel", "Mining Drone", "Asteroid Mine", "Orbital Station",
-        "Lunar Colony", "Planetary Harvester", "Fusion Reactor", "Dyson Swarm",
-        "Dyson Sphere", "Star Forge", "Neutron Harvester", "Black Hole Tap",
-        "Quantum Vacuum", "Galactic Core", "Dark Matter Engine", "Cosmic String",
-        "Multiverse Gate", "Reality Compiler", "Entropy Reverser", "Big Bang Catalyst",
+        "Solar Panel",
+        "Mining Drone",
+        "Asteroid Mine",
+        "Orbital Station",
+        "Lunar Colony",
+        "Planetary Harvester",
+        "Fusion Reactor",
+        "Dyson Swarm",
+        "Dyson Sphere",
+        "Star Forge",
+        "Neutron Harvester",
+        "Black Hole Tap",
+        "Quantum Vacuum",
+        "Galactic Core",
+        "Dark Matter Engine",
+        "Cosmic String",
+        "Multiverse Gate",
+        "Reality Compiler",
+        "Entropy Reverser",
+        "Big Bang Catalyst",
     ];
     let producer_milestones = [1, 10, 25, 50, 100, 150, 200, 250, 300];
     let milestone_names = [
-        "Novice", "Initiate", "Apprentice", "Journeyman",
-        "Expert", "Master", "Grandmaster", "Legend", "Transcendent"
+        "Novice",
+        "Initiate",
+        "Apprentice",
+        "Journeyman",
+        "Expert",
+        "Master",
+        "Grandmaster",
+        "Legend",
+        "Transcendent",
     ];
 
     for (producer_idx, producer_name) in producer_names.iter().enumerate() {
         let producer_id = (producer_idx + 1) as u32;
         for (milestone_idx, &count) in producer_milestones.iter().enumerate() {
-            let name = Box::leak(format!("{} {}", milestone_names[milestone_idx], producer_name).into_boxed_str());
-            let description = Box::leak(format!("Own {} {}s", count, producer_name).into_boxed_str());
+            let name = Box::leak(
+                format!("{} {}", milestone_names[milestone_idx], producer_name).into_boxed_str(),
+            );
+            let description =
+                Box::leak(format!("Own {} {}s", count, producer_name).into_boxed_str());
             achievements.push(Achievement {
                 id,
                 name,
@@ -83,7 +108,8 @@ static ACHIEVEMENTS: Lazy<Vec<Achievement>> = Lazy::new(|| {
         (1_000_000_000_000_000.0, "Infinite Power"),
     ];
     for (rate, name) in production_milestones {
-        let description = Box::leak(format!("Reach {} E/s", format_large_number(rate)).into_boxed_str());
+        let description =
+            Box::leak(format!("Reach {} E/s", format_large_number(rate)).into_boxed_str());
         achievements.push(Achievement {
             id,
             name,
@@ -112,7 +138,9 @@ static ACHIEVEMENTS: Lazy<Vec<Achievement>> = Lazy::new(|| {
         (1e21, "Septillionaire"),
     ];
     for (amount, name) in lifetime_milestones {
-        let description = Box::leak(format!("Earn {} total energy", format_large_number(amount)).into_boxed_str());
+        let description = Box::leak(
+            format!("Earn {} total energy", format_large_number(amount)).into_boxed_str(),
+        );
         achievements.push(Achievement {
             id,
             name,

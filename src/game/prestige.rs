@@ -2,16 +2,16 @@ use once_cell::sync::Lazy;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PrestigeEffect {
-    ProductionMultiplier(f64),      // Permanent production bonus
-    StartingEnergy(f64),            // Energy after ascension
-    OfflineBonus(f64),              // Offline earnings multiplier
-    UnlockProducers(u32),           // Start with N producers unlocked
-    UpgradeCostReduction(f64),      // Upgrades cost less
-    ChipBonus(f64),                 // More stellar chips earned
-    ProductionPerAscension(f64),    // +X% per ascension
-    ProductionPerAchievement(f64),  // +X% per achievement
-    KeepEnergyPercent(f64),         // Keep X% of energy after ascension
-    DoubleEnergyChance(f64),        // Chance for double energy per tick
+    ProductionMultiplier(f64),     // Permanent production bonus
+    StartingEnergy(f64),           // Energy after ascension
+    OfflineBonus(f64),             // Offline earnings multiplier
+    UnlockProducers(u32),          // Start with N producers unlocked
+    UpgradeCostReduction(f64),     // Upgrades cost less
+    ChipBonus(f64),                // More stellar chips earned
+    ProductionPerAscension(f64),   // +X% per ascension
+    ProductionPerAchievement(f64), // +X% per achievement
+    KeepEnergyPercent(f64),        // Keep X% of energy after ascension
+    DoubleEnergyChance(f64),       // Chance for double energy per tick
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -42,9 +42,11 @@ impl PrestigeUpgrade {
 }
 
 // Calculate stellar chips from total energy earned
-// Formula: floor(total_energy_earned^0.5 / 1_000_000)
+// Formula: floor(cbrt(total_energy_earned / 1_000_000_000_000))
+// This matches Cookie Clicker's cubic scaling for slower prestige progression
+// 1 chip = 1 trillion, 8 chips = 8 trillion, 1000 chips = 1 quintillion
 pub fn calculate_stellar_chips(total_energy_earned: f64) -> u64 {
-    (total_energy_earned.sqrt() / 1_000_000.0).floor() as u64
+    (total_energy_earned / 1_000_000_000_000.0).cbrt().floor() as u64
 }
 
 static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
@@ -90,7 +92,6 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             effect: PrestigeEffect::UnlockProducers(2),
             requirement: None,
         },
-
         // Tier 2 (15-50 chips)
         PrestigeUpgrade {
             id: 6,
@@ -132,7 +133,6 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             effect: PrestigeEffect::UnlockProducers(5),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(7)),
         },
-
         // Tier 3 (75-200 chips)
         PrestigeUpgrade {
             id: 11,
@@ -166,7 +166,6 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             effect: PrestigeEffect::ChipBonus(1.05),
             requirement: Some(PrestigeRequirement::Ascensions(10)),
         },
-
         // Tier 4 (300-500 chips)
         PrestigeUpgrade {
             id: 15,
@@ -192,7 +191,6 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             effect: PrestigeEffect::ChipBonus(1.15),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(14)),
         },
-
         // Tier 5 (750-1500 chips) - End game
         PrestigeUpgrade {
             id: 18,
@@ -218,7 +216,6 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             effect: PrestigeEffect::ProductionMultiplier(2.0),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(13)),
         },
-
         // Tier 6 (2000+ chips) - True end game
         PrestigeUpgrade {
             id: 21,
@@ -251,6 +248,634 @@ static PRESTIGE_UPGRADES: Lazy<Vec<PrestigeUpgrade>> = Lazy::new(|| {
             cost: 5000,
             effect: PrestigeEffect::ProductionMultiplier(3.0),
             requirement: Some(PrestigeRequirement::PrestigeUpgrade(20)),
+        },
+        // Tier 7 (7500-15000 chips) - Advanced end game
+        PrestigeUpgrade {
+            id: 25,
+            name: "Dimensional Mastery",
+            description: "Start with first 12 producers unlocked",
+            cost: 7500,
+            effect: PrestigeEffect::UnlockProducers(12),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(18)),
+        },
+        PrestigeUpgrade {
+            id: 26,
+            name: "Eternal Fortune",
+            description: "+10% chance for double energy per tick",
+            cost: 10000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.10),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(16)),
+        },
+        PrestigeUpgrade {
+            id: 27,
+            name: "Chip Magnet",
+            description: "+25% Stellar Chips earned",
+            cost: 12500,
+            effect: PrestigeEffect::ChipBonus(1.25),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(17)),
+        },
+        PrestigeUpgrade {
+            id: 28,
+            name: "Perfect Retention",
+            description: "Keep 10% of energy after ascension",
+            cost: 15000,
+            effect: PrestigeEffect::KeepEnergyPercent(0.10),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(19)),
+        },
+        // Tier 8 (20000-40000 chips) - Deep end game
+        PrestigeUpgrade {
+            id: 29,
+            name: "Stellar Supremacy",
+            description: "+300% all production permanently",
+            cost: 20000,
+            effect: PrestigeEffect::ProductionMultiplier(4.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(24)),
+        },
+        PrestigeUpgrade {
+            id: 30,
+            name: "Universal Unlock II",
+            description: "Start with first 15 producers unlocked",
+            cost: 25000,
+            effect: PrestigeEffect::UnlockProducers(15),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(25)),
+        },
+        PrestigeUpgrade {
+            id: 31,
+            name: "Achievement Synergy",
+            description: "+0.5% production per achievement",
+            cost: 30000,
+            effect: PrestigeEffect::ProductionPerAchievement(0.005),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(11)),
+        },
+        PrestigeUpgrade {
+            id: 32,
+            name: "Ascension Mastery",
+            description: "+2% production per ascension",
+            cost: 35000,
+            effect: PrestigeEffect::ProductionPerAscension(0.02),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(21)),
+        },
+        PrestigeUpgrade {
+            id: 33,
+            name: "Discount Champion",
+            description: "Upgrades cost 40% less",
+            cost: 40000,
+            effect: PrestigeEffect::UpgradeCostReduction(0.40),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(22)),
+        },
+        // Tier 9 (50000-100000 chips) - Master tier
+        PrestigeUpgrade {
+            id: 34,
+            name: "Offline Empire",
+            description: "+100% offline earnings",
+            cost: 50000,
+            effect: PrestigeEffect::OfflineBonus(2.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(23)),
+        },
+        PrestigeUpgrade {
+            id: 35,
+            name: "Lucky Universe",
+            description: "+15% chance for double energy per tick",
+            cost: 60000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.15),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(26)),
+        },
+        PrestigeUpgrade {
+            id: 36,
+            name: "Stellar Magnate",
+            description: "+50% Stellar Chips earned",
+            cost: 75000,
+            effect: PrestigeEffect::ChipBonus(1.50),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(27)),
+        },
+        PrestigeUpgrade {
+            id: 37,
+            name: "Cosmic Emperor",
+            description: "+500% all production permanently",
+            cost: 100000,
+            effect: PrestigeEffect::ProductionMultiplier(6.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(29)),
+        },
+        // Tier 10 (150000-300000 chips) - Legendary tier
+        PrestigeUpgrade {
+            id: 38,
+            name: "Complete Mastery",
+            description: "Start with all 20 producers unlocked",
+            cost: 150000,
+            effect: PrestigeEffect::UnlockProducers(20),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(30)),
+        },
+        PrestigeUpgrade {
+            id: 39,
+            name: "Achievement Legend",
+            description: "+1% production per achievement",
+            cost: 200000,
+            effect: PrestigeEffect::ProductionPerAchievement(0.01),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(31)),
+        },
+        PrestigeUpgrade {
+            id: 40,
+            name: "Eternal Ascender",
+            description: "+5% production per ascension",
+            cost: 250000,
+            effect: PrestigeEffect::ProductionPerAscension(0.05),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(32)),
+        },
+        PrestigeUpgrade {
+            id: 41,
+            name: "Free Shopping",
+            description: "Upgrades cost 50% less",
+            cost: 300000,
+            effect: PrestigeEffect::UpgradeCostReduction(0.50),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(33)),
+        },
+        // Tier 11 (400000-750000 chips) - Mythic tier
+        PrestigeUpgrade {
+            id: 42,
+            name: "Transcendent Luck",
+            description: "+20% chance for double energy per tick",
+            cost: 400000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.20),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(35)),
+        },
+        PrestigeUpgrade {
+            id: 43,
+            name: "Chip Tycoon",
+            description: "+100% Stellar Chips earned",
+            cost: 500000,
+            effect: PrestigeEffect::ChipBonus(2.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(36)),
+        },
+        PrestigeUpgrade {
+            id: 44,
+            name: "Offline Dominion",
+            description: "+200% offline earnings",
+            cost: 600000,
+            effect: PrestigeEffect::OfflineBonus(3.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(34)),
+        },
+        PrestigeUpgrade {
+            id: 45,
+            name: "Universal Power",
+            description: "+1000% all production permanently",
+            cost: 750000,
+            effect: PrestigeEffect::ProductionMultiplier(11.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(37)),
+        },
+        // Tier 12 (1M+ chips) - Godlike tier
+        PrestigeUpgrade {
+            id: 46,
+            name: "Beyond Achievement",
+            description: "+2% production per achievement",
+            cost: 1000000,
+            effect: PrestigeEffect::ProductionPerAchievement(0.02),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(39)),
+        },
+        PrestigeUpgrade {
+            id: 47,
+            name: "Infinite Ascension",
+            description: "+10% production per ascension",
+            cost: 1500000,
+            effect: PrestigeEffect::ProductionPerAscension(0.10),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(40)),
+        },
+        PrestigeUpgrade {
+            id: 48,
+            name: "Quantum Luck",
+            description: "+25% chance for double energy per tick",
+            cost: 2000000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.25),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(42)),
+        },
+        PrestigeUpgrade {
+            id: 49,
+            name: "Chip Overlord",
+            description: "+200% Stellar Chips earned",
+            cost: 3000000,
+            effect: PrestigeEffect::ChipBonus(3.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(43)),
+        },
+        PrestigeUpgrade {
+            id: 50,
+            name: "Absolute Dominance",
+            description: "+2500% all production permanently",
+            cost: 5000000,
+            effect: PrestigeEffect::ProductionMultiplier(26.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(45)),
+        },
+        // Tier 13+ (10M+ chips) - Transcendent tier
+        PrestigeUpgrade {
+            id: 51,
+            name: "Eternal Offline II",
+            description: "+500% offline earnings",
+            cost: 10000000,
+            effect: PrestigeEffect::OfflineBonus(6.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(44)),
+        },
+        PrestigeUpgrade {
+            id: 52,
+            name: "Achievement Godhood",
+            description: "+5% production per achievement",
+            cost: 15000000,
+            effect: PrestigeEffect::ProductionPerAchievement(0.05),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(46)),
+        },
+        PrestigeUpgrade {
+            id: 53,
+            name: "Ascension Mastery II",
+            description: "+20% production per ascension",
+            cost: 20000000,
+            effect: PrestigeEffect::ProductionPerAscension(0.20),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(47)),
+        },
+        PrestigeUpgrade {
+            id: 54,
+            name: "Reality Luck",
+            description: "+30% chance for double energy per tick",
+            cost: 30000000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.30),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(48)),
+        },
+        PrestigeUpgrade {
+            id: 55,
+            name: "Chip Deity",
+            description: "+400% Stellar Chips earned",
+            cost: 50000000,
+            effect: PrestigeEffect::ChipBonus(5.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(49)),
+        },
+        PrestigeUpgrade {
+            id: 56,
+            name: "Omnipotent Production",
+            description: "+5000% all production permanently",
+            cost: 100000000,
+            effect: PrestigeEffect::ProductionMultiplier(51.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(50)),
+        },
+        // Tier 14+ (500M+ chips) - Ultimate tier
+        PrestigeUpgrade {
+            id: 57,
+            name: "Eternal Presence",
+            description: "+1000% offline earnings",
+            cost: 500000000,
+            effect: PrestigeEffect::OfflineBonus(11.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(51)),
+        },
+        PrestigeUpgrade {
+            id: 58,
+            name: "Achievement Transcendence",
+            description: "+10% production per achievement",
+            cost: 750000000,
+            effect: PrestigeEffect::ProductionPerAchievement(0.10),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(52)),
+        },
+        PrestigeUpgrade {
+            id: 59,
+            name: "Ultimate Luck",
+            description: "+35% chance for double energy per tick",
+            cost: 1000000000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.35),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(54)),
+        },
+        PrestigeUpgrade {
+            id: 60,
+            name: "Chip Absolute",
+            description: "+1000% Stellar Chips earned",
+            cost: 2000000000,
+            effect: PrestigeEffect::ChipBonus(11.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(55)),
+        },
+        PrestigeUpgrade {
+            id: 61,
+            name: "Ascension Pinnacle",
+            description: "+50% production per ascension",
+            cost: 3000000000,
+            effect: PrestigeEffect::ProductionPerAscension(0.50),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(53)),
+        },
+        PrestigeUpgrade {
+            id: 62,
+            name: "Infinite Production",
+            description: "+10000% all production permanently",
+            cost: 5000000000,
+            effect: PrestigeEffect::ProductionMultiplier(101.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(56)),
+        },
+        // Tier 15+ (10B+ chips) - Omega tier
+        PrestigeUpgrade {
+            id: 63,
+            name: "Eternal Vigilance",
+            description: "+2500% offline earnings",
+            cost: 10000000000,
+            effect: PrestigeEffect::OfflineBonus(26.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(57)),
+        },
+        PrestigeUpgrade {
+            id: 64,
+            name: "Divine Luck",
+            description: "+40% chance for double energy per tick",
+            cost: 20000000000,
+            effect: PrestigeEffect::DoubleEnergyChance(0.40),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(59)),
+        },
+        PrestigeUpgrade {
+            id: 65,
+            name: "Ultimate Production",
+            description: "+25000% all production permanently",
+            cost: 50000000000,
+            effect: PrestigeEffect::ProductionMultiplier(251.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(62)),
+        },
+        PrestigeUpgrade {
+            id: 66,
+            name: "Chip God",
+            description: "+2500% Stellar Chips earned",
+            cost: 100000000000,
+            effect: PrestigeEffect::ChipBonus(26.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(60)),
+        },
+        // Additional production multipliers for smooth progression
+        PrestigeUpgrade {
+            id: 67,
+            name: "Cosmic Surge I",
+            description: "+50% all production permanently",
+            cost: 8000,
+            effect: PrestigeEffect::ProductionMultiplier(1.5),
+            requirement: Some(PrestigeRequirement::TotalChips(5000)),
+        },
+        PrestigeUpgrade {
+            id: 68,
+            name: "Cosmic Surge II",
+            description: "+75% all production permanently",
+            cost: 18000,
+            effect: PrestigeEffect::ProductionMultiplier(1.75),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(67)),
+        },
+        PrestigeUpgrade {
+            id: 69,
+            name: "Cosmic Surge III",
+            description: "+100% all production permanently",
+            cost: 45000,
+            effect: PrestigeEffect::ProductionMultiplier(2.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(68)),
+        },
+        PrestigeUpgrade {
+            id: 70,
+            name: "Cosmic Surge IV",
+            description: "+150% all production permanently",
+            cost: 90000,
+            effect: PrestigeEffect::ProductionMultiplier(2.5),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(69)),
+        },
+        PrestigeUpgrade {
+            id: 71,
+            name: "Cosmic Surge V",
+            description: "+200% all production permanently",
+            cost: 180000,
+            effect: PrestigeEffect::ProductionMultiplier(3.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(70)),
+        },
+        // Additional starting energy upgrades
+        PrestigeUpgrade {
+            id: 72,
+            name: "Quick Start II",
+            description: "Start with 1,000 energy after ascension",
+            cost: 25,
+            effect: PrestigeEffect::StartingEnergy(1_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(2)),
+        },
+        PrestigeUpgrade {
+            id: 73,
+            name: "Quick Start III",
+            description: "Start with 10,000 energy after ascension",
+            cost: 100,
+            effect: PrestigeEffect::StartingEnergy(10_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(72)),
+        },
+        PrestigeUpgrade {
+            id: 74,
+            name: "Quick Start IV",
+            description: "Start with 100,000 energy after ascension",
+            cost: 500,
+            effect: PrestigeEffect::StartingEnergy(100_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(73)),
+        },
+        PrestigeUpgrade {
+            id: 75,
+            name: "Quick Start V",
+            description: "Start with 1,000,000 energy after ascension",
+            cost: 2500,
+            effect: PrestigeEffect::StartingEnergy(1_000_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(74)),
+        },
+        PrestigeUpgrade {
+            id: 76,
+            name: "Quick Start VI",
+            description: "Start with 10,000,000 energy after ascension",
+            cost: 12500,
+            effect: PrestigeEffect::StartingEnergy(10_000_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(75)),
+        },
+        PrestigeUpgrade {
+            id: 77,
+            name: "Quick Start VII",
+            description: "Start with 100,000,000 energy after ascension",
+            cost: 62500,
+            effect: PrestigeEffect::StartingEnergy(100_000_000.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(76)),
+        },
+        // Additional offline upgrades
+        PrestigeUpgrade {
+            id: 78,
+            name: "Offline Boost I",
+            description: "+25% offline earnings",
+            cost: 60,
+            effect: PrestigeEffect::OfflineBonus(1.25),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(3)),
+        },
+        PrestigeUpgrade {
+            id: 79,
+            name: "Offline Boost II",
+            description: "+35% offline earnings",
+            cost: 300,
+            effect: PrestigeEffect::OfflineBonus(1.35),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(78)),
+        },
+        // Additional chip bonuses
+        PrestigeUpgrade {
+            id: 80,
+            name: "Chip Collector I",
+            description: "+10% Stellar Chips earned",
+            cost: 120,
+            effect: PrestigeEffect::ChipBonus(1.10),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(14)),
+        },
+        PrestigeUpgrade {
+            id: 81,
+            name: "Chip Collector II",
+            description: "+20% Stellar Chips earned",
+            cost: 600,
+            effect: PrestigeEffect::ChipBonus(1.20),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(80)),
+        },
+        // Additional unlock tiers
+        PrestigeUpgrade {
+            id: 82,
+            name: "Galaxy Starter",
+            description: "Start with first 4 producers unlocked",
+            cost: 35,
+            effect: PrestigeEffect::UnlockProducers(4),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(7)),
+        },
+        PrestigeUpgrade {
+            id: 83,
+            name: "Stellar Starter",
+            description: "Start with first 6 producers unlocked",
+            cost: 80,
+            effect: PrestigeEffect::UnlockProducers(6),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(10)),
+        },
+        PrestigeUpgrade {
+            id: 84,
+            name: "Cosmic Starter",
+            description: "Start with first 8 producers unlocked",
+            cost: 175,
+            effect: PrestigeEffect::UnlockProducers(8),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(15)),
+        },
+        // Additional double energy chances
+        PrestigeUpgrade {
+            id: 85,
+            name: "Fortune I",
+            description: "+2% chance for double energy per tick",
+            cost: 18,
+            effect: PrestigeEffect::DoubleEnergyChance(0.02),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(4)),
+        },
+        PrestigeUpgrade {
+            id: 86,
+            name: "Fortune II",
+            description: "+3% chance for double energy per tick",
+            cost: 55,
+            effect: PrestigeEffect::DoubleEnergyChance(0.03),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(85)),
+        },
+        // More ascension bonuses
+        PrestigeUpgrade {
+            id: 87,
+            name: "Ascension Power I",
+            description: "+0.75% production per ascension",
+            cost: 45,
+            effect: PrestigeEffect::ProductionPerAscension(0.0075),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(6)),
+        },
+        PrestigeUpgrade {
+            id: 88,
+            name: "Ascension Power II",
+            description: "+1.25% production per ascension",
+            cost: 120,
+            effect: PrestigeEffect::ProductionPerAscension(0.0125),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(87)),
+        },
+        // More achievement bonuses
+        PrestigeUpgrade {
+            id: 89,
+            name: "Achievement Echo I",
+            description: "+0.35% production per achievement",
+            cost: 180,
+            effect: PrestigeEffect::ProductionPerAchievement(0.0035),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(11)),
+        },
+        PrestigeUpgrade {
+            id: 90,
+            name: "Achievement Echo II",
+            description: "+0.4% production per achievement",
+            cost: 450,
+            effect: PrestigeEffect::ProductionPerAchievement(0.004),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(89)),
+        },
+        // More discount upgrades
+        PrestigeUpgrade {
+            id: 91,
+            name: "Thrifty I",
+            description: "Upgrades cost 15% less",
+            cost: 90,
+            effect: PrestigeEffect::UpgradeCostReduction(0.15),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(9)),
+        },
+        PrestigeUpgrade {
+            id: 92,
+            name: "Thrifty II",
+            description: "Upgrades cost 20% less",
+            cost: 250,
+            effect: PrestigeEffect::UpgradeCostReduction(0.20),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(91)),
+        },
+        // More energy retention
+        PrestigeUpgrade {
+            id: 93,
+            name: "Memory Fragment I",
+            description: "Keep 2% of energy after ascension",
+            cost: 250,
+            effect: PrestigeEffect::KeepEnergyPercent(0.02),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(12)),
+        },
+        PrestigeUpgrade {
+            id: 94,
+            name: "Memory Fragment II",
+            description: "Keep 3% of energy after ascension",
+            cost: 500,
+            effect: PrestigeEffect::KeepEnergyPercent(0.03),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(93)),
+        },
+        // Ultra late game bonuses
+        PrestigeUpgrade {
+            id: 95,
+            name: "Stellar Dynasty",
+            description: "+500% all production permanently",
+            cost: 350000,
+            effect: PrestigeEffect::ProductionMultiplier(6.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(71)),
+        },
+        PrestigeUpgrade {
+            id: 96,
+            name: "Cosmic Dynasty",
+            description: "+750% all production permanently",
+            cost: 700000,
+            effect: PrestigeEffect::ProductionMultiplier(8.5),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(95)),
+        },
+        PrestigeUpgrade {
+            id: 97,
+            name: "Universal Dynasty",
+            description: "+1500% all production permanently",
+            cost: 1400000,
+            effect: PrestigeEffect::ProductionMultiplier(16.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(96)),
+        },
+        PrestigeUpgrade {
+            id: 98,
+            name: "Dimensional Dynasty",
+            description: "+3000% all production permanently",
+            cost: 2800000,
+            effect: PrestigeEffect::ProductionMultiplier(31.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(97)),
+        },
+        PrestigeUpgrade {
+            id: 99,
+            name: "Reality Dynasty",
+            description: "+6000% all production permanently",
+            cost: 5600000,
+            effect: PrestigeEffect::ProductionMultiplier(61.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(98)),
+        },
+        PrestigeUpgrade {
+            id: 100,
+            name: "Multiversal Dynasty",
+            description: "+15000% all production permanently",
+            cost: 11200000,
+            effect: PrestigeEffect::ProductionMultiplier(151.0),
+            requirement: Some(PrestigeRequirement::PrestigeUpgrade(99)),
         },
     ]
 });
