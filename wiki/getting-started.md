@@ -77,8 +77,23 @@ Upgrades appear when you meet their requirements:
 - **Synergy Upgrades**: Own 15+ of two adjacent producer types
 - **Global Upgrades**: Reach production rate milestones
 - **Manual Upgrades**: Reach click milestones
+- **Cosmic Cat Upgrades**: Reach E/s thresholds (very powerful with achievements!)
 
 **Tip**: Always check if an upgrade cost is less than 10 minutes of production. If so, it's usually worth buying!
+
+### Special Mechanics
+
+Two producers have unique mechanics that make them valuable throughout the game:
+
+**Solar Panels (Thousand Rays):**
+- First 3 upgrades boost both Solar Panel CPS AND manual mining 2x each
+- Later upgrades add bonus energy based on your total non-panel buildings
+- Don't neglect Solar Panels - they scale with your entire empire!
+
+**Mining Drones (Drone Network):**
+- Gain synergies from ALL other building types
+- With 50+ drones and network upgrades: every building gets bonus CPS
+- Invest in Mining Drones early for empire-wide bonuses
 
 ### Unlocking New Producers
 
@@ -105,10 +120,11 @@ Buying in bulk (10x or Max) calculates the total cost automatically.
 ### Production Multipliers
 
 Your production is affected by multiple bonuses:
-1. **Producer Upgrades**: Double specific producer output
+1. **Producer Upgrades**: Double (2x) specific producer output each
 2. **Global Upgrades**: Boost all production
-3. **Synergy Bonuses**: Adjacent producers boost each other
-4. **Achievements**: +1% per achievement unlocked
+3. **Synergy Bonuses**: Adjacent producers boost each other (bidirectional!)
+4. **Achievements**: +0.5% per achievement unlocked
+5. **Cosmic Cats**: Multiply CPS based on your achievement count (very powerful!)
 
 ---
 
@@ -120,7 +136,8 @@ Once you've earned enough total energy, you can **ascend** to the prestige layer
 
 1. Press `a` to open the Ascension panel
 2. Check "Chips on Ascension" - aim for at least 5-10 chips first time
-3. This usually requires reaching the Fusion Reactor tier
+3. The game uses a **cubic formula** - you need ~1 trillion energy for 1 chip
+4. **Don't rush!** Achievements persist and power Cosmic Cat upgrades
 
 ### What Happens on Ascension
 
@@ -131,7 +148,7 @@ Once you've earned enough total energy, you can **ascend** to the prestige layer
 - Click count
 
 **Kept**:
-- Achievements (and their +1% bonus each!)
+- Achievements (and their +0.5% bonus + Stellar Essence for Cosmic Cats!)
 - Stellar Chips earned
 - Prestige upgrades purchased
 - Total ascension count
@@ -146,12 +163,14 @@ Once you've earned enough total energy, you can **ascend** to the prestige layer
 
 ## Tips for New Players
 
-1. **Don't Rush Ascension**: Build up a good base before ascending
-2. **Achievements Matter**: Each achievement is +1% production permanently
-3. **Check Upgrades Regularly**: They provide massive boosts
+1. **Don't Rush Ascension**: Build up achievements first - they power Cosmic Cats!
+2. **Achievements Matter**: Each achievement gives +0.5% production AND +4% Stellar Essence
+3. **Check Upgrades Regularly**: They provide massive boosts (2x each!)
 4. **Use Max Buy**: For late-game producers, buying one at a time is inefficient
 5. **Offline Progress Works**: Close the game and come back to bonus energy (up to 8 hours)
 6. **Boss Mode**: Press `` ` `` (backtick) to disguise as a spreadsheet
+7. **Don't Neglect Solar Panels**: Thousand Rays makes them scale with all buildings
+8. **Invest in Mining Drones**: Drone Network boosts your entire empire
 
 ---
 

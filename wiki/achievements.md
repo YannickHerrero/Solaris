@@ -1,6 +1,9 @@
 # Achievements
 
-Solaris features **260 achievements** across 8 categories. Each achievement unlocked provides a **+0.5% multiplicative production bonus**.
+Solaris features **260 achievements** across 8 categories. Achievements provide **two powerful bonuses**:
+
+1. **Production Bonus**: +0.5% multiplicative bonus per achievement
+2. **Stellar Essence**: +4% Stellar Essence per achievement (powers Cosmic Cats!)
 
 ## Achievement Bonus
 
@@ -12,8 +15,8 @@ Achievement Multiplier = 1.005^n
 
 Where `n` is the number of achievements unlocked.
 
-| Achievements | Bonus |
-|--------------|-------|
+| Achievements | Production Bonus |
+|--------------|------------------|
 | 10 | +5.1% (1.051x) |
 | 25 | +13.3% (1.133x) |
 | 50 | +28.4% (1.284x) |
@@ -21,6 +24,40 @@ Where `n` is the number of achievements unlocked.
 | 150 | +111.8% (2.118x) |
 | 200 | +171.5% (2.715x) |
 | 260 | +267% (3.67x) |
+
+---
+
+## Stellar Essence (Cosmic Cat System)
+
+Each achievement also grants **+4% Stellar Essence**, which powers the Cosmic Cat upgrade system:
+
+```
+Stellar Essence = 0.04 × achievement_count
+```
+
+| Achievements | Stellar Essence |
+|--------------|-----------------|
+| 25 | 100% (1.0) |
+| 50 | 200% (2.0) |
+| 100 | 400% (4.0) |
+| 150 | 600% (6.0) |
+| 200 | 800% (8.0) |
+| 260 | 1040% (10.4) |
+
+### Cosmic Cat Multiplier
+
+Each Cosmic Cat upgrade multiplies your CPS by:
+```
+Per Cat = 1 + (stellar_essence × 0.05)
+```
+
+With 260 achievements and all 15 Cosmic Cat upgrades:
+```
+Per Cat = 1 + (10.4 × 0.05) = 1.52x
+Total = 1.52^15 = ~695x multiplier!
+```
+
+**This makes achievement hunting one of the most powerful strategies in the game!**
 
 ---
 
@@ -294,9 +331,24 @@ Based on total number of ascensions performed.
 ### Prestige and Achievements
 
 **Achievements persist through ascensions!** This means:
-- Your achievement bonus carries over
+- Your achievement bonus carries over (+0.5% each)
+- Your Stellar Essence carries over (+4% each for Cosmic Cats!)
 - Each ascension becomes easier with more achievements
 - Focus on unlocking achievements before ascending
+
+### Why Achievements Are Critical
+
+Achievements power **two separate multiplier systems**:
+
+1. **Base Achievement Bonus**: 1.005^n (up to 3.67x at 260)
+2. **Cosmic Cat System**: Each cat = (1 + essence × 0.05)^cats (up to ~695x at 260!)
+
+Combined potential from 260 achievements:
+```
+3.67x (base) × 695x (cats) = ~2,550x multiplier!
+```
+
+**Don't rush ascension - unlock achievements first!**
 
 ---
 
