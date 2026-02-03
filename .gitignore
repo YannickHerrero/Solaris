@@ -21,3 +21,6 @@ Thumbs.db
 
 # Save files (optional - uncomment if you don't want to track saves)
 # *.json
+
+# Reference files (local notes, not for version control)
+reference/
