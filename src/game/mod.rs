@@ -148,7 +148,10 @@ impl GameState {
 
     /// Get lifetime energy produced by a specific producer
     pub fn producer_lifetime_production(&self, producer_id: u32) -> f64 {
-        *self.producer_lifetime_energy.get(&producer_id).unwrap_or(&0.0)
+        *self
+            .producer_lifetime_energy
+            .get(&producer_id)
+            .unwrap_or(&0.0)
     }
 
     /// Get total production rate for a specific producer (count * rate * multipliers)
@@ -160,7 +163,18 @@ impl GameState {
         let count = self.producer_count(producer_id);
         let producer_mult = self.get_producer_multiplier(producer_id);
         let global_mult = self.get_global_multiplier();
-        producer.base_energy_per_second * count as f64 * producer_mult * global_mult
+        let base_rate = producer.base_energy_per_second * count as f64 * producer_mult;
+
+        // Special handling for Solar Panel (producer 1) - Thousand Rays bonus
+        let thousand_rays_bonus = if producer_id == 1 {
+            let tf_bonus = self.get_thousand_fingers_bonus();
+            let non_collector_count = self.get_non_collector_building_count();
+            tf_bonus * count as f64 * non_collector_count as f64
+        } else {
+            0.0
+        };
+
+        (base_rate + thousand_rays_bonus) * global_mult
     }
 
     /// Get percentage of total production from a specific producer
@@ -207,7 +221,13 @@ impl GameState {
     }
 
     pub fn max_affordable(&self, producer: &Producer, owned: u64, max_quantity: u64) -> u64 {
-        calculate_max_affordable(producer.base_cost, owned, self.energy, max_quantity, producer.id)
+        calculate_max_affordable(
+            producer.base_cost,
+            owned,
+            self.energy,
+            max_quantity,
+            producer.id,
+        )
     }
 
     // ============ Upgrade Management ============
@@ -270,12 +290,13 @@ impl GameState {
             UpgradeRequirement::TotalEnergyPerSecond(rate) => {
                 self.total_energy_per_second() >= rate
             }
-            UpgradeRequirement::ManualClicks(clicks) => {
-                self.total_manual_clicks >= clicks
-            }
-            UpgradeRequirement::ProducersPair { id_a, count_a, id_b, count_b } => {
-                self.producer_count(id_a) >= count_a && self.producer_count(id_b) >= count_b
-            }
+            UpgradeRequirement::ManualClicks(clicks) => self.total_manual_clicks >= clicks,
+            UpgradeRequirement::ProducersPair {
+                id_a,
+                count_a,
+                id_b,
+                count_b,
+            } => self.producer_count(id_a) >= count_a && self.producer_count(id_b) >= count_b,
         }
     }
 
@@ -288,6 +309,54 @@ impl GameState {
 
     // ============ Multiplier Calculations ============
 
+    /// Get the base multiplier for Solar Panels (producer 1) from CursorBaseMultiplier upgrades
+    /// The first 3 solar panel upgrades double both panel CPS AND click power
+    fn get_cursor_base_multiplier(&self) -> f64 {
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::CursorBaseMultiplier(m) = upgrade.effect {
+                    multiplier *= m;
+                }
+            }
+        }
+
+        multiplier
+    }
+
+    /// Get the Thousand Rays bonus (flat CPS added per non-panel building)
+    /// This is the base value * all multipliers from ThousandFingersMultiplier upgrades
+    fn get_thousand_fingers_bonus(&self) -> f64 {
+        let mut base_bonus = 0.0;
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                match upgrade.effect {
+                    UpgradeEffect::ThousandFingers(bonus) => {
+                        base_bonus = bonus;
+                    }
+                    UpgradeEffect::ThousandFingersMultiplier(mult) => {
+                        multiplier *= mult;
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        base_bonus * multiplier
+    }
+
+    /// Get the total count of non-panel buildings (for Thousand Rays calculation)
+    fn get_non_collector_building_count(&self) -> u64 {
+        self.producers_owned
+            .iter()
+            .filter(|(&id, _)| id != 1) // Exclude Solar Panel (id 1)
+            .map(|(_, &count)| count)
+            .sum()
+    }
+
     pub fn get_producer_multiplier(&self, producer_id: u32) -> f64 {
         let mut multiplier = 1.0;
 
@@ -295,9 +364,30 @@ impl GameState {
         for upgrade_id in &self.upgrades_purchased {
             if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
                 match upgrade.effect {
-                    UpgradeEffect::ProducerMultiplier { producer_id: pid, multiplier: m } => {
+                    UpgradeEffect::ProducerMultiplier {
+                        producer_id: pid,
+                        multiplier: m,
+                    } => {
                         if pid == producer_id {
                             multiplier *= m;
+                        }
+                    }
+                    // Drone Network upgrades: 2x Drone CPS when purchased
+                    UpgradeEffect::GrandmaType { building_id: _ } => {
+                        if producer_id == 2 {
+                            // Mining Drone
+                            multiplier *= 2.0;
+                        }
+                    }
+                    // Drone Network Per Building: +1% drone CPS per X drones for target building
+                    UpgradeEffect::GrandmaPerBuilding {
+                        building_id,
+                        grandmas_per_bonus,
+                    } => {
+                        if producer_id == building_id {
+                            let drone_count = self.producer_count(2);
+                            let bonus_percent = drone_count as f64 / grandmas_per_bonus as f64;
+                            multiplier *= 1.0 + (bonus_percent / 100.0);
                         }
                     }
                     _ => {}
@@ -308,7 +398,40 @@ impl GameState {
         // Synergy bonuses
         multiplier *= self.get_synergy_multiplier(producer_id);
 
+        // Special handling for Solar Panel (producer 1) - panel base multiplier
+        if producer_id == 1 {
+            multiplier *= self.get_cursor_base_multiplier();
+        }
+
+        // Mining Drone (producer 2) - Drone Network bonus to self
+        if producer_id == 2 {
+            multiplier *= self.get_grandma_self_bonus();
+        }
+
         multiplier
+    }
+
+    /// Calculate Mining Drone's self-bonus from GrandmaPerBuilding upgrades
+    /// Drones gain +1% CPS per X drones for each building type unlocked
+    fn get_grandma_self_bonus(&self) -> f64 {
+        let mut bonus = 1.0;
+        let drone_count = self.producer_count(2);
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::GrandmaPerBuilding {
+                    building_id: _,
+                    grandmas_per_bonus,
+                } = upgrade.effect
+                {
+                    // Each Drone Network upgrade also gives drones +1% per X drones
+                    let bonus_percent = drone_count as f64 / grandmas_per_bonus as f64;
+                    bonus *= 1.0 + (bonus_percent / 100.0);
+                }
+            }
+        }
+
+        bonus
     }
 
     /// Calculate synergy bonus for a producer (capped at 2.5x)
@@ -317,7 +440,12 @@ impl GameState {
 
         for upgrade_id in &self.upgrades_purchased {
             if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
-                if let UpgradeEffect::Synergy { source_id, target_id: tid, bonus_per_source } = upgrade.effect {
+                if let UpgradeEffect::Synergy {
+                    source_id,
+                    target_id: tid,
+                    bonus_per_source,
+                } = upgrade.effect
+                {
                     if tid == target_id {
                         let source_count = self.producer_count(source_id);
                         bonus *= 1.0 + (bonus_per_source * source_count as f64);
@@ -333,17 +461,36 @@ impl GameState {
     pub fn get_global_multiplier(&self) -> f64 {
         let mut multiplier = 1.0;
 
-        // Global upgrades
+        // Global upgrades and flavor upgrades
         for upgrade_id in &self.upgrades_purchased {
             if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
-                if let UpgradeEffect::GlobalMultiplier(m) = upgrade.effect {
-                    multiplier *= m;
+                match upgrade.effect {
+                    UpgradeEffect::GlobalMultiplier(m) => {
+                        multiplier *= m;
+                    }
+                    UpgradeEffect::CpsPerBuilding {
+                        producer_id,
+                        bonus_percent,
+                    } => {
+                        // +X% CPS per building of this type owned
+                        let count = self.producer_count(producer_id);
+                        multiplier *= 1.0 + (bonus_percent * count as f64);
+                    }
+                    UpgradeEffect::CpsPerTotalBuildings(bonus_percent) => {
+                        // +X% CPS per total buildings owned
+                        let total = self.total_producers_owned();
+                        multiplier *= 1.0 + (bonus_percent * total as f64);
+                    }
+                    _ => {}
                 }
             }
         }
 
         // Achievement bonus (1% per achievement)
         multiplier *= self.get_achievement_multiplier();
+
+        // Kitten (Cosmic Cat) bonus based on stellar essence
+        multiplier *= self.get_kitten_multiplier();
 
         // Prestige bonuses
         multiplier *= self.get_prestige_production_multiplier();
@@ -354,6 +501,42 @@ impl GameState {
     /// Get achievement bonus multiplier (1.01^n)
     pub fn get_achievement_multiplier(&self) -> f64 {
         ACHIEVEMENT_BONUS.powi(self.achievements_unlocked.len() as i32)
+    }
+
+    /// Get Stellar Essence (milk) amount - 4% per achievement
+    /// Range: 0.0 to theoretically unlimited (but achievements are finite)
+    pub fn get_stellar_essence(&self) -> f64 {
+        let base_essence = 0.04 * self.achievements_unlocked.len() as f64;
+
+        // Apply MilkMultiplier upgrades
+        let mut multiplier = 1.0;
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::MilkMultiplier(m) = upgrade.effect {
+                    multiplier *= m;
+                }
+            }
+        }
+
+        base_essence * multiplier
+    }
+
+    /// Get Kitten (Cosmic Cat) multiplier based on stellar essence
+    /// Each KittenBonus upgrade multiplies CPS by (1 + stellar_essence * bonus)
+    fn get_kitten_multiplier(&self) -> f64 {
+        let essence = self.get_stellar_essence();
+        let mut multiplier = 1.0;
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::KittenBonus(bonus) = upgrade.effect {
+                    // Each kitten upgrade multiplies by (1 + essence * bonus)
+                    multiplier *= 1.0 + (essence * bonus);
+                }
+            }
+        }
+
+        multiplier
     }
 
     /// Get prestige production multiplier
@@ -368,7 +551,8 @@ impl GameState {
                     }
                     PrestigeEffect::ProductionPerAscension(bonus) => {
                         // Cap per-ascension bonus at 2.0x (100% bonus) to prevent late-game acceleration
-                        let ascension_mult = (1.0 + (bonus * self.total_ascensions as f64)).min(2.0);
+                        let ascension_mult =
+                            (1.0 + (bonus * self.total_ascensions as f64)).min(2.0);
                         multiplier *= ascension_mult;
                     }
                     PrestigeEffect::ProductionPerAchievement(bonus) => {
@@ -390,7 +574,19 @@ impl GameState {
             .map(|p| {
                 let count = self.producer_count(p.id);
                 let producer_mult = self.get_producer_multiplier(p.id);
-                p.base_energy_per_second * count as f64 * producer_mult * global_mult
+                let base_rate = p.base_energy_per_second * count as f64 * producer_mult;
+
+                // Special handling for Solar Panel (producer 1) - Thousand Rays bonus
+                let thousand_fingers_bonus = if p.id == 1 {
+                    let tf_bonus = self.get_thousand_fingers_bonus();
+                    let non_collector_count = self.get_non_collector_building_count();
+                    // Thousand Rays adds flat CPS per Solar Panel per non-panel building
+                    tf_bonus * count as f64 * non_collector_count as f64
+                } else {
+                    0.0
+                };
+
+                (base_rate + thousand_fingers_bonus) * global_mult
             })
             .sum()
     }
@@ -413,10 +609,36 @@ impl GameState {
         multiplier
     }
 
+    /// Get the click CPS percent bonus from ClickCpsPercent upgrades
+    /// Base is 5% (0.05), upgrades add to this
+    fn get_click_cps_percent(&self) -> f64 {
+        let mut bonus = 0.05; // Base 5% of CPS per click
+
+        for upgrade_id in &self.upgrades_purchased {
+            if let Some(upgrade) = Upgrade::all().iter().find(|u| u.id == *upgrade_id) {
+                if let UpgradeEffect::ClickCpsPercent(pct) = upgrade.effect {
+                    bonus += pct;
+                }
+            }
+        }
+
+        bonus
+    }
+
     pub fn manual_mine(&mut self) -> f64 {
         let manual_mult = self.get_manual_multiplier();
-        let eps_bonus = self.total_energy_per_second() * 0.05;
-        let energy_gained = (self.manual_click_power * manual_mult) + eps_bonus;
+        let cursor_base_mult = self.get_cursor_base_multiplier();
+        let click_cps_pct = self.get_click_cps_percent();
+        let eps_bonus = self.total_energy_per_second() * click_cps_pct;
+
+        // Thousand Rays bonus for clicks (same as for each Solar Panel)
+        let tf_bonus = self.get_thousand_fingers_bonus();
+        let non_collector_count = self.get_non_collector_building_count();
+        let thousand_rays_click_bonus = tf_bonus * non_collector_count as f64;
+
+        // Click power = (base * panel_base_mult + thousand_rays) * manual_mult + EPS bonus
+        let base_click = self.manual_click_power * cursor_base_mult + thousand_rays_click_bonus;
+        let energy_gained = (base_click * manual_mult) + eps_bonus;
 
         self.energy += energy_gained;
         self.total_energy_earned += energy_gained;
@@ -438,8 +660,17 @@ impl GameState {
 
     pub fn effective_manual_power(&self) -> f64 {
         let manual_mult = self.get_manual_multiplier();
-        let eps_bonus = self.total_energy_per_second() * 0.05;
-        (self.manual_click_power * manual_mult) + eps_bonus
+        let cursor_base_mult = self.get_cursor_base_multiplier();
+        let click_cps_pct = self.get_click_cps_percent();
+        let eps_bonus = self.total_energy_per_second() * click_cps_pct;
+
+        // Thousand Rays bonus for clicks
+        let tf_bonus = self.get_thousand_fingers_bonus();
+        let non_collector_count = self.get_non_collector_building_count();
+        let thousand_rays_click_bonus = tf_bonus * non_collector_count as f64;
+
+        let base_click = self.manual_click_power * cursor_base_mult + thousand_rays_click_bonus;
+        (base_click * manual_mult) + eps_bonus
     }
 
     // ============ Achievement System ============
@@ -461,21 +692,15 @@ impl GameState {
                 AchievementRequirement::TotalEnergyEarned(amount) => {
                     self.total_energy_earned >= amount
                 }
-                AchievementRequirement::TotalClicks(clicks) => {
-                    self.total_manual_clicks >= clicks
-                }
+                AchievementRequirement::TotalClicks(clicks) => self.total_manual_clicks >= clicks,
                 AchievementRequirement::UpgradesPurchased(count) => {
                     self.upgrades_purchased.len() >= count as usize
                 }
-                AchievementRequirement::TimePlayed(secs) => {
-                    self.time_played_seconds() >= secs
-                }
+                AchievementRequirement::TimePlayed(secs) => self.time_played_seconds() >= secs,
                 AchievementRequirement::TotalProducers(count) => {
                     self.total_producers_owned() >= count
                 }
-                AchievementRequirement::Ascensions(count) => {
-                    self.total_ascensions >= count
-                }
+                AchievementRequirement::Ascensions(count) => self.total_ascensions >= count,
             };
 
             if earned {
@@ -615,9 +840,7 @@ impl GameState {
 
         match upgrade.requirement {
             None => true,
-            Some(PrestigeRequirement::Ascensions(count)) => {
-                self.total_ascensions >= count
-            }
+            Some(PrestigeRequirement::Ascensions(count)) => self.total_ascensions >= count,
             Some(PrestigeRequirement::TotalChips(count)) => {
                 self.total_stellar_chips_earned >= count
             }
@@ -642,5 +865,4 @@ impl GameState {
         self.prestige_upgrades.push(id);
         true
     }
-
 }
