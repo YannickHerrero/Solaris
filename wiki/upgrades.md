@@ -1,146 +1,182 @@
 # Upgrades
 
-Solaris features **339 upgrades** across four categories. Upgrades provide permanent bonuses and are essential for progression.
+Solaris features **474 upgrades** across 13 categories. Upgrades provide permanent bonuses and are essential for progression.
 
 ## Upgrade Summary
 
 | Category | Count | Effect |
 |----------|-------|--------|
-| Producer Upgrades | 300 | Double specific producer output |
-| Synergy Upgrades | 19 | Source producers boost target |
+| Producer Upgrades | 300 | 2x specific producer output (15 per producer) |
+| Synergy Upgrades | 38 | Source producers boost target (+2% each) |
 | Global Upgrades | 10 | Boost all production |
-| Manual Upgrades | 10 | Double manual mining power |
-| **Total** | **339** | |
+| Manual Upgrades | 10 | 2x manual mining power |
+| Click CPS Upgrades | 10 | +1% of CPS per click each |
+| Per-Building CPS | 20 | +1% CPS per building of type |
+| Total Building CPS | 5 | +0.1% CPS per total buildings |
+| Milestone Upgrades | 10 | +10% CPS at thresholds |
+| Research Upgrades | 15 | +5% CPS each |
+| Cosmic Cat Upgrades | 15 | CPS × (1 + stellar_essence × 0.05) |
+| Stellar Essence Upgrades | 5 | +5% Stellar Essence effect |
+| Drone Network Upgrades | 36 | Mining Drone synergies |
+| **Total** | **474** | |
 
 ---
 
 ## Producer Upgrades (300 total)
 
-Each of the 20 producers has **15 upgrade tiers**. Multipliers vary by tier:
-- **Tiers 1-5**: 2.0x per tier
-- **Tiers 6-10**: 1.7x per tier
-- **Tiers 11-15**: 1.4x per tier
+Each of the 20 producers has **15 upgrade tiers**. All tiers give a flat **2x multiplier** (Cookie Clicker style).
 
 ### Unlock Thresholds
 
-| Tier | Required Count | Tier Mult | Cumulative |
-|------|----------------|-----------|------------|
+| Tier | Required Count | Multiplier | Cumulative |
+|------|----------------|------------|------------|
 | 1 | 1 | 2.0x | 2x |
 | 2 | 5 | 2.0x | 4x |
 | 3 | 25 | 2.0x | 8x |
 | 4 | 50 | 2.0x | 16x |
 | 5 | 100 | 2.0x | 32x |
-| 6 | 150 | 1.7x | 54x |
-| 7 | 200 | 1.7x | 92x |
-| 8 | 250 | 1.7x | 157x |
-| 9 | 300 | 1.7x | 267x |
-| 10 | 350 | 1.7x | 454x |
-| 11 | 400 | 1.4x | 635x |
-| 12 | 450 | 1.4x | 889x |
-| 13 | 500 | 1.4x | 1,245x |
-| 14 | 550 | 1.4x | 1,743x |
-| 15 | 600 | 1.4x | 2,454x |
+| 6 | 150 | 2.0x | 64x |
+| 7 | 200 | 2.0x | 128x |
+| 8 | 250 | 2.0x | 256x |
+| 9 | 300 | 2.0x | 512x |
+| 10 | 350 | 2.0x | 1,024x |
+| 11 | 400 | 2.0x | 2,048x |
+| 12 | 450 | 2.0x | 4,096x |
+| 13 | 500 | 2.0x | 8,192x |
+| 14 | 550 | 2.0x | 16,384x |
+| 15 | 600 | 2.0x | **32,768x** |
 
 ### Cost Formula
 
-Upgrade costs scale by **5x** per tier:
+Upgrade costs scale by **10x** per tier (Cookie Clicker style):
 
 ```
-Upgrade Cost = base_cost × 5^tier
+Upgrade Cost = base_upgrade_cost × 10^tier
 ```
 
-### Solar Panel Upgrades
+### Solar Panel Upgrades (Thousand Rays System)
+
+Solar Panel upgrades work differently from other producers:
 
 | Tier | Name | Required | Cost | Effect |
 |------|------|----------|------|--------|
-| 1 | Better Silicon | 1 | 100 | 2.0x Solar Panels |
-| 2 | Anti-Reflective Coating | 5 | 500 | 2.0x Solar Panels |
-| 3 | Quantum Dots | 25 | 2,500 | 2.0x Solar Panels |
-| 4 | Perovskite Cells | 50 | 12,500 | 2.0x Solar Panels |
-| 5 | Stellar Collectors | 100 | 62,500 | 2.0x Solar Panels |
-| 6 | Galactic Arrays | 150 | 312,500 | 1.7x Solar Panels |
-| 7 | Cosmic Absorption | 200 | 1,562,500 | 1.7x Solar Panels |
-| 8 | Transcendent Photons | 250 | 7,812,500 | 1.7x Solar Panels |
-| 9 | Eternal Light Capture | 300 | 39,062,500 | 1.7x Solar Panels |
-| 10 | Infinite Spectrum | 350 | 195,312,500 | 1.7x Solar Panels |
-| 11 | Omega Radiance | 400 | 976,562,500 | 1.4x Solar Panels |
-| 12 | Ascendant Luminosity | 450 | 4,882,812,500 | 1.4x Solar Panels |
-| 13 | Divine Brilliance | 500 | 24,414,062,500 | 1.4x Solar Panels |
-| 14 | Absolute Efficiency | 550 | 122,070,312,500 | 1.4x Solar Panels |
-| 15 | Ultimate Solar Mastery | 600 | 610,351,562,500 | 1.4x Solar Panels |
+| 1 | Enhanced Photovoltaics | 1 | 100 | 2x Solar Panels AND manual mining |
+| 2 | Quantum Absorption | 1 | 500 | 2x Solar Panels AND manual mining |
+| 3 | Solar Amplification | 10 | 10K | 2x Solar Panels AND manual mining |
+| 4 | Thousand Rays | 25 | 100K | +0.1 energy per non-panel building |
+| 5 | Million Rays | 50 | 10M | 5x Thousand Rays bonus |
+| 6 | Billion Rays | 100 | 100M | 10x Thousand Rays bonus |
+| 7 | Trillion Rays | 150 | 1B | 20x Thousand Rays bonus |
+| 8 | Quadrillion Rays | 200 | 10B | 20x Thousand Rays bonus |
+| 9 | Quintillion Rays | 250 | 10T | 20x Thousand Rays bonus |
+| 10 | Sextillion Rays | 300 | 10Q | 20x Thousand Rays bonus |
+| 11 | Septillion Rays | 350 | 10Qi | 20x Thousand Rays bonus |
+| 12 | Octillion Rays | 400 | 10Sx | 20x Thousand Rays bonus |
+| 13 | Nonillion Rays | 450 | 10Sp | 20x Thousand Rays bonus |
+| 14 | Decillion Rays | 500 | 10Oc | 20x Thousand Rays bonus |
+| 15 | Undecillion Rays | 550 | 10No | 20x Thousand Rays bonus |
+
+**Key mechanic**: The first 3 upgrades boost both Solar Panel CPS AND manual mining power. Tier 4+ adds energy based on your total non-panel buildings, then subsequent tiers multiply that bonus.
 
 ### Mining Drone Upgrades
 
-| Tier | Name | Required | Cost | Effect |
-|------|------|----------|------|--------|
-| 1 | Improved Thrusters | 1 | 500 | 2.0x Mining Drones |
-| 2 | AI Navigation | 5 | 2,500 | 2.0x Mining Drones |
-| 3 | Swarm Intelligence | 25 | 12,500 | 2.0x Mining Drones |
-| 4 | Quantum Pathfinding | 50 | 62,500 | 2.0x Mining Drones |
-| 5 | Stellar Mining | 100 | 312,500 | 2.0x Mining Drones |
-| 6 | Galactic Excavation | 150 | 1,562,500 | 1.7x Mining Drones |
-| 7 | Cosmic Drilling | 200 | 7,812,500 | 1.7x Mining Drones |
-| 8 | Transcendent Extraction | 250 | 39,062,500 | 1.7x Mining Drones |
-| 9 | Eternal Harvest | 300 | 195,312,500 | 1.7x Mining Drones |
-| 10 | Infinite Yield | 350 | 976,562,500 | 1.7x Mining Drones |
-| 11 | Omega Mining | 400 | 4,882,812,500 | 1.4x Mining Drones |
-| 12 | Ascendant Gathering | 450 | 24,414,062,500 | 1.4x Mining Drones |
-| 13 | Divine Collection | 500 | 122,070,312,500 | 1.4x Mining Drones |
-| 14 | Absolute Efficiency | 550 | 610,351,562,500 | 1.4x Mining Drones |
-| 15 | Ultimate Drone Mastery | 600 | 3,051,757,812,500 | 1.4x Mining Drones |
-
-### Asteroid Mine Upgrades
+Mining Drones use standard 2x tier upgrades:
 
 | Tier | Name | Required | Cost | Effect |
 |------|------|----------|------|--------|
-| 1 | Deep Core Drilling | 1 | 2,500 | 2.0x Asteroid Mines |
-| 2 | Spectral Analysis | 5 | 12,500 | 2.0x Asteroid Mines |
-| 3 | Automated Refineries | 25 | 62,500 | 2.0x Asteroid Mines |
-| 4 | Quantum Tunneling | 50 | 312,500 | 2.0x Asteroid Mines |
-| 5 | Stellar Processing | 100 | 1,562,500 | 2.0x Asteroid Mines |
-| 6 | Galactic Extraction | 150 | 7,812,500 | 1.7x Asteroid Mines |
-| 7 | Cosmic Harvesting | 200 | 39,062,500 | 1.7x Asteroid Mines |
-| 8 | Transcendent Mining | 250 | 195,312,500 | 1.7x Asteroid Mines |
-| 9 | Eternal Excavation | 300 | 976,562,500 | 1.7x Asteroid Mines |
-| 10 | Infinite Resources | 350 | 4,882,812,500 | 1.7x Asteroid Mines |
-| 11 | Omega Yield | 400 | 24,414,062,500 | 1.4x Asteroid Mines |
-| 12 | Ascendant Collection | 450 | 122,070,312,500 | 1.4x Asteroid Mines |
-| 13 | Divine Extraction | 500 | 610,351,562,500 | 1.4x Asteroid Mines |
-| 14 | Absolute Mining | 550 | 3,051,757,812,500 | 1.4x Asteroid Mines |
-| 15 | Ultimate Asteroid Mastery | 600 | 15,258,789,062,500 | 1.4x Asteroid Mines |
+| 1 | Reinforced Drill Bits | 1 | 1K | 2x Mining Drones |
+| 2 | Autonomous Navigation | 5 | 10K | 2x Mining Drones |
+| 3 | Swarm Coordination | 25 | 100K | 2x Mining Drones |
+| 4 | Deep Mining Protocols | 50 | 1M | 2x Mining Drones |
+| 5 | Quantum Scanners | 100 | 10M | 2x Mining Drones |
+| 6 | Adaptive Algorithms | 150 | 100M | 2x Mining Drones |
+| 7 | Nano-repair Systems | 200 | 1B | 2x Mining Drones |
+| 8 | Hive Mind Link | 250 | 10B | 2x Mining Drones |
+| 9 | Temporal Prospecting | 300 | 100B | 2x Mining Drones |
+| 10 | Dark Matter Sensors | 350 | 1T | 2x Mining Drones |
+| 11 | Reality Mining | 400 | 10T | 2x Mining Drones |
+| 12 | Dimensional Excavation | 450 | 100T | 2x Mining Drones |
+| 13 | Infinite Fuel Cells | 500 | 1Q | 2x Mining Drones |
+| 14 | Transcendent Automation | 550 | 10Q | 2x Mining Drones |
+| 15 | Ultimate Drone Mastery | 600 | 100Q | 2x Mining Drones |
 
 ### Base Costs by Producer
 
 | Producer | Base Upgrade Cost | Tier 15 Cost |
 |----------|-------------------|--------------|
-| Solar Panel | 100 | 610.35B |
-| Mining Drone | 500 | 3.05T |
-| Asteroid Mine | 2,500 | 15.26T |
-| Orbital Station | 15,000 | 91.55T |
-| Lunar Colony | 75,000 | 457.76T |
-| Planetary Harvester | 400,000 | 2.44Q |
-| Fusion Reactor | 2,000,000 | 12.21Q |
-| Dyson Swarm | 10,000,000 | 61.04Q |
-| Dyson Sphere | 50,000,000 | 305.18Q |
-| Star Forge | 250,000,000 | 1.53Qi |
-| Neutron Harvester | 1,250,000,000 | 7.63Qi |
-| Black Hole Tap | 6,250,000,000 | 38.15Qi |
-| Quantum Vacuum | 31,250,000,000 | 190.73Qi |
-| Galactic Core | 156,250,000,000 | 953.67Qi |
-| Dark Matter Engine | 781,250,000,000 | 4.77Sx |
-| Cosmic String | 3,906,250,000,000 | 23.84Sx |
-| Multiverse Gate | 19,531,250,000,000 | 119.21Sx |
-| Reality Compiler | 97,656,250,000,000 | 596.05Sx |
-| Entropy Reverser | 488,281,250,000,000 | 2.98Sp |
-| Big Bang Catalyst | 2,441,406,250,000,000 | 14.90Sp |
+| Solar Panel | 100 | 10No |
+| Mining Drone | 1K | 100Q |
+| Asteroid Mine | 11K | 1.1Qi |
+| Orbital Station | 120K | 12Qi |
+| Lunar Colony | 1.3M | 130Qi |
+| Planetary Harvester | 14M | 1.4Sx |
+| Fusion Reactor | 200M | 20Sx |
+| Dyson Swarm | 3.3B | 330Sx |
+| Dyson Sphere | 51B | 5.1Sp |
+| Star Forge | 750B | 75Sp |
+| Neutron Harvester | 10T | 1Oc |
+| Black Hole Tap | 140T | 14Oc |
+| Quantum Vacuum | 1.7Q | 170Oc |
+| Galactic Core | 21Q | 2.1No |
+| Dark Matter Engine | 260Q | 26No |
+| Cosmic String | 3.1Qi | 310No |
+| Multiverse Gate | 710Qi | 71Dc |
+| Reality Compiler | 12Sx | 1.2Un |
+| Entropy Reverser | 190Sx | 19Un |
+| Big Bang Catalyst | 5.4Sp | 540Un |
 
 ---
 
-## Synergy Upgrades (19 total)
+## Drone Network Upgrades (36 total)
 
-Synergy upgrades create production chains where one producer type boosts another.
+Mining Drones gain special synergies with ALL other building types through the Drone Network system.
+
+### Network Upgrades (18)
+
+Each building (3-20) has a corresponding network upgrade:
+
+| ID | Name | Requirement | Cost | Effect |
+|----|------|-------------|------|--------|
+| 7001 | Asteroid Mining Network | 1 Drone + 15 Mines | 6.6K | 2x Drones, +1%/50 drones |
+| 7002 | Orbital Drone Network | 1 Drone + 15 Stations | 72K | 2x Drones, +1%/50 drones |
+| 7003 | Lunar Drone Network | 1 Drone + 15 Colonies | 780K | 2x Drones, +1%/50 drones |
+| 7004 | Planetary Drone Network | 1 Drone + 15 Harvesters | 8.4M | 2x Drones, +1%/50 drones |
+| 7005 | Fusion Drone Network | 1 Drone + 15 Reactors | 120M | 2x Drones, +1%/50 drones |
+| 7006 | Swarm Drone Network | 1 Drone + 15 Swarms | 2B | 2x Drones, +1%/50 drones |
+| 7007 | Sphere Drone Network | 1 Drone + 15 Spheres | 30.6B | 2x Drones, +1%/50 drones |
+| 7008 | Forge Drone Network | 1 Drone + 15 Forges | 450B | 2x Drones, +1%/50 drones |
+| 7009 | Neutron Drone Network | 1 Drone + 15 Harvesters | 6T | 2x Drones, +1%/50 drones |
+| 7010 | Void Drone Network | 1 Drone + 15 Taps | 84T | 2x Drones, +1%/50 drones |
+| 7011 | Vacuum Drone Network | 1 Drone + 15 Vacuums | 1Q | 2x Drones, +1%/50 drones |
+| 7012 | Core Drone Network | 1 Drone + 15 Cores | 12.6Q | 2x Drones, +1%/50 drones |
+| 7013 | Dark Drone Network | 1 Drone + 15 Engines | 156Q | 2x Drones, +1%/50 drones |
+| 7014 | String Drone Network | 1 Drone + 15 Strings | 1.86Qi | 2x Drones, +1%/50 drones |
+| 7015 | Gate Drone Network | 1 Drone + 15 Gates | 426Qi | 2x Drones, +1%/50 drones |
+| 7016 | Compiler Drone Network | 1 Drone + 15 Compilers | 72Sx | 2x Drones, +1%/50 drones |
+| 7017 | Entropy Drone Network | 1 Drone + 15 Reversers | 11.4Sp | 2x Drones, +1%/50 drones |
+| 7018 | Catalyst Drone Network | 1 Drone + 15 Catalysts | 3.24Oc | 2x Drones, +1%/50 drones |
+
+### Workforce Upgrades (18)
+
+Each network also has a Workforce upgrade that gives the target building +1% CPS per 50 drones:
+
+| ID | Name | Requirement | Cost | Effect |
+|----|------|-------------|------|--------|
+| 7101 | Asteroid Mine Workforce | 50 Drones + 15 Mines | 33K | +1% Mine CPS per 50 drones |
+| 7102 | Orbital Station Workforce | 50 Drones + 15 Stations | 360K | +1% Station CPS per 50 drones |
+| ... | ... | ... | ... | ... |
+| 7118 | Big Bang Catalyst Workforce | 50 Drones + 15 Catalysts | 16.2Oc | +1% Catalyst CPS per 50 drones |
+
+**Strategy**: With 200 Mining Drones and all Workforce upgrades, every building gets +4% CPS bonus!
+
+---
+
+## Synergy Upgrades (38 total)
+
+Synergy upgrades create production chains where one producer type boosts another. There are **19 forward synergies** and **19 reverse synergies**.
 
 ### Effect
+
 Each synergy upgrade grants **+2% bonus per source producer** to the target producer (capped at 2.5x maximum).
 
 ### Formula
@@ -148,50 +184,44 @@ Each synergy upgrade grants **+2% bonus per source producer** to the target prod
 Target Multiplier = min(2.5, 1.0 + (0.02 × source_count))
 ```
 
-Example: With 100 Mining Drones and the Drone-Mine Synergy:
+Example: With 100 Mining Drones and Drone-Mine Link:
 - Asteroid Mine bonus = min(2.5, 1.0 + (0.02 × 100)) = 2.5x multiplier (capped)
 
-### Synergy Table
+### Forward Synergies (19)
 
 | ID | Name | Requirement | Cost | Effect |
 |----|------|-------------|------|--------|
-| 8001 | Drone-Mine Synergy | 15 Mining Drones + 15 Asteroid Mines | 50,000 | Mining Drones boost Asteroid Mines |
-| 8002 | Mine-Station Synergy | 15 Asteroid Mines + 15 Orbital Stations | 250,000 | Asteroid Mines boost Orbital Stations |
-| 8003 | Station-Lunar Synergy | 15 Orbital Stations + 15 Lunar Colonies | 1,500,000 | Orbital Stations boost Lunar Colonies |
-| 8004 | Lunar-Planetary Synergy | 15 Lunar Colonies + 15 Planetary Harvesters | 7,500,000 | Lunar Colonies boost Planetary Harvesters |
-| 8005 | Planetary-Fusion Synergy | 15 Planetary Harvesters + 15 Fusion Reactors | 40,000,000 | Planetary Harvesters boost Fusion Reactors |
-| 8006 | Fusion-Swarm Synergy | 15 Fusion Reactors + 15 Dyson Swarms | 200,000,000 | Fusion Reactors boost Dyson Swarms |
-| 8007 | Swarm-Sphere Synergy | 15 Dyson Swarms + 15 Dyson Spheres | 1,000,000,000 | Dyson Swarms boost Dyson Spheres |
-| 8008 | Sphere-Forge Synergy | 15 Dyson Spheres + 15 Star Forges | 5,000,000,000 | Dyson Spheres boost Star Forges |
-| 8009 | Forge-Neutron Synergy | 15 Star Forges + 15 Neutron Harvesters | 25,000,000,000 | Star Forges boost Neutron Harvesters |
-| 8010 | Neutron-Void Synergy | 15 Neutron Harvesters + 15 Black Hole Taps | 125,000,000,000 | Neutron Harvesters boost Black Hole Taps |
-| 8011 | Void-Vacuum Synergy | 15 Black Hole Taps + 15 Quantum Vacuums | 625,000,000,000 | Black Hole Taps boost Quantum Vacuums |
-| 8012 | Vacuum-Core Synergy | 15 Quantum Vacuums + 15 Galactic Cores | 3,125,000,000,000 | Quantum Vacuums boost Galactic Cores |
-| 8013 | Core-Dark Synergy | 15 Galactic Cores + 15 Dark Matter Engines | 15,625,000,000,000 | Galactic Cores boost Dark Matter Engines |
-| 8014 | Dark-String Synergy | 15 Dark Matter Engines + 15 Cosmic Strings | 78,125,000,000,000 | Dark Matter Engines boost Cosmic Strings |
-| 8015 | String-Gate Synergy | 15 Cosmic Strings + 15 Multiverse Gates | 390,625,000,000,000 | Cosmic Strings boost Multiverse Gates |
-| 8016 | Gate-Compiler Synergy | 15 Multiverse Gates + 15 Reality Compilers | 1,953,125,000,000,000 | Multiverse Gates boost Reality Compilers |
-| 8017 | Compiler-Entropy Synergy | 15 Reality Compilers + 15 Entropy Reversers | 9,765,625,000,000,000 | Reality Compilers boost Entropy Reversers |
-| 8018 | Entropy-Catalyst Synergy | 15 Entropy Reversers + 15 Big Bang Catalysts | 48,828,125,000,000,000 | Entropy Reversers boost Big Bang Catalysts |
-| 8019 | Solar-Catalyst Synergy | 15 Solar Panels + 15 Big Bang Catalysts | 10,000 | Solar Panels boost Big Bang Catalysts |
+| 8001 | Drone-Mine Link | 15 Drones + 15 Mines | 100K | Drones boost Mines |
+| 8002 | Mine-Station Link | 15 Mines + 15 Stations | 1.1M | Mines boost Stations |
+| 8003 | Station-Lunar Link | 15 Stations + 15 Colonies | 12M | Stations boost Colonies |
+| 8004 | Lunar-Planetary Link | 15 Colonies + 15 Harvesters | 130M | Colonies boost Harvesters |
+| 8005 | Planetary-Fusion Link | 15 Harvesters + 15 Reactors | 1.4B | Harvesters boost Reactors |
+| 8006 | Fusion-Swarm Link | 15 Reactors + 15 Swarms | 20B | Reactors boost Swarms |
+| 8007 | Swarm-Sphere Link | 15 Swarms + 15 Spheres | 330B | Swarms boost Spheres |
+| 8008 | Sphere-Forge Link | 15 Spheres + 15 Forges | 5.1T | Spheres boost Forges |
+| 8009 | Forge-Neutron Link | 15 Forges + 15 Harvesters | 75T | Forges boost Neutron Harvesters |
+| 8010 | Neutron-Void Link | 15 N.Harvesters + 15 Taps | 1Q | N.Harvesters boost Taps |
+| 8011 | Void-Vacuum Link | 15 Taps + 15 Vacuums | 14Q | Taps boost Vacuums |
+| 8012 | Vacuum-Core Link | 15 Vacuums + 15 Cores | 170Q | Vacuums boost Cores |
+| 8013 | Core-Dark Link | 15 Cores + 15 Engines | 2.1Qi | Cores boost Dark Matter |
+| 8014 | Dark-String Link | 15 Engines + 15 Strings | 26Qi | Dark Matter boosts Strings |
+| 8015 | String-Gate Link | 15 Strings + 15 Gates | 310Qi | Strings boost Gates |
+| 8016 | Gate-Compiler Link | 15 Gates + 15 Compilers | 71Sx | Gates boost Compilers |
+| 8017 | Compiler-Entropy Link | 15 Compilers + 15 Reversers | 12Sp | Compilers boost Reversers |
+| 8018 | Entropy-Catalyst Link | 15 Reversers + 15 Catalysts | 1.9Oc | Reversers boost Catalysts |
+| 8019 | Solar-Catalyst Link | 15 Panels + 15 Catalysts | 10K | Panels boost Catalysts |
 
-### Synergy Chain Diagram
+### Reverse Synergies (19)
 
-```
-Mining Drone ──► Asteroid Mine ──► Orbital Station ──► Lunar Colony
-                                                              │
-                                                              ▼
-Star Forge ◄── Dyson Sphere ◄── Dyson Swarm ◄── Fusion Reactor ◄── Planetary Harvester
-    │
-    ▼
-Neutron Harvester ──► Black Hole Tap ──► Quantum Vacuum ──► Galactic Core
-                                                                   │
-                                                                   ▼
-Big Bang Catalyst ◄── Entropy Reverser ◄── Reality Compiler ◄── Multiverse Gate ◄── Cosmic String ◄── Dark Matter Engine
-    ▲
-    │
-    └─────────────────────────────── Solar Panel (completes the circle!)
-```
+| ID | Name | Requirement | Cost | Effect |
+|----|------|-------------|------|--------|
+| 8020 | Mine-Drone Resonance | 15 Mines + 15 Drones | 1M | Mines boost Drones |
+| 8021 | Station-Mine Resonance | 15 Stations + 15 Mines | 11M | Stations boost Mines |
+| ... | ... | ... | ... | ... |
+| 8037 | Catalyst-Entropy Resonance | 15 Catalysts + 15 Reversers | 19Oc | Catalysts boost Reversers |
+| 8038 | Catalyst-Solar Resonance | 15 Catalysts + 15 Panels | 54Oc | Catalysts boost Panels |
+
+Reverse synergies cost 10x their forward counterpart but allow later buildings to boost earlier ones!
 
 ---
 
@@ -201,16 +231,16 @@ Global upgrades boost **all production** and unlock based on your total energy p
 
 | ID | Name | Required E/s | Cost | Effect |
 |----|------|--------------|------|--------|
-| 9001 | Efficient Wiring | 10 | 1,000 | +5% all production |
-| 9002 | Central Grid | 100 | 10,000 | +10% all production |
-| 9003 | Dark Energy Tap | 1,000 | 100,000 | +15% all production |
-| 9004 | Quantum Entanglement | 10,000 | 1,000,000 | +25% all production |
-| 9005 | Dimensional Siphon | 100,000 | 10,000,000 | +35% all production |
-| 9006 | Universal Conduit | 1,000,000 | 100,000,000 | +50% all production |
-| 9007 | Cosmic Harmonics | 10,000,000 | 1,000,000,000 | +75% all production |
-| 9008 | Reality Tap | 100,000,000 | 10,000,000,000 | +100% all production |
-| 9009 | Multiverse Channel | 1,000,000,000 | 100,000,000,000 | +150% all production |
-| 9010 | Absolute Energy | 10,000,000,000 | 1,000,000,000,000 | +200% all production |
+| 9001 | Efficient Wiring | 10 | 1K | +5% all production |
+| 9002 | Central Grid | 100 | 10K | +10% all production |
+| 9003 | Dark Energy Tap | 1K | 100K | +15% all production |
+| 9004 | Quantum Entanglement | 10K | 1M | +25% all production |
+| 9005 | Dimensional Siphon | 100K | 10M | +35% all production |
+| 9006 | Universal Conduit | 1M | 100M | +50% all production |
+| 9007 | Cosmic Harmonics | 10M | 1B | +75% all production |
+| 9008 | Reality Tap | 100M | 10B | +100% all production |
+| 9009 | Multiverse Channel | 1B | 100B | +150% all production |
+| 9010 | Absolute Energy | 10B | 1T | +200% all production |
 
 ### Cumulative Global Multiplier
 
@@ -228,15 +258,15 @@ Manual upgrades double your manual mining (Space bar) power. They unlock based o
 | ID | Name | Required Clicks | Cost | Effect |
 |----|------|-----------------|------|--------|
 | 9101 | Reinforced Pickaxe | 50 | 500 | 2x manual mining |
-| 9102 | Power Gauntlets | 200 | 5,000 | 2x manual mining |
-| 9103 | Neural Interface | 1,000 | 50,000 | 2x manual mining |
-| 9104 | Quantum Harvester | 5,000 | 500,000 | 2x manual mining |
-| 9105 | Cosmic Grip | 20,000 | 5,000,000 | 2x manual mining |
-| 9106 | Reality Punch | 100,000 | 50,000,000 | 2x manual mining |
-| 9107 | Dimensional Strike | 500,000 | 500,000,000 | 2x manual mining |
-| 9108 | Universal Touch | 2,000,000 | 5,000,000,000 | 2x manual mining |
-| 9109 | Omnipotent Hand | 10,000,000 | 50,000,000,000 | 2x manual mining |
-| 9110 | Infinite Power | 50,000,000 | 500,000,000,000 | 2x manual mining |
+| 9102 | Power Gauntlets | 200 | 5K | 2x manual mining |
+| 9103 | Neural Interface | 1K | 50K | 2x manual mining |
+| 9104 | Quantum Harvester | 5K | 500K | 2x manual mining |
+| 9105 | Cosmic Grip | 20K | 5M | 2x manual mining |
+| 9106 | Reality Punch | 100K | 50M | 2x manual mining |
+| 9107 | Dimensional Strike | 500K | 500M | 2x manual mining |
+| 9108 | Universal Touch | 2M | 5B | 2x manual mining |
+| 9109 | Omnipotent Hand | 10M | 50B | 2x manual mining |
+| 9110 | Infinite Power | 50M | 500B | 2x manual mining |
 
 ### Cumulative Manual Multiplier
 
@@ -245,19 +275,189 @@ With all manual upgrades:
 2^10 = 1,024x manual mining power
 ```
 
-### Manual Mining Formula
+---
 
-Energy from manual mining:
+## Click CPS Upgrades (10 total)
+
+These upgrades add a percentage of your CPS to each manual click, stacking with the base 5% bonus.
+
+| ID | Name | Required Clicks | Cost | Effect |
+|----|------|-----------------|------|--------|
+| 9201 | Energy Tap | 1K | 50K | +1% of CPS per click |
+| 9202 | Plasma Tap | 10K | 5M | +1% of CPS per click |
+| 9203 | Fusion Tap | 100K | 500M | +1% of CPS per click |
+| 9204 | Stellar Tap | 1M | 50B | +1% of CPS per click |
+| 9205 | Quantum Tap | 10M | 5T | +1% of CPS per click |
+| 9206 | Neutron Tap | 50M | 500T | +1% of CPS per click |
+| 9207 | Void Tap | 100M | 500Q | +1% of CPS per click |
+| 9208 | Antimatter Tap | 250M | 500Qi | +1% of CPS per click |
+| 9209 | Dark Energy Tap | 500M | 5Sp | +1% of CPS per click |
+| 9210 | Singularity Tap | 1B | 5No | +1% of CPS per click |
+
+### Click Energy Formula
+
+With all click CPS upgrades:
 ```
-Energy = (click_power × manual_multiplier) + (0.05 × total_eps)
+Click Energy = (click_power × manual_multiplier) + (0.15 × total_eps)
 ```
 
-Where:
-- `click_power` = 1 (base)
-- `manual_multiplier` = cumulative 2x from upgrades
-- `total_eps` = your total energy per second
+The base 5% becomes 15% with all 10 upgrades!
 
-This means manual mining scales with your production!
+---
+
+## Per-Building CPS Upgrades (20 total)
+
+These upgrades grant +1% CPS for each building of a specific type you own.
+
+| ID | Name | Required Count | Cost | Effect |
+|----|------|----------------|------|--------|
+| 9301 | Solar Network | 300 Panels | 1T | +1% CPS per Panel |
+| 9302 | Grandma Collective | 300 Drones | 10T | +1% CPS per Drone |
+| 9303 | Mining Consortium | 300 Mines | 100T | +1% CPS per Mine |
+| 9304 | Orbital Alliance | 300 Stations | 1Q | +1% CPS per Station |
+| 9305 | Lunar Federation | 300 Colonies | 10Q | +1% CPS per Colony |
+| 9306 | Planetary Union | 300 Harvesters | 100Q | +1% CPS per Harvester |
+| 9307 | Fusion Coalition | 300 Reactors | 1Qi | +1% CPS per Reactor |
+| 9308 | Swarm Intelligence | 300 Swarms | 10Qi | +1% CPS per Swarm |
+| 9309 | Sphere Collective | 300 Spheres | 100Qi | +1% CPS per Sphere |
+| 9310 | Forge Brotherhood | 300 Forges | 1Sx | +1% CPS per Forge |
+| 9311 | Neutron Order | 300 N.Harvesters | 10Sx | +1% CPS per N.Harvester |
+| 9312 | Void Consortium | 300 Taps | 100Sx | +1% CPS per Tap |
+| 9313 | Vacuum Assembly | 300 Vacuums | 1Sp | +1% CPS per Vacuum |
+| 9314 | Core Council | 300 Cores | 10Sp | +1% CPS per Core |
+| 9315 | Dark Collective | 300 Engines | 100Sp | +1% CPS per Engine |
+| 9316 | String Harmony | 300 Strings | 1Oc | +1% CPS per String |
+| 9317 | Gate Syndicate | 300 Gates | 10Oc | +1% CPS per Gate |
+| 9318 | Compiler Guild | 300 Compilers | 100Oc | +1% CPS per Compiler |
+| 9319 | Entropy Monks | 300 Reversers | 1No | +1% CPS per Reverser |
+| 9320 | Catalyst Cabal | 300 Catalysts | 10No | +1% CPS per Catalyst |
+
+With 400 of each building type: +400% CPS per upgrade = +8,000% total!
+
+---
+
+## Total Building CPS Upgrades (5 total)
+
+These upgrades grant a small CPS bonus for your total building count across all types.
+
+| ID | Name | Required E/s | Cost | Effect |
+|----|------|--------------|------|--------|
+| 9401 | Empire of Energy | 10T | 1Q | +0.1% CPS per building |
+| 9402 | Cosmic Dominion | 100Q | 100Qi | +0.1% CPS per building |
+| 9403 | Universal Authority | 100Sx | 100Sp | +0.1% CPS per building |
+| 9404 | Multiversal Hegemony | 100Oc | 100No | +0.1% CPS per building |
+| 9405 | Omniversal Empire | 100Dc | 100Dc | +0.1% CPS per building |
+
+With 5,000 total buildings and all 5 upgrades: +2,500% CPS!
+
+---
+
+## Milestone Upgrades (10 total)
+
+Milestone upgrades provide +10% CPS each when you reach certain energy production thresholds.
+
+| ID | Name | Required E/s | Cost | Effect |
+|----|------|--------------|------|--------|
+| 9501 | First Contact | 1K | 1M | +10% CPS |
+| 9502 | Stellar Awakening | 1M | 1B | +10% CPS |
+| 9503 | Galactic Presence | 1B | 1T | +10% CPS |
+| 9504 | Universal Awareness | 1T | 1Q | +10% CPS |
+| 9505 | Cosmic Transcendence | 1Q | 1Qi | +10% CPS |
+| 9506 | Dimensional Mastery | 1Qi | 1Sx | +10% CPS |
+| 9507 | Reality Dominion | 1Sx | 1Sp | +10% CPS |
+| 9508 | Existential Authority | 1Sp | 1Oc | +10% CPS |
+| 9509 | Omnipotent Vision | 1Oc | 1No | +10% CPS |
+| 9510 | Absolute Supremacy | 1No | 1Dc | +10% CPS |
+
+All 10 milestones: 1.10^10 = **2.59x** cumulative multiplier
+
+---
+
+## Research Upgrades (15 total)
+
+Research upgrades provide +5% CPS each and unlock at specific E/s thresholds.
+
+| ID | Name | Required E/s | Cost | Effect |
+|----|------|--------------|------|--------|
+| 9601 | Basic Thermodynamics | 100 | 10K | +5% CPS |
+| 9602 | Advanced Materials | 10K | 1M | +5% CPS |
+| 9603 | Quantum Mechanics | 1M | 100M | +5% CPS |
+| 9604 | Relativistic Physics | 100M | 10B | +5% CPS |
+| 9605 | Unified Field Theory | 10B | 1T | +5% CPS |
+| 9606 | Zero-Point Energy | 1T | 100T | +5% CPS |
+| 9607 | Exotic Matter | 100T | 10Q | +5% CPS |
+| 9608 | Spacetime Engineering | 10Q | 1Qi | +5% CPS |
+| 9609 | Dimensional Mathematics | 1Qi | 100Qi | +5% CPS |
+| 9610 | Multiverse Theory | 100Qi | 10Sx | +5% CPS |
+| 9611 | Entropy Reversal | 10Sx | 1Sp | +5% CPS |
+| 9612 | Causality Loops | 1Sp | 100Sp | +5% CPS |
+| 9613 | Reality Compilation | 100Sp | 10Oc | +5% CPS |
+| 9614 | Omniscience Protocols | 10Oc | 1No | +5% CPS |
+| 9615 | Creation Algorithms | 1No | 100No | +5% CPS |
+
+All 15 research upgrades: 1.05^15 = **2.08x** cumulative multiplier
+
+---
+
+## Cosmic Cat Upgrades (15 total)
+
+Cosmic Cats are the Solaris equivalent of Cookie Clicker's "Kitten" upgrades. They multiply your CPS based on your **Stellar Essence** (which is 4% per achievement).
+
+### Stellar Essence Formula
+```
+Stellar Essence = 0.04 × achievement_count
+```
+
+At 260 achievements: 10.4 Stellar Essence (1,040%)
+
+### Cosmic Cat Effect
+```
+CPS Multiplier = 1 + (stellar_essence × bonus)
+```
+
+Each Cosmic Cat upgrade adds 0.05 (5%) per 4% Stellar Essence.
+
+| ID | Name | Required E/s | Cost | Effect |
+|----|------|--------------|------|--------|
+| 9701 | Cosmic Kittens | 9K | 9M | +5% CPS per 4% Essence |
+| 9702 | Astro Cats | 9M | 9B | +5% CPS per 4% Essence |
+| 9703 | Nebula Felines | 9B | 9T | +5% CPS per 4% Essence |
+| 9704 | Pulsar Prowlers | 9T | 9Q | +5% CPS per 4% Essence |
+| 9705 | Quasar Whiskers | 9Q | 9Qi | +5% CPS per 4% Essence |
+| 9706 | Void Tabbies | 9Qi | 9Sx | +5% CPS per 4% Essence |
+| 9707 | Singularity Siamese | 9Sx | 9Sp | +5% CPS per 4% Essence |
+| 9708 | Dimension Calicos | 9Sp | 9Oc | +5% CPS per 4% Essence |
+| 9709 | Reality Persians | 9Oc | 9No | +5% CPS per 4% Essence |
+| 9710 | Multiverse Maus | 9No | 9Dc | +5% CPS per 4% Essence |
+| 9711 | Omniverse Ocicats | 9Dc | 9Un | +5% CPS per 4% Essence |
+| 9712 | Eternal Egyptians | 9Un | 9Du | +5% CPS per 4% Essence |
+| 9713 | Infinite Abyssinians | 9Du | 9Tr | +5% CPS per 4% Essence |
+| 9714 | Transcendent Tabbies | 9Tr | 9Qa | +5% CPS per 4% Essence |
+| 9715 | Absolute Angoras | 9Qa | 9Qi | +5% CPS per 4% Essence |
+
+### Example Calculation
+
+With 260 achievements (10.4 Stellar Essence) and all 15 Cosmic Cat upgrades:
+```
+Per cat: 1 + (10.4 × 0.05) = 1.52x
+All 15 cats: 1.52^15 = 695x multiplier!
+```
+
+---
+
+## Stellar Essence Upgrades (5 total)
+
+These upgrades increase the effectiveness of your Stellar Essence (making Cosmic Cats even more powerful).
+
+| ID | Name | Required E/s | Cost | Effect |
+|----|------|--------------|------|--------|
+| 9801 | Essence Amplifier | 10T | 1Q | +5% Stellar Essence effect |
+| 9802 | Essence Magnifier | 10Qi | 100Qi | +5% Stellar Essence effect |
+| 9803 | Essence Concentrator | 10Sp | 100Sp | +5% Stellar Essence effect |
+| 9804 | Essence Crystallizer | 10No | 100No | +5% Stellar Essence effect |
+| 9805 | Essence Perfector | 10Dc | 100Dc | +5% Stellar Essence effect |
+
+These multiply the effectiveness of Stellar Essence: 1.05^5 = **1.276x**
 
 ---
 
@@ -265,7 +465,11 @@ This means manual mining scales with your production!
 
 Prestige upgrades can reduce upgrade costs:
 - **Bargain Hunter** (40 chips): 10% reduction
-- **Discount Master** (3000 chips): 25% reduction
+- **Thrifty I** (90 chips): 15% reduction
+- **Thrifty II** (250 chips): 20% reduction
+- **Discount Master** (3,000 chips): 25% reduction
+- **Discount Champion** (40,000 chips): 40% reduction
+- **Free Shopping** (300,000 chips): 50% reduction
 
 Maximum reduction: **50%** (capped)
 
