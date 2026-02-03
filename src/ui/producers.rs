@@ -10,7 +10,11 @@ const INDICATOR_HEIGHT: u16 = 8;
 pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let visible = app.game.visible_producers();
 
-    let border_color = if focused { Color::Yellow } else { Color::DarkGray };
+    let border_color = if focused {
+        Color::Yellow
+    } else {
+        Color::DarkGray
+    };
     let title = if focused {
         format!(" Producers [Buy: {}] *", app.buy_amount.label())
     } else {
@@ -34,17 +38,17 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
         Layout::default()
             .direction(Direction::Vertical)
             .constraints([
-                Constraint::Length(1),                              // Header
-                Constraint::Min(3),                                 // Producer list
-                Constraint::Length(indicator_height),               // Indicator section
+                Constraint::Length(1),                // Header
+                Constraint::Min(3),                   // Producer list
+                Constraint::Length(indicator_height), // Indicator section
             ])
             .split(inner)
     } else {
         Layout::default()
             .direction(Direction::Vertical)
             .constraints([
-                Constraint::Length(1),  // Header
-                Constraint::Min(1),     // Producer list
+                Constraint::Length(1), // Header
+                Constraint::Min(1),    // Producer list
             ])
             .split(inner)
     };
@@ -94,18 +98,33 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     // Render header
     let header = format!(
         "  {:<name_width$} {:>owned_width$}  {:>rate_width$}  {:>cost_width$}",
-        "Producer", "Own", "Rate", "Cost",
+        "Producer",
+        "Own",
+        "Rate",
+        "Cost",
         name_width = name_width,
         owned_width = owned_width,
         rate_width = rate_width,
         cost_width = cost_width
     );
-    let header_widget = Paragraph::new(header)
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+    let header_widget = Paragraph::new(header).style(
+        Style::default()
+            .fg(Color::Cyan)
+            .add_modifier(Modifier::BOLD),
+    );
     frame.render_widget(header_widget, chunks[0]);
 
     // Render producer list
-    render_producer_list(frame, chunks[1], app, &visible, name_width, owned_width, rate_width, cost_width);
+    render_producer_list(
+        frame,
+        chunks[1],
+        app,
+        &visible,
+        name_width,
+        owned_width,
+        rate_width,
+        cost_width,
+    );
 
     // Render indicator section if applicable
     if show_indicator && chunks.len() > 2 {
@@ -134,7 +153,8 @@ fn render_producer_list(
             let owned = app.game.producer_count(producer.id);
             let quantity = app.get_buy_quantity_for_producer(producer);
             let display_quantity = app.get_display_quantity_for_producer(producer);
-            let cost = calculate_bulk_cost(producer.base_cost, owned, display_quantity, producer.id);
+            let cost =
+                calculate_bulk_cost(producer.base_cost, owned, display_quantity, producer.id);
             let can_afford = app.game.energy >= cost && quantity > 0;
 
             let effective_rate = producer.base_energy_per_second
@@ -235,10 +255,21 @@ fn render_producer_indicator(
     let next_cost = calculate_bulk_cost(producer.base_cost, owned, display_quantity, producer.id);
 
     // Calculate ROI (time to pay back next purchase)
-    let effective_rate = producer.base_energy_per_second
-        * app.game.get_producer_multiplier(producer.id)
-        * app.game.get_global_multiplier();
-    let rate_gain = effective_rate * display_quantity as f64;
+    // For Solar Panel (id 1), include Thousand Rays bonus which is the main production source
+    let rate_gain = if producer.id == 1 {
+        // Solar Panel: base rate + Thousand Rays bonus per panel
+        let base_rate =
+            producer.base_energy_per_second * app.game.get_producer_multiplier(producer.id);
+        let tf_bonus = app.game.get_thousand_fingers_bonus();
+        let non_collector_count = app.game.get_non_collector_building_count();
+        let rate_per_panel = base_rate + (tf_bonus * non_collector_count as f64);
+        rate_per_panel * app.game.get_global_multiplier() * display_quantity as f64
+    } else {
+        let effective_rate = producer.base_energy_per_second
+            * app.game.get_producer_multiplier(producer.id)
+            * app.game.get_global_multiplier();
+        effective_rate * display_quantity as f64
+    };
     let roi_seconds = if rate_gain > 0.0 {
         (next_cost / rate_gain).ceil() as u64
     } else {
