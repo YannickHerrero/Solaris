@@ -147,6 +147,10 @@ fn run_app<B: Backend>(
                     let _ = app.save();
                     return Ok(());
                 }
+                // Pause auto-player on any user input
+                if let Some(ref mut player) = auto_player {
+                    player.pause();
+                }
             }
         }
 
@@ -157,6 +161,7 @@ fn run_app<B: Backend>(
             // Auto-player tick (runs after game tick so it sees fresh state)
             if let Some(ref mut player) = auto_player {
                 player.tick(app);
+                app.auto_paused = player.is_paused();
             }
 
             last_tick = Instant::now();

@@ -77,6 +77,7 @@ pub struct App {
     pub show_upgrade_tooltip: bool,
     pub show_producer_detail: bool,
     pub auto_mode: bool,
+    pub auto_paused: bool,
 }
 
 pub struct OfflineReport {
@@ -109,6 +110,7 @@ impl App {
             show_upgrade_tooltip: false,
             show_producer_detail: true,
             auto_mode: false,
+            auto_paused: false,
         }
     }
 

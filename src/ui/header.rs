@@ -8,24 +8,42 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     let energy = format_energy(app.game.energy);
     let rate = format_rate(app.game.total_energy_per_second());
 
-    let auto_indicator = if app.auto_mode { "  [AUTO]" } else { "" };
+    let auto_indicator = if app.auto_mode {
+        if app.auto_paused {
+            "  [AUTO PAUSED]"
+        } else {
+            "  [AUTO]"
+        }
+    } else {
+        ""
+    };
     let text = format!("  Energy: {} ⚛    Rate: {}{}", energy, rate, auto_indicator);
 
     let title = if app.auto_mode {
-        " SOLARIS [AUTO] "
+        if app.auto_paused {
+            " SOLARIS [AUTO PAUSED] "
+        } else {
+            " SOLARIS [AUTO] "
+        }
     } else {
         " SOLARIS "
+    };
+
+    let border_color = if app.auto_mode {
+        if app.auto_paused {
+            Color::Yellow
+        } else {
+            Color::Magenta
+        }
+    } else {
+        Color::Cyan
     };
 
     let block = Block::default()
         .title(title)
         .title_alignment(Alignment::Center)
         .borders(Borders::ALL)
-        .border_style(Style::default().fg(if app.auto_mode {
-            Color::Magenta
-        } else {
-            Color::Cyan
-        }));
+        .border_style(Style::default().fg(border_color));
 
     let paragraph = Paragraph::new(text)
         .block(block)

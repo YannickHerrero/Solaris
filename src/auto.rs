@@ -79,9 +79,13 @@ impl SimpleRng {
     }
 }
 
+/// Duration in ticks to pause auto-player when user interacts (5 seconds at 10 Hz)
+const PAUSE_TICKS: u32 = 50;
+
 pub struct AutoPlayer {
     state: AutoState,
     rng: SimpleRng,
+    pause_ticks_remaining: u32,
 }
 
 impl AutoPlayer {
@@ -91,11 +95,30 @@ impl AutoPlayer {
                 ticks_remaining: 20, // 2 seconds initial delay
             },
             rng: SimpleRng::new(42),
+            pause_ticks_remaining: 0,
         }
+    }
+
+    /// Pause the auto-player for 5 seconds, giving control to the user.
+    /// Resets internal state so the bot re-evaluates from scratch when resuming.
+    pub fn pause(&mut self) {
+        self.pause_ticks_remaining = PAUSE_TICKS;
+        self.state = AutoState::Idle { ticks_remaining: 0 };
+    }
+
+    /// Returns true if the auto-player is currently paused (user has control).
+    pub fn is_paused(&self) -> bool {
+        self.pause_ticks_remaining > 0
     }
 
     /// Called every game tick (10 Hz). Drives the state machine.
     pub fn tick(&mut self, app: &mut App) {
+        // If paused, count down and do nothing
+        if self.pause_ticks_remaining > 0 {
+            self.pause_ticks_remaining -= 1;
+            return;
+        }
+
         // Force buy amount to One for predictable ROI calculations
         if app.buy_amount != BuyAmount::One {
             app.buy_amount = BuyAmount::One;
