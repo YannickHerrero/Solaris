@@ -76,6 +76,7 @@ pub struct App {
     pub last_selected_upgrade: usize,
     pub show_upgrade_tooltip: bool,
     pub show_producer_detail: bool,
+    pub auto_mode: bool,
 }
 
 pub struct OfflineReport {
@@ -107,6 +108,7 @@ impl App {
             last_selected_upgrade: 0,
             show_upgrade_tooltip: false,
             show_producer_detail: true,
+            auto_mode: false,
         }
     }
 

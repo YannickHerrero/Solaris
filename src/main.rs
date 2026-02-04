@@ -1,4 +1,5 @@
 mod app;
+mod auto;
 mod format;
 mod game;
 mod input;
@@ -16,6 +17,7 @@ use crossterm::{
 use ratatui::prelude::*;
 
 use app::App;
+use auto::AutoPlayer;
 
 pub const TICK_RATE_MS: u64 = 100; // 10 ticks/second for game logic
 pub const TICKS_PER_SECOND: f64 = 1000.0 / TICK_RATE_MS as f64;
@@ -25,8 +27,10 @@ const AUTOSAVE_INTERVAL_SECS: u64 = 30;
 fn main() -> io::Result<()> {
     // Handle command line arguments
     let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
-        match args[1].as_str() {
+    let mut auto_mode = false;
+
+    for arg in args.iter().skip(1) {
+        match arg.as_str() {
             "--reset" => {
                 return handle_reset();
             }
@@ -36,11 +40,15 @@ fn main() -> io::Result<()> {
                 println!("Usage: solaris [OPTIONS]");
                 println!();
                 println!("Options:");
+                println!("  --auto     Enable auto-play mode (buys producers and upgrades)");
                 println!("  --reset    Reset the save file (with confirmation)");
                 println!("  --help     Show this help message");
                 return Ok(());
             }
-            arg => {
+            "--auto" => {
+                auto_mode = true;
+            }
+            _ => {
                 eprintln!("Unknown option: {}", arg);
                 eprintln!("Use --help for usage information");
                 return Ok(());
@@ -57,13 +65,20 @@ fn main() -> io::Result<()> {
 
     // Create app and run
     let mut app = App::new();
+    app.auto_mode = auto_mode;
 
     // Load saved game if exists
     if let Err(e) = app.load() {
         eprintln!("Warning: Could not load save file: {}", e);
     }
 
-    let result = run_app(&mut terminal, &mut app);
+    let mut auto_player = if auto_mode {
+        Some(AutoPlayer::new())
+    } else {
+        None
+    };
+
+    let result = run_app(&mut terminal, &mut app, &mut auto_player);
 
     // Restore terminal
     disable_raw_mode()?;
@@ -110,7 +125,11 @@ fn handle_reset() -> io::Result<()> {
     Ok(())
 }
 
-fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+fn run_app<B: Backend>(
+    terminal: &mut Terminal<B>,
+    app: &mut App,
+    auto_player: &mut Option<AutoPlayer>,
+) -> io::Result<()> {
     let mut last_tick = Instant::now();
     let mut last_save = Instant::now();
 
@@ -134,6 +153,12 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
         // Game tick at 10 Hz
         if last_tick.elapsed() >= Duration::from_millis(TICK_RATE_MS) {
             app.tick();
+
+            // Auto-player tick (runs after game tick so it sees fresh state)
+            if let Some(ref mut player) = auto_player {
+                player.tick(app);
+            }
+
             last_tick = Instant::now();
         }
 
