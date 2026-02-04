@@ -16,7 +16,7 @@ Press `a` to open the Ascension panel where you can:
 
 ### Earning Formula (Cubic)
 
-Stellar Chips are calculated using a **cubic formula** for slower progression (matching Cookie Clicker's feel):
+Stellar Chips are calculated using a **cubic formula** for slower progression:
 
 ```
 chips = floor(cbrt(total_energy_earned / 1,000,000,000,000))

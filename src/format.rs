@@ -1,13 +1,22 @@
-/// Format a number for display (Cookie Clicker style)
+/// Format a number for display (incremental game style)
 /// - Below 1000: show as-is with appropriate decimal places
 /// - 1000 to 999,999: comma separators (e.g., 24,900)
 /// - Million+: named suffixes (million, billion, etc.)
 /// - Beyond decillion: scientific notation
 pub fn format_energy(value: f64) -> String {
     const SUFFIXES: &[&str] = &[
-        "", "", "million", "billion", "trillion",
-        "quadrillion", "quintillion", "sextillion", "septillion",
-        "octillion", "nonillion", "decillion",
+        "",
+        "",
+        "million",
+        "billion",
+        "trillion",
+        "quadrillion",
+        "quintillion",
+        "sextillion",
+        "septillion",
+        "octillion",
+        "nonillion",
+        "decillion",
     ];
 
     if value.is_nan() || value.is_infinite() {
@@ -36,7 +45,11 @@ pub fn format_energy(value: f64) -> String {
             let divisor = 10f64.powi((tier * 3) as i32);
             let scaled = value / divisor;
             let suffix = SUFFIXES[tier];
-            let plural = if scaled.abs() == 1.0 || suffix.is_empty() { "" } else { "s" };
+            let plural = if scaled.abs() == 1.0 || suffix.is_empty() {
+                ""
+            } else {
+                "s"
+            };
             format!("{:.3} {}{}", scaled, suffix, plural)
         } else {
             // Fall back to scientific notation for very large numbers
@@ -138,7 +151,11 @@ mod tests {
     fn test_format_very_large_numbers() {
         // Beyond decillion, fall back to scientific notation
         let result = format_energy(1.5e36);
-        assert!(result.contains("e36"), "Expected scientific notation for 1.5e36, got: {}", result);
+        assert!(
+            result.contains("e36"),
+            "Expected scientific notation for 1.5e36, got: {}",
+            result
+        );
     }
 
     #[test]

@@ -21,7 +21,7 @@ payback_time = cost / production_gain
 ### Upgrades vs Producers
 
 Upgrades are almost always better than producers when available:
-- Producer upgrades give **2x multiplier** each (Cookie Clicker style)
+- Producer upgrades give **2x multiplier** each
 - A new producer adds linear output
 - Prioritize upgrades when their cost is reasonable
 
@@ -73,7 +73,7 @@ Mining Drones synergize with ALL other building types:
 
 ### Stellar Essence & Cosmic Cats
 
-This is Cookie Clicker's "milk and kittens" system:
+The Stellar Essence and Cosmic Cat system:
 
 **Stellar Essence:**
 - You gain 4% Stellar Essence per achievement

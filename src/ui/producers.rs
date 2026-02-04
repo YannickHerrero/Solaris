@@ -260,9 +260,9 @@ fn render_producer_indicator(
         // Solar Panel: base rate + Thousand Rays bonus per panel
         let base_rate =
             producer.base_energy_per_second * app.game.get_producer_multiplier(producer.id);
-        let tf_bonus = app.game.get_thousand_fingers_bonus();
+        let tr_bonus = app.game.get_thousand_rays_bonus();
         let non_collector_count = app.game.get_non_collector_building_count();
-        let rate_per_panel = base_rate + (tf_bonus * non_collector_count as f64);
+        let rate_per_panel = base_rate + (tr_bonus * non_collector_count as f64);
         rate_per_panel * app.game.get_global_multiplier() * display_quantity as f64
     } else {
         let effective_rate = producer.base_energy_per_second

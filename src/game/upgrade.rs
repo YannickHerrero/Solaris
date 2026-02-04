@@ -30,27 +30,27 @@ pub enum UpgradeEffect {
         bonus_per_source: f64,
     },
     // Solar Panel special effects (Thousand Rays mechanic)
-    CursorBaseMultiplier(f64), // First 3 upgrades: 2x base E/s AND click
-    ThousandFingers(f64),      // +X per non-panel building owned (Thousand Rays)
-    ThousandFingersMultiplier(f64), // Multiplies Thousand Rays effect
+    SolarPanelBaseMultiplier(f64), // First 3 upgrades: 2x base E/s AND click
+    ThousandRays(f64),             // +X per non-panel building owned (Thousand Rays)
+    ThousandRaysMultiplier(f64),   // Multiplies Thousand Rays effect
     // Mining Drone special effects (Drone Network)
-    GrandmaType {
+    DroneNetworkType {
         building_id: u32,
     }, // Unlocks drone network type, doubles drone E/s
-    GrandmaPerBuilding {
+    DroneNetworkPerBuilding {
         building_id: u32,
-        grandmas_per_bonus: u64,
+        drones_per_bonus: u64,
     }, // +1% drone E/s per X drones
     // Flavor upgrades - general bonuses
-    CpsPerBuilding {
+    EpsPerBuilding {
         producer_id: u32,
         bonus_percent: f64,
     }, // +X% E/s per building of type owned
-    CpsPerTotalBuildings(f64), // +X% E/s per total buildings owned
-    ClickCpsPercent(f64),      // Manual mining gains +X% of E/s (adds to the 5% base)
-    // Milk/Kitten system (renamed to Stellar Essence/Cosmic Cat)
-    MilkMultiplier(f64), // Multiplies the effect of stellar essence
-    KittenBonus(f64),    // E/s multiplied by (1 + stellar_essence * bonus)
+    EpsPerTotalBuildings(f64), // +X% E/s per total buildings owned
+    ClickEpsPercent(f64),      // Manual mining gains +X% of E/s (adds to the 5% base)
+    // Stellar Essence / Cosmic Cat system
+    StellarEssenceMultiplier(f64), // Multiplies the effect of stellar essence
+    CosmicCatBonus(f64),           // E/s multiplied by (1 + stellar_essence * bonus)
 }
 
 #[derive(Debug, Clone)]
@@ -69,7 +69,7 @@ impl Upgrade {
     }
 }
 
-// Unlock thresholds for 15 tiers (Cookie Clicker inspired)
+// Unlock thresholds for 15 tiers
 const TIER_THRESHOLDS: [u64; 15] = [
     1, 5, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600,
 ];
@@ -439,26 +439,26 @@ const PRODUCER_UPGRADE_NAMES: [[&str; 15]; 20] = [
 ];
 
 // Solar Panel upgrade costs - unique scaling
-const CURSOR_UPGRADE_COSTS: [f64; 15] = [
-    100.0,                                        // Tier 1: Reinforced Index Finger
-    500.0,                                        // Tier 2: Carpal Tunnel Prevention
-    10_000.0,                                     // Tier 3: Ambidextrous
-    100_000.0,                                    // Tier 4: Thousand Fingers
-    10_000_000.0,                                 // Tier 5: Million Fingers
-    100_000_000.0,                                // Tier 6: Billion Fingers
-    1_000_000_000.0,                              // Tier 7: Trillion Fingers
-    10_000_000_000.0,                             // Tier 8: Quadrillion Fingers
-    10_000_000_000_000.0,                         // Tier 9: Quintillion Fingers
-    10_000_000_000_000_000.0,                     // Tier 10: Sextillion Fingers
-    10_000_000_000_000_000_000.0,                 // Tier 11: Septillion Fingers
-    10_000_000_000_000_000_000_000.0,             // Tier 12: Octillion Fingers
-    10_000_000_000_000_000_000_000_000.0,         // Tier 13: Nonillion Fingers
-    10_000_000_000_000_000_000_000_000_000.0,     // Tier 14: Decillion Fingers
-    10_000_000_000_000_000_000_000_000_000_000.0, // Tier 15: Undecillion Fingers
+const SOLAR_PANEL_UPGRADE_COSTS: [f64; 15] = [
+    100.0,                                        // Tier 1: Solar Panel Base I
+    500.0,                                        // Tier 2: Solar Panel Base II
+    10_000.0,                                     // Tier 3: Solar Panel Base III
+    100_000.0,                                    // Tier 4: Thousand Rays
+    10_000_000.0,                                 // Tier 5: Million Rays
+    100_000_000.0,                                // Tier 6: Billion Rays
+    1_000_000_000.0,                              // Tier 7: Trillion Rays
+    10_000_000_000.0,                             // Tier 8: Quadrillion Rays
+    10_000_000_000_000.0,                         // Tier 9: Quintillion Rays
+    10_000_000_000_000_000.0,                     // Tier 10: Sextillion Rays
+    10_000_000_000_000_000_000.0,                 // Tier 11: Septillion Rays
+    10_000_000_000_000_000_000_000.0,             // Tier 12: Octillion Rays
+    10_000_000_000_000_000_000_000_000.0,         // Tier 13: Nonillion Rays
+    10_000_000_000_000_000_000_000_000_000.0,     // Tier 14: Decillion Rays
+    10_000_000_000_000_000_000_000_000_000_000.0, // Tier 15: Undecillion Rays
 ];
 
 // Solar Panel unlock thresholds
-const CURSOR_THRESHOLDS: [u64; 15] = [
+const SOLAR_PANEL_THRESHOLDS: [u64; 15] = [
     1, 1, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550,
 ];
 
@@ -523,12 +523,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             id,
             name,
             description: "Manual mining and Solar Panels are twice as efficient.",
-            cost: CURSOR_UPGRADE_COSTS[tier],
+            cost: SOLAR_PANEL_UPGRADE_COSTS[tier],
             requirement: UpgradeRequirement::ProducerCount {
                 producer_id: 1,
-                count: CURSOR_THRESHOLDS[tier],
+                count: SOLAR_PANEL_THRESHOLDS[tier],
             },
-            effect: UpgradeEffect::CursorBaseMultiplier(2.0),
+            effect: UpgradeEffect::SolarPanelBaseMultiplier(2.0),
         });
     }
 
@@ -538,12 +538,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         name: PRODUCER_UPGRADE_NAMES[0][3],
         description:
             "Manual mining and Solar Panels gain +0.1 energy for each non-panel building owned.",
-        cost: CURSOR_UPGRADE_COSTS[3],
+        cost: SOLAR_PANEL_UPGRADE_COSTS[3],
         requirement: UpgradeRequirement::ProducerCount {
             producer_id: 1,
-            count: CURSOR_THRESHOLDS[3],
+            count: SOLAR_PANEL_THRESHOLDS[3],
         },
-        effect: UpgradeEffect::ThousandFingers(0.1),
+        effect: UpgradeEffect::ThousandRays(0.1),
     });
 
     // Tier 5: Million Rays - 5x Thousand Rays
@@ -551,12 +551,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         id: 105,
         name: PRODUCER_UPGRADE_NAMES[0][4],
         description: "Multiplies the gain from Thousand Rays by 5.",
-        cost: CURSOR_UPGRADE_COSTS[4],
+        cost: SOLAR_PANEL_UPGRADE_COSTS[4],
         requirement: UpgradeRequirement::ProducerCount {
             producer_id: 1,
-            count: CURSOR_THRESHOLDS[4],
+            count: SOLAR_PANEL_THRESHOLDS[4],
         },
-        effect: UpgradeEffect::ThousandFingersMultiplier(5.0),
+        effect: UpgradeEffect::ThousandRaysMultiplier(5.0),
     });
 
     // Tier 6: Billion Rays - 10x Thousand Rays
@@ -564,12 +564,12 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         id: 106,
         name: PRODUCER_UPGRADE_NAMES[0][5],
         description: "Multiplies the gain from Thousand Rays by 10.",
-        cost: CURSOR_UPGRADE_COSTS[5],
+        cost: SOLAR_PANEL_UPGRADE_COSTS[5],
         requirement: UpgradeRequirement::ProducerCount {
             producer_id: 1,
-            count: CURSOR_THRESHOLDS[5],
+            count: SOLAR_PANEL_THRESHOLDS[5],
         },
-        effect: UpgradeEffect::ThousandFingersMultiplier(10.0),
+        effect: UpgradeEffect::ThousandRaysMultiplier(10.0),
     });
 
     // Tiers 7-15: 20x Thousand Rays each
@@ -580,17 +580,17 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             id,
             name,
             description: "Multiplies the gain from Thousand Rays by 20.",
-            cost: CURSOR_UPGRADE_COSTS[tier],
+            cost: SOLAR_PANEL_UPGRADE_COSTS[tier],
             requirement: UpgradeRequirement::ProducerCount {
                 producer_id: 1,
-                count: CURSOR_THRESHOLDS[tier],
+                count: SOLAR_PANEL_THRESHOLDS[tier],
             },
-            effect: UpgradeEffect::ThousandFingersMultiplier(20.0),
+            effect: UpgradeEffect::ThousandRaysMultiplier(20.0),
         });
     }
 
     // ============ STANDARD PRODUCER UPGRADES (Producers 2-20) ============
-    // All use flat 2x multiplier (Cookie Clicker style)
+    // All use flat 2x multiplier per tier
     for producer_idx in 1..20 {
         let producer_id = (producer_idx + 1) as u32;
         let base_cost = PRODUCER_BASE_COSTS[producer_idx];
@@ -600,13 +600,13 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             let name = PRODUCER_UPGRADE_NAMES[producer_idx][tier];
             let producer_name = PRODUCER_NAMES[producer_idx];
 
-            // All tiers give 2x (Cookie Clicker style)
+            // All tiers give 2x multiplier
             let multiplier = 2.0;
 
             let description =
                 Box::leak(format!("{} are twice as efficient.", producer_name).into_boxed_str());
 
-            // Cost scales by 10x per tier (Cookie Clicker style)
+            // Cost scales by 10x per tier
             let cost = base_cost * 10.0_f64.powi(tier as i32);
 
             upgrades.push(Upgrade {
@@ -680,7 +680,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
                 id_b: *building_id,
                 count_b: 15,
             },
-            effect: UpgradeEffect::GrandmaType {
+            effect: UpgradeEffect::DroneNetworkType {
                 building_id: *building_id,
             },
         });
@@ -704,9 +704,9 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
                 id_b: *building_id,
                 count_b: 15,
             },
-            effect: UpgradeEffect::GrandmaPerBuilding {
+            effect: UpgradeEffect::DroneNetworkPerBuilding {
                 building_id: *building_id,
-                grandmas_per_bonus: *drones_per_bonus,
+                drones_per_bonus: *drones_per_bonus,
             },
         });
     }
@@ -913,11 +913,11 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         });
     }
 
-    // ============ FLAVOR UPGRADES (Cookie Clicker style) ============
+    // ============ FLAVOR UPGRADES ============
     // These provide various bonuses based on building ownership, clicks, etc.
 
     // Click E/s bonuses - increase the % of E/s gained per click
-    let click_cps_upgrades: [(u32, &str, &str, f64, u64, f64); 10] = [
+    let click_eps_upgrades: [(u32, &str, &str, f64, u64, f64); 10] = [
         (
             9201,
             "Energy Tap",
@@ -1000,14 +1000,14 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         ),
     ];
 
-    for (id, name, desc, cost, clicks, bonus) in click_cps_upgrades {
+    for (id, name, desc, cost, clicks, bonus) in click_eps_upgrades {
         upgrades.push(Upgrade {
             id,
             name,
             description: desc,
             cost,
             requirement: UpgradeRequirement::ManualClicks(clicks),
-            effect: UpgradeEffect::ClickCpsPercent(bonus),
+            effect: UpgradeEffect::ClickEpsPercent(bonus),
         });
     }
 
@@ -1015,7 +1015,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
     // These unlock at high building counts and encourage diverse building strategies
     let per_building_upgrades: [(u32, u32, &str, u64, f64); 20] = [
         (9301, 1, "Solar Network", 300, 1e12),
-        (9302, 2, "Grandma Collective", 300, 1e13),
+        (9302, 2, "Drone Collective", 300, 1e13),
         (9303, 3, "Mining Consortium", 300, 1e14),
         (9304, 4, "Orbital Alliance", 300, 1e15),
         (9305, 5, "Lunar Federation", 300, 1e16),
@@ -1046,7 +1046,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             description,
             cost,
             requirement: UpgradeRequirement::ProducerCount { producer_id, count },
-            effect: UpgradeEffect::CpsPerBuilding {
+            effect: UpgradeEffect::EpsPerBuilding {
                 producer_id,
                 bonus_percent: 0.01,
             },
@@ -1104,7 +1104,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             description: desc,
             cost,
             requirement: UpgradeRequirement::TotalEnergyPerSecond(cost / 100.0), // Unlock at ~1% of cost in EPS
-            effect: UpgradeEffect::CpsPerTotalBuildings(bonus),
+            effect: UpgradeEffect::EpsPerTotalBuildings(bonus),
         });
     }
 
@@ -1313,11 +1313,11 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         });
     }
 
-    // ============ COSMIC CAT UPGRADES (Cookie Clicker Kitten style) ============
-    // E/s is multiplied by (1 + stellar_essence * bonus) for each kitten upgrade
-    // Stellar Essence = 4% per achievement (like Cookie Clicker's milk)
+    // ============ COSMIC CAT UPGRADES ============
+    // E/s is multiplied by (1 + stellar_essence * bonus) for each Cosmic Cat upgrade
+    // Stellar Essence = 4% per achievement
     // These stack multiplicatively!
-    let kitten_upgrades: [(u32, &str, &str, f64, f64); 15] = [
+    let cosmic_cat_upgrades: [(u32, &str, &str, f64, f64); 15] = [
         (
             9701,
             "Cosmic Kittens",
@@ -1425,18 +1425,18 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
         ),
     ];
 
-    for (id, name, desc, cost, bonus) in kitten_upgrades {
+    for (id, name, desc, cost, bonus) in cosmic_cat_upgrades {
         upgrades.push(Upgrade {
             id,
             name,
             description: desc,
             cost,
             requirement: UpgradeRequirement::TotalEnergyPerSecond(cost / 1000.0),
-            effect: UpgradeEffect::KittenBonus(bonus),
+            effect: UpgradeEffect::CosmicCatBonus(bonus),
         });
     }
 
-    // Stellar Essence multiplier upgrades (increases milk effect)
+    // Stellar Essence multiplier upgrades (increases essence effect)
     let essence_upgrades: [(u32, &str, &str, f64, f64); 5] = [
         (
             9801,
@@ -1482,7 +1482,7 @@ static UPGRADES: Lazy<Vec<Upgrade>> = Lazy::new(|| {
             description: desc,
             cost,
             requirement: UpgradeRequirement::TotalEnergyPerSecond(cost / 100.0),
-            effect: UpgradeEffect::MilkMultiplier(mult),
+            effect: UpgradeEffect::StellarEssenceMultiplier(mult),
         });
     }
 

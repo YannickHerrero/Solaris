@@ -1,5 +1,5 @@
 /// Get cost multiplier - fixed at 1.15x for all producers
-/// This matches Cookie Clicker's consistent cost scaling
+/// Consistent cost scaling across all producer types
 pub fn get_cost_multiplier(_producer_id: u32) -> f64 {
     1.15
 }
@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn test_cost_multiplier() {
-        // All producers use 1.15x (Cookie Clicker style)
+        // All producers use 1.15x cost scaling
         assert!((get_cost_multiplier(1) - 1.15).abs() < 0.001);
         assert!((get_cost_multiplier(7) - 1.15).abs() < 0.001);
         assert!((get_cost_multiplier(8) - 1.15).abs() < 0.001);

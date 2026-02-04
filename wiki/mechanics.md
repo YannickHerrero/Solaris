@@ -15,7 +15,7 @@ Solaris runs at **10 ticks per second**. Each tick:
 
 ### Single Producer Cost
 
-All producers use a flat **1.15x cost multiplier** (Cookie Clicker style):
+All producers use a flat **1.15x cost multiplier**:
 
 ```
 cost(n) = base_cost × 1.15^owned
@@ -46,7 +46,7 @@ total_cost = base_cost × 1.15^owned × (1.15^quantity - 1) / 0.15
 
 ### Upgrade Cost
 
-Upgrade costs scale by **10x** per tier (Cookie Clicker style):
+Upgrade costs scale by **10x** per tier:
 
 ```
 upgrade_cost = base_upgrade_cost × 10^tier
@@ -112,7 +112,7 @@ producer_multiplier = upgrade_mult × synergy_mult × special_bonuses
 The global multiplier affects all producers:
 
 ```
-global_multiplier = upgrade_global_mult × achievement_mult × prestige_mult × kitten_mult × misc_mult
+global_multiplier = upgrade_global_mult × achievement_mult × prestige_mult × cosmic_cat_mult × misc_mult
 ```
 
 Where:
@@ -129,9 +129,9 @@ Where:
    ```
    At 260 achievements: **3.67x**
 
-3. **Cosmic Cat (Kitten) Multiplier**: Based on Stellar Essence
+3. **Cosmic Cat Multiplier**: Based on Stellar Essence
    ```
-   kitten_mult = (1 + stellar_essence × 0.05)^(kitten_upgrades_owned)
+   cosmic_cat_mult = (1 + stellar_essence × 0.05)^(cosmic_cat_upgrades_owned)
    ```
 
 4. **Miscellaneous Multipliers**: Milestone, Research, Per-Building E/s, etc.
@@ -185,7 +185,7 @@ drone_network_bonus = 2^10 × (1 + 0.01 × 200/50 × 10) = 1024 × 1.40 = 1,433.
 
 ### Stellar Essence & Cosmic Cats
 
-**Stellar Essence** is Solaris's equivalent of Cookie Clicker's "milk":
+**Stellar Essence** is a resource earned through achievements:
 ```
 stellar_essence = 0.04 × achievement_count
 ```
@@ -194,15 +194,15 @@ At 260 achievements: 10.4 Stellar Essence
 
 **Cosmic Cat Bonus:**
 ```
-single_kitten_mult = 1 + (stellar_essence × 0.05 × essence_multiplier)
-total_kitten_mult = single_kitten_mult^(kitten_upgrades_owned)
+single_cat_mult = 1 + (stellar_essence × 0.05 × essence_multiplier)
+total_cat_mult = single_cat_mult^(cosmic_cat_upgrades_owned)
 ```
 
 **Example with 260 achievements, all 15 cats, and all 5 essence upgrades:**
 ```
 essence_multiplier = 1.05^5 = 1.276
-single_kitten_mult = 1 + (10.4 × 0.05 × 1.276) = 1.663
-total_kitten_mult = 1.663^15 = 5,847x
+single_cat_mult = 1 + (10.4 × 0.05 × 1.276) = 1.663
+total_cat_mult = 1.663^15 = 5,847x
 ```
 
 ---
@@ -212,14 +212,14 @@ total_kitten_mult = 1.663^15 = 5,847x
 ### Energy Per Click
 
 ```
-click_energy = (click_power × manual_multiplier × cursor_multiplier) + (click_cps_percent × total_eps) + thousand_rays_bonus
+click_energy = (click_power × manual_multiplier × panel_multiplier) + (click_eps_percent × total_eps) + thousand_rays_bonus
 ```
 
 Where:
 - `click_power` = 1 (base)
 - `manual_multiplier` = 2^(manual_upgrades_purchased)
-- `cursor_multiplier` = 2^(first_3_solar_upgrades) (from Thousand Rays tiers 1-3)
-- `click_cps_percent` = 0.05 + (0.01 × click_cps_upgrades) (base 5% + 1% per upgrade)
+- `panel_multiplier` = 2^(first_3_solar_upgrades) (from Thousand Rays tiers 1-3)
+- `click_eps_percent` = 0.05 + (0.01 × click_eps_upgrades) (base 5% + 1% per upgrade)
 - `total_eps` = current total energy per second
 - `thousand_rays_bonus` = calculated Thousand Rays bonus (if tier 4+ owned)
 
@@ -291,7 +291,7 @@ Where `n` = number of achievements unlocked.
 
 ### Stellar Chips Formula (Cubic)
 
-Solaris uses a **cubic formula** for slower prestige progression (matching Cookie Clicker's feel):
+Solaris uses a **cubic formula** for slower prestige progression:
 
 ```
 chips = floor(cbrt(total_energy_earned / 1,000,000,000,000))

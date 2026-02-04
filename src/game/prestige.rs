@@ -43,7 +43,7 @@ impl PrestigeUpgrade {
 
 // Calculate stellar chips from total energy earned
 // Formula: floor(cbrt(total_energy_earned / 1_000_000_000_000))
-// This matches Cookie Clicker's cubic scaling for slower prestige progression
+// Cubic scaling for slower prestige progression
 // 1 chip = 1 trillion, 8 chips = 8 trillion, 1000 chips = 1 quintillion
 pub fn calculate_stellar_chips(total_energy_earned: f64) -> u64 {
     (total_energy_earned / 1_000_000_000_000.0).cbrt().floor() as u64
