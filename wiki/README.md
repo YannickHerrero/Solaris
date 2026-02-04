@@ -44,6 +44,7 @@ Solaris is an incremental/idle game inspired by classic incremental games. Start
 - [Controls](controls.md) - Keybindings, UI panels, and layout modes
 - [Mechanics](mechanics.md) - Game formulas for costs, production, and bonuses
 - [Strategy Guide](strategy.md) - Optimization tips and progression strategies
+- [Auto Mode](auto-mode.md) - Built-in bot that plays the game optimally
 
 ---
 
