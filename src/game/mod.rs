@@ -48,6 +48,10 @@ pub struct GameState {
     #[serde(skip)]
     pub new_achievements: Vec<u32>,
 
+    // All-time energy earned across all ascensions (never resets)
+    #[serde(default)]
+    pub all_time_energy_earned: f64,
+
     // Per-producer lifetime energy tracking (resets on ascension)
     #[serde(default)]
     pub producer_lifetime_energy: HashMap<u32, f64>,
@@ -79,6 +83,7 @@ impl GameState {
             total_ascensions: 0,
             prestige_upgrades: Vec::new(),
             new_achievements: Vec::new(),
+            all_time_energy_earned: 0.0,
             producer_lifetime_energy: HashMap::new(),
         }
     }
@@ -190,6 +195,7 @@ impl GameState {
     pub fn add_energy(&mut self, amount: f64) {
         self.energy += amount;
         self.total_energy_earned += amount;
+        self.all_time_energy_earned += amount;
     }
 
     pub fn buy_producer(&mut self, id: u32, quantity: u64) -> bool {
@@ -642,6 +648,7 @@ impl GameState {
 
         self.energy += energy_gained;
         self.total_energy_earned += energy_gained;
+        self.all_time_energy_earned += energy_gained;
         self.total_manual_clicks += 1;
 
         // Add to current tick's tracking for rate display
