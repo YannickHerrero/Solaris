@@ -1,8 +1,8 @@
 use ratatui::prelude::*;
-use ratatui::widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Clear};
+use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph};
 
 use crate::app::App;
-use crate::game::{PrestigeUpgrade, PrestigeRequirement};
+use crate::game::{PrestigeRequirement, PrestigeUpgrade};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     // Create a centered popup
@@ -24,8 +24,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(8),  // Info section
-            Constraint::Min(1),      // Upgrade list
+            Constraint::Length(8), // Info section
+            Constraint::Min(1),    // Upgrade list
         ])
         .split(inner);
 
@@ -43,7 +43,10 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
     let can_ascend = app.game.can_ascend();
 
     let ascend_status = if can_ascend {
-        format!("Press ENTER to ascend and gain {} Stellar Chips!", potential_chips)
+        format!(
+            "Press ENTER to ascend and gain {} Stellar Chips!",
+            potential_chips
+        )
     } else {
         "Need ~1 trillion total energy to earn first chip".to_string()
     };
@@ -58,10 +61,7 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
 
   Ascension resets your progress but grants permanent bonuses!
 "#,
-        stellar_chips,
-        ascensions,
-        potential_chips,
-        ascend_status
+        stellar_chips, ascensions, potential_chips, ascend_status
     );
 
     let style = if can_ascend {
@@ -108,20 +108,21 @@ fn render_prestige_upgrades(frame: &mut Frame, area: Rect, app: &App) {
 
             let line = format!(
                 "{:<8} {:<22} {:>12}  {}",
-                status,
-                upgrade.name,
-                cost_str,
-                description
+                status, upgrade.name, cost_str, description
             );
 
-            let style = if is_purchased {
-                Style::default().fg(Color::DarkGray)
-            } else if i == app.selected_prestige_upgrade && is_available {
-                if can_afford {
+            let style = if i == app.selected_prestige_upgrade {
+                if is_purchased {
+                    Style::default().fg(Color::Black).bg(Color::DarkGray)
+                } else if is_available && can_afford {
                     Style::default().fg(Color::Black).bg(Color::Green)
-                } else {
+                } else if is_available {
                     Style::default().fg(Color::Black).bg(Color::Red)
+                } else {
+                    Style::default().fg(Color::Black).bg(Color::DarkGray)
                 }
+            } else if is_purchased {
+                Style::default().fg(Color::DarkGray)
             } else if is_available && can_afford {
                 Style::default().fg(Color::Green)
             } else if is_available {
@@ -144,13 +145,19 @@ fn render_prestige_upgrades(frame: &mut Frame, area: Rect, app: &App) {
         .constraints([Constraint::Length(1), Constraint::Min(1)])
         .split(area);
 
-    let header_widget = Paragraph::new(header)
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+    let header_widget = Paragraph::new(header).style(
+        Style::default()
+            .fg(Color::Cyan)
+            .add_modifier(Modifier::BOLD),
+    );
     frame.render_widget(header_widget, chunks[0]);
 
     let list = List::new(items);
     let mut state = ListState::default();
-    state.select(Some(app.selected_prestige_upgrade.min(all_upgrades.len().saturating_sub(1))));
+    state.select(Some(
+        app.selected_prestige_upgrade
+            .min(all_upgrades.len().saturating_sub(1)),
+    ));
     frame.render_stateful_widget(list, chunks[1], &mut state);
 }
 
@@ -159,10 +166,16 @@ fn get_requirement_string(upgrade: &PrestigeUpgrade, app: &App) -> String {
     match upgrade.requirement {
         None => upgrade.description.to_string(),
         Some(PrestigeRequirement::Ascensions(count)) => {
-            format!("Requires {} ascensions (have {})", count, app.game.total_ascensions)
+            format!(
+                "Requires {} ascensions (have {})",
+                count, app.game.total_ascensions
+            )
         }
         Some(PrestigeRequirement::TotalChips(count)) => {
-            format!("Requires {} total chips earned (have {})", count, app.game.total_stellar_chips_earned)
+            format!(
+                "Requires {} total chips earned (have {})",
+                count, app.game.total_stellar_chips_earned
+            )
         }
         Some(PrestigeRequirement::PrestigeUpgrade(req_id)) => {
             if let Some(req_upgrade) = PrestigeUpgrade::by_id(req_id) {
