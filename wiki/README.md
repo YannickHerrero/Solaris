@@ -4,7 +4,7 @@ Welcome to the official wiki for **Solaris**, a terminal-based idle game where y
 
 ## Game Overview
 
-Solaris is an incremental/idle game inspired by classics like Cookie Clicker. Starting with simple Solar Panels, you'll progress through 20 increasingly powerful energy producers, from Mining Drones to Big Bang Catalysts that create pocket universes.
+Solaris is an incremental/idle game inspired by classic incremental games. Starting with simple Solar Panels, you'll progress through 20 increasingly powerful energy producers, from Mining Drones to Big Bang Catalysts that create pocket universes.
 
 ### Quick Stats
 
@@ -50,14 +50,14 @@ Solaris is an incremental/idle game inspired by classics like Cookie Clicker. St
 ## Key Features
 
 ### Energy Production
-- **20 Unique Producers**: Cookie Clicker-inspired cost and E/s ratios
+- **20 Unique Producers**: Incremental-style cost and E/s ratios
 - **Producer Upgrades**: 15 tiers per producer, each doubling production (2x)
 - **Synergy System**: 38 bidirectional synergies between adjacent producers
 
 ### Special Mechanics
 - **Thousand Rays System**: Solar Panels gain +0.1 energy per non-panel building owned
 - **Drone Network System**: Mining Drones are boosted by all other building types
-- **Stellar Essence & Cosmic Cats**: Achievements (4% each) power kitten-style multipliers
+- **Stellar Essence & Cosmic Cats**: Achievements (4% each) power Cosmic Cat multipliers
 
 ### Prestige System
 - **Stellar Chips**: Earned by ascending, using cubic formula for slower progression

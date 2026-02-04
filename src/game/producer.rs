@@ -15,9 +15,9 @@ impl Producer {
     }
 }
 
-// 20 Producers matching Cookie Clicker's cost/E/s ratios
+// 20 Producers with incremental cost/E/s ratios
 // Each producer has progressively longer payback times (cost/E/s)
-// This creates the characteristic CC slow-down as you progress
+// This creates the characteristic slow-down as you progress
 static PRODUCERS: [Producer; 20] = [
     // Producer 1: Solar Panel
     // Special: Uses Thousand Rays mechanic (gains +0.1 per other building)

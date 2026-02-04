@@ -4,7 +4,7 @@ Solaris features 20 unique energy producers, each representing increasingly adva
 
 ## Producer Table
 
-All producers use Cookie Clicker-inspired cost and E/s ratios with progressively longer payback times.
+All producers use incremental-style cost and E/s ratios with progressively longer payback times.
 
 | ID | Icon | Name | Base E/s | Base Cost | Description |
 |----|------|------|----------|-----------|-------------|
@@ -100,7 +100,7 @@ Additionally, prestige upgrades can unlock multiple producers at the start:
 
 ## Cost Scaling
 
-All producer costs scale by a flat **1.15x multiplier** per purchase (Cookie Clicker style):
+All producer costs scale by a flat **1.15x multiplier** per purchase:
 
 ```
 Cost(n) = base_cost × 1.15^owned
@@ -143,7 +143,7 @@ Where:
 
 ### Producer Multiplier Sources
 
-1. **Producer Upgrades**: 15 tiers, each giving **2x** multiplier (Cookie Clicker style)
+1. **Producer Upgrades**: 15 tiers, each giving **2x** multiplier
    - All tiers give flat 2.0x multiplier
    - Maximum: **32,768x** from all 15 upgrades (2^15)
 
@@ -166,7 +166,7 @@ Where:
 
 ## Producer Upgrades
 
-Each producer has **15 upgrade tiers** that unlock at specific ownership thresholds. All tiers give a flat **2x multiplier** (Cookie Clicker style):
+Each producer has **15 upgrade tiers** that unlock at specific ownership thresholds. All tiers give a flat **2x multiplier**:
 
 | Tier | Required Count | Effect | Cumulative |
 |------|----------------|--------|------------|
@@ -196,7 +196,7 @@ See [Upgrades](upgrades.md) for complete upgrade details.
 
 ### Thousand Rays (Solar Panel)
 
-Solar Panels use a unique upgrade system inspired by Cookie Clicker's "Thousand Fingers" mechanic. Instead of standard 2x multipliers, Solar Panel upgrades provide scaling bonuses based on your total buildings:
+Solar Panels use a unique upgrade system called Thousand Rays. Instead of standard 2x multipliers, Solar Panel upgrades provide scaling bonuses based on your total buildings:
 
 **First 3 Upgrades (Tiers 1-3):**
 - Each upgrade provides **2x to both Solar Panel E/s AND manual mining power**

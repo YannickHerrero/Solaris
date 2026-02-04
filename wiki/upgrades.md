@@ -24,7 +24,7 @@ Solaris features **474 upgrades** across 13 categories. Upgrades provide permane
 
 ## Producer Upgrades (300 total)
 
-Each of the 20 producers has **15 upgrade tiers**. All tiers give a flat **2x multiplier** (Cookie Clicker style).
+Each of the 20 producers has **15 upgrade tiers**. All tiers give a flat **2x multiplier**.
 
 ### Unlock Thresholds
 
@@ -48,7 +48,7 @@ Each of the 20 producers has **15 upgrade tiers**. All tiers give a flat **2x mu
 
 ### Cost Formula
 
-Upgrade costs scale by **10x** per tier (Cookie Clicker style):
+Upgrade costs scale by **10x** per tier:
 
 ```
 Upgrade Cost = base_upgrade_cost × 10^tier
@@ -312,7 +312,7 @@ These upgrades grant +1% E/s for each building of a specific type you own.
 | ID | Name | Required Count | Cost | Effect |
 |----|------|----------------|------|--------|
 | 9301 | Solar Network | 300 Panels | 1T | +1% E/s per Panel |
-| 9302 | Grandma Collective | 300 Drones | 10T | +1% E/s per Drone |
+| 9302 | Drone Collective | 300 Drones | 10T | +1% E/s per Drone |
 | 9303 | Mining Consortium | 300 Mines | 100T | +1% E/s per Mine |
 | 9304 | Orbital Alliance | 300 Stations | 1Q | +1% E/s per Station |
 | 9305 | Lunar Federation | 300 Colonies | 10Q | +1% E/s per Colony |
@@ -401,7 +401,7 @@ All 15 research upgrades: 1.05^15 = **2.08x** cumulative multiplier
 
 ## Cosmic Cat Upgrades (15 total)
 
-Cosmic Cats are the Solaris equivalent of Cookie Clicker's "Kitten" upgrades. They multiply your E/s based on your **Stellar Essence** (which is 4% per achievement).
+Cosmic Cats multiply your E/s based on your **Stellar Essence** (which is 4% per achievement).
 
 ### Stellar Essence Formula
 ```
