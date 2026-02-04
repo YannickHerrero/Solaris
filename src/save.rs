@@ -31,8 +31,8 @@ pub fn load_game() -> io::Result<Option<SaveData>> {
     }
 
     let json = fs::read_to_string(path)?;
-    let save_data: SaveData = serde_json::from_str(&json)
-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+    let save_data: SaveData =
+        serde_json::from_str(&json).map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
 
     Ok(Some(save_data))
 }

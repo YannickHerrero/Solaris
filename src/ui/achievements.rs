@@ -24,9 +24,9 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3),  // Tab bar
-            Constraint::Length(2),  // Stats
-            Constraint::Min(1),     // Achievement list
+            Constraint::Length(3), // Tab bar
+            Constraint::Length(2), // Stats
+            Constraint::Min(1),    // Achievement list
         ])
         .split(inner);
 
@@ -55,7 +55,11 @@ fn render_tabs(frame: &mut Frame, area: Rect, app: &App) {
     let tabs = Tabs::new(tab_titles)
         .select(app.achievement_tab)
         .style(Style::default().fg(Color::White))
-        .highlight_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+        .highlight_style(
+            Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+        )
         .divider(" | ");
 
     frame.render_widget(tabs, area);
@@ -74,8 +78,7 @@ fn render_stats(frame: &mut Frame, area: Rect, app: &App) {
         bonus
     );
 
-    let paragraph = Paragraph::new(stats_text)
-        .style(Style::default().fg(Color::Cyan));
+    let paragraph = Paragraph::new(stats_text).style(Style::default().fg(Color::Cyan));
     frame.render_widget(paragraph, area);
 }
 
@@ -114,12 +117,7 @@ fn render_achievement_list(frame: &mut Frame, area: Rect, app: &App) {
                 get_hint(achievement)
             };
 
-            let line = format!(
-                " {} {:<30} {}",
-                status,
-                name,
-                desc
-            );
+            let line = format!(" {} {:<30} {}", status, name, desc);
 
             let style = if is_unlocked {
                 if i == app.selected_achievement {
@@ -145,17 +143,20 @@ fn render_achievement_list(frame: &mut Frame, area: Rect, app: &App) {
         .constraints([Constraint::Length(1), Constraint::Min(1)])
         .split(area);
 
-    let header = format!(
-        " {:<3} {:<30} {}",
-        "", "Achievement", "Requirement"
+    let header = format!(" {:<3} {:<30} {}", "", "Achievement", "Requirement");
+    let header_widget = Paragraph::new(header).style(
+        Style::default()
+            .fg(Color::Cyan)
+            .add_modifier(Modifier::BOLD),
     );
-    let header_widget = Paragraph::new(header)
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
     frame.render_widget(header_widget, chunks[0]);
 
     let list = List::new(items);
     let mut state = ListState::default();
-    state.select(Some(app.selected_achievement.min(filtered.len().saturating_sub(1))));
+    state.select(Some(
+        app.selected_achievement
+            .min(filtered.len().saturating_sub(1)),
+    ));
     frame.render_stateful_widget(list, chunks[1], &mut state);
 }
 
@@ -163,13 +164,13 @@ fn matches_tab(achievement: &Achievement, tab: usize) -> bool {
     use crate::game::AchievementRequirement::*;
 
     match tab {
-        0 => true, // All
-        1 => matches!(achievement.requirement, ProducerCount { .. }), // Producers
-        2 => matches!(achievement.requirement, TotalEnergyPerSecond(_)), // Production
-        3 => matches!(achievement.requirement, TotalEnergyEarned(_)), // Lifetime
-        4 => matches!(achievement.requirement, TotalClicks(_)), // Clicks
-        5 => matches!(achievement.requirement, UpgradesPurchased(_)), // Upgrades
-        6 => matches!(achievement.requirement, TimePlayed(_)), // Time
+        0 => true,                                                                 // All
+        1 => matches!(achievement.requirement, ProducerCount { .. }),              // Producers
+        2 => matches!(achievement.requirement, TotalEnergyPerSecond(_)),           // Production
+        3 => matches!(achievement.requirement, TotalEnergyEarned(_)),              // Lifetime
+        4 => matches!(achievement.requirement, TotalClicks(_)),                    // Clicks
+        5 => matches!(achievement.requirement, UpgradesPurchased(_)),              // Upgrades
+        6 => matches!(achievement.requirement, TimePlayed(_)),                     // Time
         7 => matches!(achievement.requirement, Ascensions(_) | TotalProducers(_)), // Prestige
         _ => true,
     }

@@ -1,5 +1,5 @@
-pub mod animation;
 mod achievements;
+pub mod animation;
 mod boss;
 mod header;
 mod help;
@@ -24,8 +24,7 @@ pub fn render(frame: &mut Frame, app: &mut App) {
             "Terminal too small!\nMinimum: 60x20\nCurrent: {}x{}",
             size.width, size.height
         );
-        let paragraph = ratatui::widgets::Paragraph::new(msg)
-            .alignment(Alignment::Center);
+        let paragraph = ratatui::widgets::Paragraph::new(msg).alignment(Alignment::Center);
         frame.render_widget(paragraph, size);
         return;
     }
@@ -58,7 +57,9 @@ pub fn render(frame: &mut Frame, app: &mut App) {
                 Panel::Producers => producers::render(frame, chunks.left_panel, app, focused),
                 Panel::Upgrades => upgrades::render(frame, chunks.left_panel, app, focused),
                 Panel::Stats => stats::render(frame, chunks.left_panel, app, focused),
-                Panel::Visualization => visualization::render(frame, chunks.left_panel, app, focused),
+                Panel::Visualization => {
+                    visualization::render(frame, chunks.left_panel, app, focused)
+                }
             }
         }
         LayoutMode::TwoColumn => {
@@ -97,7 +98,7 @@ pub fn render(frame: &mut Frame, app: &mut App) {
 }
 
 fn render_offline_report(frame: &mut Frame, area: Rect, report: &crate::app::OfflineReport) {
-    use ratatui::widgets::{Block, Borders, Paragraph, Clear};
+    use ratatui::widgets::{Block, Borders, Clear, Paragraph};
 
     // Center the popup
     let popup_width = 40;
@@ -129,7 +130,7 @@ fn render_offline_report(frame: &mut Frame, area: Rect, report: &crate::app::Off
 }
 
 fn render_achievement_notification(frame: &mut Frame, area: Rect, app: &mut App) {
-    use ratatui::widgets::{Block, Borders, Paragraph, Clear};
+    use ratatui::widgets::{Block, Borders, Clear, Paragraph};
 
     // Check for new achievements to display
     if let Some(achievement) = &app.achievement_notification {

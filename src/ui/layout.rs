@@ -23,8 +23,8 @@ pub fn create_layout(area: Rect, app: &App) -> LayoutChunks {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3),  // Header
-            Constraint::Min(10),    // Main content
+            Constraint::Length(3), // Header
+            Constraint::Min(10),   // Main content
         ])
         .split(area);
 
@@ -32,31 +32,23 @@ pub fn create_layout(area: Rect, app: &App) -> LayoutChunks {
     let main = chunks[1];
 
     match app.layout_mode {
-        LayoutMode::Single => {
-            LayoutChunks {
-                header,
-                left_panel: main,
-                right_top: None,
-                right_bottom: None,
-            }
-        }
+        LayoutMode::Single => LayoutChunks {
+            header,
+            left_panel: main,
+            right_top: None,
+            right_bottom: None,
+        },
         LayoutMode::TwoColumn => {
             // Split main horizontally: left (Producers) | right (Viz + Upgrades)
             let horizontal = Layout::default()
                 .direction(Direction::Horizontal)
-                .constraints([
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50),
-                ])
+                .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
                 .split(main);
 
             // Split right side vertically: top (Visualization) | bottom (Upgrades)
             let right_vertical = Layout::default()
                 .direction(Direction::Vertical)
-                .constraints([
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50),
-                ])
+                .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
                 .split(horizontal[1]);
 
             LayoutChunks {
