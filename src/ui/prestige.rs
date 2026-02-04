@@ -2,6 +2,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph};
 
 use crate::app::App;
+use crate::format::format_energy;
 use crate::game::{PrestigeRequirement, PrestigeUpgrade};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &App) {
@@ -24,8 +25,8 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(8), // Info section
-            Constraint::Min(1),    // Upgrade list
+            Constraint::Length(10), // Info section
+            Constraint::Min(1),     // Upgrade list
         ])
         .split(inner);
 
@@ -41,6 +42,8 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
     let potential_chips = app.game.calculate_potential_stellar_chips();
     let ascensions = app.game.total_ascensions;
     let can_ascend = app.game.can_ascend();
+    let energy_this_run = format_energy(app.game.total_energy_earned);
+    let energy_all_time = format_energy(app.game.all_time_energy_earned);
 
     let ascend_status = if can_ascend {
         format!(
@@ -54,14 +57,15 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
     let info_text = format!(
         r#"
   Stellar Chips: {}     |     Total Ascensions: {}
+  Energy This Ascension: {}
+  All-Time Energy: {}
 
   Potential Chips on Ascension: {}
-
   {}
 
   Ascension resets your progress but grants permanent bonuses!
 "#,
-        stellar_chips, ascensions, potential_chips, ascend_status
+        stellar_chips, ascensions, energy_this_run, energy_all_time, potential_chips, ascend_status
     );
 
     let style = if can_ascend {
