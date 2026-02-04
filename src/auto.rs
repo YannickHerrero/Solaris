@@ -38,20 +38,20 @@ enum AutoState {
 
 /// What the auto-player wants to buy
 #[derive(Debug, Clone)]
-enum AutoTarget {
+pub(crate) enum AutoTarget {
     Producer { index: usize },
     Upgrade { index: usize },
 }
 
 impl AutoTarget {
-    fn panel(&self) -> Panel {
+    pub(crate) fn panel(&self) -> Panel {
         match self {
             AutoTarget::Producer { .. } => Panel::Producers,
             AutoTarget::Upgrade { .. } => Panel::Upgrades,
         }
     }
 
-    fn index(&self) -> usize {
+    pub(crate) fn index(&self) -> usize {
         match self {
             AutoTarget::Producer { index } | AutoTarget::Upgrade { index } => *index,
         }
@@ -60,12 +60,12 @@ impl AutoTarget {
 
 /// A scored candidate for purchase, used to compare producers and upgrades uniformly.
 #[derive(Debug, Clone)]
-struct ScoredCandidate {
-    target: AutoTarget,
-    cost: f64,
+pub(crate) struct ScoredCandidate {
+    pub(crate) target: AutoTarget,
+    pub(crate) cost: f64,
     #[allow(dead_code)]
-    eps_gain: f64,
-    roi_seconds: f64,
+    pub(crate) eps_gain: f64,
+    pub(crate) roi_seconds: f64,
 }
 
 // ============ Simple RNG ============
@@ -300,196 +300,12 @@ impl AutoPlayer {
     // ============ Decision Engine ============
 
     /// Decide the globally optimal next action.
-    ///
-    /// Strategy (in priority order):
-    /// 1. Buy first unit of a newly available producer (unlock next tier) if affordable.
-    /// 2. Score all affordable producers and upgrades by ROI (cost / E/s gain).
-    /// 3. Look-ahead: if a not-yet-affordable option has very high value and the
-    ///    time-to-save for it is shorter than the best affordable option's ROI,
-    ///    wait (return None) to save for it.
-    /// 4. Otherwise, buy the affordable option with the lowest ROI.
+    /// Delegates to the shared `decide_best_action` function.
     fn decide_next_action(&mut self, app: &App) -> Option<AutoTarget> {
-        let current_eps = app.game.total_energy_per_second();
-
-        // Priority 1: Buy first unit of newly unlocked producers to unlock next tier
-        if let Some(target) = self.find_unlock_producer(app) {
-            return Some(target);
+        match decide_best_action(app) {
+            DecisionResult::Buy(target) | DecisionResult::UnlockProducer(target) => Some(target),
+            DecisionResult::Wait { .. } | DecisionResult::Nothing => None,
         }
-
-        // Gather all candidates (affordable and not-yet-affordable)
-        let mut affordable: Vec<ScoredCandidate> = Vec::new();
-        let mut future: Vec<ScoredCandidate> = Vec::new();
-
-        // Score producers
-        self.score_producers(app, current_eps, &mut affordable, &mut future);
-
-        // Score upgrades
-        self.score_upgrades(app, current_eps, &mut affordable, &mut future);
-
-        // Sort affordable by ROI (lowest = best)
-        affordable.sort_by(|a, b| a.roi_seconds.partial_cmp(&b.roi_seconds).unwrap());
-
-        // If nothing affordable, nothing to do
-        if affordable.is_empty() {
-            return None;
-        }
-
-        let best_affordable = &affordable[0];
-
-        // Priority 3: Look-ahead — should we save for a better future purchase?
-        if current_eps > 0.0 {
-            for candidate in &future {
-                let energy_needed = candidate.cost - app.game.energy;
-                let time_to_save = energy_needed / current_eps;
-
-                // If we can save for this candidate faster than the best affordable's payback,
-                // and the future candidate has a better ROI, wait for it.
-                if time_to_save < best_affordable.roi_seconds * SAVE_THRESHOLD_MULTIPLIER
-                    && candidate.roi_seconds < best_affordable.roi_seconds
-                {
-                    // Worth waiting — return None to idle
-                    return None;
-                }
-            }
-        }
-
-        // Priority 4: Buy the best affordable option
-        Some(best_affordable.target.clone())
-    }
-
-    /// Find a newly unlocked producer that we don't own yet — buying one unit
-    /// unlocks the next tier.
-    fn find_unlock_producer(&self, app: &App) -> Option<AutoTarget> {
-        let visible = app.game.visible_producers();
-
-        for (display_idx, (_, producer)) in visible.iter().enumerate() {
-            let owned = app.game.producer_count(producer.id);
-
-            // Already own at least one — skip
-            if owned > 0 {
-                continue;
-            }
-
-            // Solar Panel (id 1) is always unlocked and should be auto-bought
-            // For other producers: buying the first one unlocks the next producer
-            let cost = calculate_bulk_cost(producer.base_cost, owned, 1, producer.id);
-
-            if app.game.energy >= cost {
-                return Some(AutoTarget::Producer { index: display_idx });
-            }
-        }
-
-        None
-    }
-
-    /// Score all visible producers by simulated ROI.
-    /// Simulation: clone the game state, add 1 producer, measure E/s delta.
-    fn score_producers(
-        &self,
-        app: &App,
-        _current_eps: f64,
-        affordable: &mut Vec<ScoredCandidate>,
-        future: &mut Vec<ScoredCandidate>,
-    ) {
-        let visible = app.game.visible_producers();
-
-        for (display_idx, (_, producer)) in visible.iter().enumerate() {
-            let owned = app.game.producer_count(producer.id);
-            let cost = calculate_bulk_cost(producer.base_cost, owned, 1, producer.id);
-
-            // Simulate buying this producer: clone state, add 1, measure E/s
-            let eps_gain = self.simulate_producer_purchase(app, producer);
-
-            if eps_gain <= 0.0 {
-                continue;
-            }
-
-            let roi_seconds = cost / eps_gain;
-
-            let candidate = ScoredCandidate {
-                target: AutoTarget::Producer { index: display_idx },
-                cost,
-                eps_gain,
-                roi_seconds,
-            };
-
-            if app.game.energy >= cost {
-                affordable.push(candidate);
-            } else {
-                future.push(candidate);
-            }
-        }
-    }
-
-    /// Simulate buying 1 unit of a producer and return the E/s delta.
-    /// This captures all cross-producer effects (Thousand Rays, synergies, etc.).
-    fn simulate_producer_purchase(&self, app: &App, producer: &Producer) -> f64 {
-        let current_eps = app.game.total_energy_per_second();
-
-        // Clone the game state and simulate the purchase
-        let mut simulated = app.game.clone();
-        *simulated.producers_owned.entry(producer.id).or_insert(0) += 1;
-
-        let new_eps = simulated.total_energy_per_second();
-        new_eps - current_eps
-    }
-
-    /// Score all available upgrades by simulated ROI.
-    /// Simulation: clone the game state, add the upgrade, measure E/s delta.
-    fn score_upgrades(
-        &self,
-        app: &App,
-        current_eps: f64,
-        affordable: &mut Vec<ScoredCandidate>,
-        future: &mut Vec<ScoredCandidate>,
-    ) {
-        let available = app.game.available_upgrades();
-
-        for (idx, upgrade) in available.iter().enumerate() {
-            let cost = app.game.get_upgrade_cost(upgrade);
-
-            let eps_gain = self.simulate_upgrade_purchase(app, upgrade);
-
-            // For upgrades with zero direct E/s impact (ManualMultiplier, ClickEpsPercent),
-            // give them a small synthetic value so they're still bought eventually.
-            let effective_eps_gain = if eps_gain <= 0.0 {
-                // Assign a tiny synthetic value proportional to current EPS
-                // so these upgrades get a very high ROI but aren't ignored forever
-                current_eps * 0.001
-            } else {
-                eps_gain
-            };
-
-            if effective_eps_gain <= 0.0 {
-                continue;
-            }
-
-            let roi_seconds = cost / effective_eps_gain;
-
-            let candidate = ScoredCandidate {
-                target: AutoTarget::Upgrade { index: idx },
-                cost,
-                eps_gain: effective_eps_gain,
-                roi_seconds,
-            };
-
-            if app.game.energy >= cost {
-                affordable.push(candidate);
-            } else {
-                future.push(candidate);
-            }
-        }
-    }
-
-    /// Simulate purchasing an upgrade and return the E/s delta.
-    fn simulate_upgrade_purchase(&self, app: &App, upgrade: &Upgrade) -> f64 {
-        let current_eps = app.game.total_energy_per_second();
-
-        let mut simulated = app.game.clone();
-        simulated.upgrades_purchased.push(upgrade.id);
-
-        let new_eps = simulated.total_energy_per_second();
-        new_eps - current_eps
     }
 
     fn current_selection(&self, app: &App, target: &AutoTarget) -> usize {
@@ -513,4 +329,210 @@ impl AutoPlayer {
             }
         }
     }
+}
+
+// ============ Shared Decision Engine ============
+// These free functions are used by both AutoPlayer and the hint system.
+
+/// Result of evaluating the best action to take.
+#[derive(Debug, Clone)]
+pub(crate) enum DecisionResult {
+    /// Buy this target now (it's affordable and optimal).
+    Buy(AutoTarget),
+    /// Wait and save for a better future purchase.
+    Wait {
+        /// The future candidate worth saving for.
+        save_for: ScoredCandidate,
+        /// The best affordable option (that we're skipping).
+        best_affordable: ScoredCandidate,
+    },
+    /// Unlock a new producer tier (highest priority).
+    #[allow(dead_code)]
+    UnlockProducer(AutoTarget),
+    /// Nothing useful to do (no candidates at all).
+    Nothing,
+}
+
+/// Evaluate the best action to take given the current game state.
+///
+/// Strategy (in priority order):
+/// 1. Buy first unit of a newly available producer (unlock next tier) if affordable.
+/// 2. Score all affordable producers and upgrades by ROI (cost / E/s gain).
+/// 3. Look-ahead: if a not-yet-affordable option has very high value and the
+///    time-to-save for it is shorter than the best affordable option's ROI,
+///    wait (return Wait) to save for it.
+/// 4. Otherwise, buy the affordable option with the lowest ROI.
+pub(crate) fn decide_best_action(app: &App) -> DecisionResult {
+    let current_eps = app.game.total_energy_per_second();
+
+    // Priority 1: Buy first unit of newly unlocked producers to unlock next tier
+    if let Some(target) = find_unlock_producer(app) {
+        return DecisionResult::UnlockProducer(target);
+    }
+
+    // Gather all candidates (affordable and not-yet-affordable)
+    let mut affordable: Vec<ScoredCandidate> = Vec::new();
+    let mut future: Vec<ScoredCandidate> = Vec::new();
+
+    // Score producers
+    score_producers(app, current_eps, &mut affordable, &mut future);
+
+    // Score upgrades
+    score_upgrades(app, current_eps, &mut affordable, &mut future);
+
+    // Sort affordable by ROI (lowest = best)
+    affordable.sort_by(|a, b| a.roi_seconds.partial_cmp(&b.roi_seconds).unwrap());
+
+    // If nothing affordable, nothing to do
+    if affordable.is_empty() {
+        return DecisionResult::Nothing;
+    }
+
+    let best_affordable = &affordable[0];
+
+    // Priority 3: Look-ahead — should we save for a better future purchase?
+    if current_eps > 0.0 {
+        for candidate in &future {
+            let energy_needed = candidate.cost - app.game.energy;
+            let time_to_save = energy_needed / current_eps;
+
+            // If we can save for this candidate faster than the best affordable's payback,
+            // and the future candidate has a better ROI, wait for it.
+            if time_to_save < best_affordable.roi_seconds * SAVE_THRESHOLD_MULTIPLIER
+                && candidate.roi_seconds < best_affordable.roi_seconds
+            {
+                return DecisionResult::Wait {
+                    save_for: candidate.clone(),
+                    best_affordable: best_affordable.clone(),
+                };
+            }
+        }
+    }
+
+    // Priority 4: Buy the best affordable option
+    DecisionResult::Buy(best_affordable.target.clone())
+}
+
+/// Find a newly unlocked producer that we don't own yet — buying one unit
+/// unlocks the next tier.
+pub(crate) fn find_unlock_producer(app: &App) -> Option<AutoTarget> {
+    let visible = app.game.visible_producers();
+
+    for (display_idx, (_, producer)) in visible.iter().enumerate() {
+        let owned = app.game.producer_count(producer.id);
+
+        // Already own at least one — skip
+        if owned > 0 {
+            continue;
+        }
+
+        let cost = calculate_bulk_cost(producer.base_cost, owned, 1, producer.id);
+
+        if app.game.energy >= cost {
+            return Some(AutoTarget::Producer { index: display_idx });
+        }
+    }
+
+    None
+}
+
+/// Score all visible producers by simulated ROI.
+pub(crate) fn score_producers(
+    app: &App,
+    _current_eps: f64,
+    affordable: &mut Vec<ScoredCandidate>,
+    future: &mut Vec<ScoredCandidate>,
+) {
+    let visible = app.game.visible_producers();
+
+    for (display_idx, (_, producer)) in visible.iter().enumerate() {
+        let owned = app.game.producer_count(producer.id);
+        let cost = calculate_bulk_cost(producer.base_cost, owned, 1, producer.id);
+
+        let eps_gain = simulate_producer_purchase(app, producer);
+
+        if eps_gain <= 0.0 {
+            continue;
+        }
+
+        let roi_seconds = cost / eps_gain;
+
+        let candidate = ScoredCandidate {
+            target: AutoTarget::Producer { index: display_idx },
+            cost,
+            eps_gain,
+            roi_seconds,
+        };
+
+        if app.game.energy >= cost {
+            affordable.push(candidate);
+        } else {
+            future.push(candidate);
+        }
+    }
+}
+
+/// Simulate buying 1 unit of a producer and return the E/s delta.
+pub(crate) fn simulate_producer_purchase(app: &App, producer: &Producer) -> f64 {
+    let current_eps = app.game.total_energy_per_second();
+
+    let mut simulated = app.game.clone();
+    *simulated.producers_owned.entry(producer.id).or_insert(0) += 1;
+
+    let new_eps = simulated.total_energy_per_second();
+    new_eps - current_eps
+}
+
+/// Score all available upgrades by simulated ROI.
+pub(crate) fn score_upgrades(
+    app: &App,
+    current_eps: f64,
+    affordable: &mut Vec<ScoredCandidate>,
+    future: &mut Vec<ScoredCandidate>,
+) {
+    let available = app.game.available_upgrades();
+
+    for (idx, upgrade) in available.iter().enumerate() {
+        let cost = app.game.get_upgrade_cost(upgrade);
+
+        let eps_gain = simulate_upgrade_purchase(app, upgrade);
+
+        // For upgrades with zero direct E/s impact (ManualMultiplier, ClickEpsPercent),
+        // give them a small synthetic value so they're still bought eventually.
+        let effective_eps_gain = if eps_gain <= 0.0 {
+            current_eps * 0.001
+        } else {
+            eps_gain
+        };
+
+        if effective_eps_gain <= 0.0 {
+            continue;
+        }
+
+        let roi_seconds = cost / effective_eps_gain;
+
+        let candidate = ScoredCandidate {
+            target: AutoTarget::Upgrade { index: idx },
+            cost,
+            eps_gain: effective_eps_gain,
+            roi_seconds,
+        };
+
+        if app.game.energy >= cost {
+            affordable.push(candidate);
+        } else {
+            future.push(candidate);
+        }
+    }
+}
+
+/// Simulate purchasing an upgrade and return the E/s delta.
+pub(crate) fn simulate_upgrade_purchase(app: &App, upgrade: &Upgrade) -> f64 {
+    let current_eps = app.game.total_energy_per_second();
+
+    let mut simulated = app.game.clone();
+    simulated.upgrades_purchased.push(upgrade.id);
+
+    let new_eps = simulated.total_energy_per_second();
+    new_eps - current_eps
 }

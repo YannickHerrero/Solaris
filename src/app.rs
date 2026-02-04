@@ -79,6 +79,8 @@ pub struct App {
     pub auto_mode: bool,
     pub auto_paused: bool,
     pub auto_speed: f64,
+    pub hint_message: Option<Vec<String>>,
+    pub hint_timer: u32,
 }
 
 pub struct OfflineReport {
@@ -113,11 +115,19 @@ impl App {
             auto_mode: false,
             auto_paused: false,
             auto_speed: 1.0,
+            hint_message: None,
+            hint_timer: 0,
         }
     }
 
     pub fn toggle_help(&mut self) {
         self.show_help = !self.show_help;
+    }
+
+    pub fn show_hint(&mut self) {
+        let hint = crate::hint::generate_hint(self);
+        self.hint_message = Some(hint.lines);
+        self.hint_timer = 50; // 5 seconds at 10 ticks/sec
     }
 
     pub fn toggle_prestige(&mut self) {
@@ -158,6 +168,14 @@ impl App {
             self.achievement_notification_timer -= 1;
             if self.achievement_notification_timer == 0 {
                 self.achievement_notification = None;
+            }
+        }
+
+        // Hint popup auto-dismiss timer
+        if self.hint_timer > 0 {
+            self.hint_timer -= 1;
+            if self.hint_timer == 0 {
+                self.hint_message = None;
             }
         }
 

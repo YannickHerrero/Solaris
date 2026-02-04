@@ -20,6 +20,7 @@ Complete keybinding reference and UI guide for Solaris.
 | `Enter` | Purchase selected item |
 | `Tab` | Cycle buy amount (1x → 10x → Max → 1x) |
 | `Space` | Manual mine |
+| `i` | Show purchase hint (best buy recommendation) |
 
 ### Panel Navigation
 
@@ -344,8 +345,9 @@ nothing to commit, working tree clean
 1. **Use vim keys** (`h`, `j`, `k`, `l`) for efficient navigation
 2. **Tab for bulk buying** - Switch to Max mode when you have excess energy
 3. **Check upgrades often** - Press `u` to see available upgrades
-4. **Boss mode is instant** - Backtick toggles immediately
-5. **Resize your terminal** - Wider terminals show more information
+4. **Press `i` for hints** - Shows the optimal next purchase based on ROI analysis
+5. **Boss mode is instant** - Backtick toggles immediately
+6. **Resize your terminal** - Wider terminals show more information
 
 ---
 

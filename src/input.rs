@@ -135,6 +135,9 @@ pub fn handle_key(app: &mut App, key: KeyEvent) -> bool {
             }
         }
 
+        // Purchase hint
+        KeyCode::Char('i') => app.show_hint(),
+
         // Manual mining
         KeyCode::Char(' ') => app.manual_mine(),
 
