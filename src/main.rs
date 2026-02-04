@@ -28,9 +28,11 @@ fn main() -> io::Result<()> {
     // Handle command line arguments
     let args: Vec<String> = std::env::args().collect();
     let mut auto_mode = false;
+    let mut auto_speed: f64 = 1.0;
 
-    for arg in args.iter().skip(1) {
-        match arg.as_str() {
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
             "--reset" => {
                 return handle_reset();
             }
@@ -40,20 +42,43 @@ fn main() -> io::Result<()> {
                 println!("Usage: solaris [OPTIONS]");
                 println!();
                 println!("Options:");
-                println!("  --auto     Enable auto-play mode (buys producers and upgrades)");
-                println!("  --reset    Reset the save file (with confirmation)");
-                println!("  --help     Show this help message");
+                println!("  --auto           Enable auto-play mode (buys producers and upgrades)");
+                println!("  --speed <N>      Set auto-play speed multiplier (default: 1, max effective: ~10)");
+                println!("  --reset          Reset the save file (with confirmation)");
+                println!("  --help           Show this help message");
                 return Ok(());
             }
             "--auto" => {
                 auto_mode = true;
             }
+            "--speed" => {
+                i += 1;
+                if i >= args.len() {
+                    eprintln!("Error: --speed requires a numeric value (e.g. --speed 2)");
+                    return Ok(());
+                }
+                match args[i].parse::<f64>() {
+                    Ok(v) if v > 0.0 => auto_speed = v,
+                    _ => {
+                        eprintln!(
+                            "Error: --speed value must be a positive number (e.g. --speed 2)"
+                        );
+                        return Ok(());
+                    }
+                }
+            }
             _ => {
-                eprintln!("Unknown option: {}", arg);
+                eprintln!("Unknown option: {}", args[i]);
                 eprintln!("Use --help for usage information");
                 return Ok(());
             }
         }
+        i += 1;
+    }
+
+    // --speed implies --auto
+    if auto_speed != 1.0 {
+        auto_mode = true;
     }
 
     // Setup terminal
@@ -66,6 +91,7 @@ fn main() -> io::Result<()> {
     // Create app and run
     let mut app = App::new();
     app.auto_mode = auto_mode;
+    app.auto_speed = auto_speed;
 
     // Load saved game if exists
     if let Err(e) = app.load() {
@@ -73,7 +99,7 @@ fn main() -> io::Result<()> {
     }
 
     let mut auto_player = if auto_mode {
-        Some(AutoPlayer::new())
+        Some(AutoPlayer::new(auto_speed))
     } else {
         None
     };

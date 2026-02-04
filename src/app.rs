@@ -78,6 +78,7 @@ pub struct App {
     pub show_producer_detail: bool,
     pub auto_mode: bool,
     pub auto_paused: bool,
+    pub auto_speed: f64,
 }
 
 pub struct OfflineReport {
@@ -111,6 +112,7 @@ impl App {
             show_producer_detail: true,
             auto_mode: false,
             auto_paused: false,
+            auto_speed: 1.0,
         }
     }
 

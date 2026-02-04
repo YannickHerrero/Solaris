@@ -102,17 +102,37 @@ pub struct AutoPlayer {
     state: AutoState,
     rng: SimpleRng,
     pause_ticks_remaining: u32,
+    speed: f64,
 }
 
 impl AutoPlayer {
-    pub fn new() -> Self {
+    pub fn new(speed: f64) -> Self {
+        let clamped_speed = speed.max(0.1);
         Self {
             state: AutoState::Idle {
-                ticks_remaining: 20,
+                ticks_remaining: Self::scale_delay_with(20, clamped_speed),
             },
             rng: SimpleRng::new(42),
             pause_ticks_remaining: 0,
+            speed: clamped_speed,
         }
+    }
+
+    /// Generate a random delay in [min, max] and scale it by the speed multiplier.
+    /// Always returns at least 1 tick.
+    fn scaled_range(&mut self, min: u32, max: u32) -> u32 {
+        let raw = self.rng.range(min, max);
+        (raw as f64 / self.speed).ceil().max(1.0) as u32
+    }
+
+    fn scale_delay_with(ticks: u32, speed: f64) -> u32 {
+        (ticks as f64 / speed).ceil().max(1.0) as u32
+    }
+
+    /// Returns true if cursor animation should be skipped (instant jump).
+    /// At speed >= 5x, moving one step at a time is pointless.
+    fn should_skip_cursor_animation(&self) -> bool {
+        self.speed >= 5.0
     }
 
     /// Pause the auto-player for 5 seconds, giving control to the user.
@@ -162,14 +182,14 @@ impl AutoPlayer {
 
             AutoState::Deciding => {
                 if let Some(target) = self.decide_next_action(app) {
-                    let delay = self.rng.range(3, 5);
+                    let delay = self.scaled_range(3, 5);
                     app.focus_panel(target.panel());
                     self.state = AutoState::FocusingPanel {
                         target,
                         ticks_remaining: delay,
                     };
                 } else {
-                    let delay = self.rng.range(20, 50);
+                    let delay = self.scaled_range(20, 50);
                     self.state = AutoState::WaitingForFunds {
                         ticks_remaining: delay,
                     };
@@ -186,11 +206,20 @@ impl AutoPlayer {
                         ticks_remaining: ticks_remaining - 1,
                     };
                 } else {
-                    let move_delay = self.rng.range(1, 2);
-                    self.state = AutoState::MovingCursor {
-                        target,
-                        ticks_remaining: move_delay,
-                    };
+                    if self.should_skip_cursor_animation() {
+                        // Jump directly to target position
+                        self.jump_cursor_to(app, &target);
+                        let delay = self.scaled_range(2, 4);
+                        self.state = AutoState::Purchasing {
+                            ticks_remaining: delay,
+                        };
+                    } else {
+                        let move_delay = self.scaled_range(1, 2);
+                        self.state = AutoState::MovingCursor {
+                            target,
+                            ticks_remaining: move_delay,
+                        };
+                    }
                 }
             }
 
@@ -208,20 +237,20 @@ impl AutoPlayer {
                     let target_index = target.index();
 
                     if current_index == target_index {
-                        let delay = self.rng.range(2, 4);
+                        let delay = self.scaled_range(2, 4);
                         self.state = AutoState::Purchasing {
                             ticks_remaining: delay,
                         };
                     } else if current_index < target_index {
                         app.move_selection_down();
-                        let delay = self.rng.range(1, 2);
+                        let delay = self.scaled_range(1, 2);
                         self.state = AutoState::MovingCursor {
                             target,
                             ticks_remaining: delay,
                         };
                     } else {
                         app.move_selection_up();
-                        let delay = self.rng.range(1, 2);
+                        let delay = self.scaled_range(1, 2);
                         self.state = AutoState::MovingCursor {
                             target,
                             ticks_remaining: delay,
@@ -237,7 +266,7 @@ impl AutoPlayer {
                     };
                 } else {
                     app.purchase_selected();
-                    let delay = self.rng.range(5, 10);
+                    let delay = self.scaled_range(5, 10);
                     self.state = AutoState::CooldownAfterPurchase {
                         ticks_remaining: delay,
                     };
@@ -467,6 +496,21 @@ impl AutoPlayer {
         match target {
             AutoTarget::Producer { .. } => app.selected_producer,
             AutoTarget::Upgrade { .. } => app.selected_upgrade,
+        }
+    }
+
+    /// Jump the cursor directly to the target index (skipping step-by-step animation).
+    fn jump_cursor_to(&self, app: &mut App, target: &AutoTarget) {
+        let current = self.current_selection(app, target);
+        let goal = target.index();
+        if current < goal {
+            for _ in 0..(goal - current) {
+                app.move_selection_down();
+            }
+        } else if current > goal {
+            for _ in 0..(current - goal) {
+                app.move_selection_up();
+            }
         }
     }
 }
