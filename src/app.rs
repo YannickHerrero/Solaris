@@ -329,6 +329,8 @@ impl App {
         // If no upgrade purchased and at the top, try to ascend
         if self.selected_prestige_upgrade == 0 && self.game.can_ascend() {
             self.game.perform_ascension();
+            self.selected_producer = 0;
+            self.selected_upgrade = 0;
             let _ = self.save();
         }
     }
