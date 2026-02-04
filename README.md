@@ -95,3 +95,7 @@ Contributions are welcome! Feel free to:
 ## License
 
 [MIT](LICENSE)
+
+## Acknowledgments
+
+This game's mechanics and balance are heavily inspired by [Cookie Clicker](https://orteil.dashnet.org/cookieclicker/) by Orteil.
