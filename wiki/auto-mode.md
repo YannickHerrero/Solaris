@@ -6,9 +6,28 @@ Solaris includes a built-in auto-play bot that can play the game for you. It mim
 
 ```
 solaris --auto
+solaris --auto --speed 3    # 3x faster bot
+solaris --auto --speed 0.5  # slower, more human-like
+solaris --speed 5           # --speed implies --auto
 ```
 
 The game launches normally with the bot active. You'll see `[AUTO]` in the header bar and a magenta border to indicate auto mode is running.
+
+### Speed Multiplier
+
+The `--speed` flag controls how fast the bot acts. It scales all internal delays (thinking time, cursor movement, purchase cooldowns):
+
+| Speed | Behavior | Purchases/sec (approx) |
+|-------|----------|----------------------|
+| 0.5x | Slow and deliberate, fun to watch | ~0.2 |
+| 1x (default) | Human-like pacing | ~0.3-0.5 |
+| 2x | Noticeably faster | ~0.6-1.0 |
+| 5x+ | Near-instant, cursor jumps directly to target | ~1.5-2.0 |
+| 10x+ | Maximum effective speed (all delays clamp to 1 tick) | ~1.5-2.0 |
+
+At speed 5x and above, the bot skips cursor animation entirely and jumps directly to the target item. Beyond ~10x there is no further effect since the game tick rate (10 Hz) is the hard limit — the bot cannot act faster than once per 100ms tick.
+
+The speed is shown in the header: `[AUTO 3x]`, `[AUTO 5x PAUSED]`, etc. At the default 1x, no speed label is shown.
 
 ---
 
@@ -173,15 +192,17 @@ Idle ──> Deciding ──> FocusingPanel ──> MovingCursor ──> Purchas
   └──────────────────────────── WaitingForFunds <─────────────────────────────┘
 ```
 
-| State | Duration | Mines? | Description |
-|-------|----------|--------|-------------|
+| State | Duration (1x) | Mines? | Description |
+|-------|---------------|--------|-------------|
 | Idle | 1-3s | Yes | Initial thinking pause |
 | Deciding | Instant | No | Evaluates all options, picks best |
 | FocusingPanel | 300-500ms | No | Switches to Producers or Upgrades panel |
-| MovingCursor | 100-200ms per step | No | Moves selection j/k toward target |
+| MovingCursor | 100-200ms per step | No | Moves selection j/k toward target (skipped at 5x+) |
 | Purchasing | 200-400ms | No | Presses Enter |
 | CooldownAfterPurchase | 500ms-1s | Yes | Brief rest after buying |
 | WaitingForFunds | 2-5s | Yes | Nothing affordable, wait and retry |
+
+All durations above are for the default 1x speed. At 2x, durations are halved; at 5x+, most durations reach the minimum of 1 tick (100ms) and cursor movement is replaced by an instant jump.
 
 ### Performance
 
