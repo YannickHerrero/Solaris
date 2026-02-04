@@ -2,6 +2,7 @@ mod app;
 mod auto;
 mod format;
 mod game;
+mod hint;
 mod input;
 mod save;
 mod ui;

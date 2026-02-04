@@ -3,6 +3,7 @@ pub mod animation;
 mod boss;
 mod header;
 mod help;
+mod hint;
 mod layout;
 mod prestige;
 mod producers;
@@ -92,6 +93,9 @@ pub fn render(frame: &mut Frame, app: &mut App) {
 
     // Achievement notification
     render_achievement_notification(frame, size, app);
+
+    // Hint popup (auto-dismissing)
+    hint::render(frame, size, app);
 
     // Help popup overlay (rendered last so it appears on top)
     help::render(frame, size, app);

@@ -27,51 +27,53 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
   a             Toggle Ascension panel
   x             Toggle Achievements panel
 
-  Actions
-  -------
-  Space         Manual mine
-  Tab           Cycle buy amount (1/10/Max)
-  d             Toggle producer detail (in Producers)
-  b             Toggle boss mode
-  ?             Toggle this help
+   Actions
+   -------
+   Space         Manual mine
+   Tab           Cycle buy amount (1/10/Max)
+   d             Toggle producer detail (in Producers)
+   i             Show purchase hint
+   b             Toggle boss mode
+   ?             Toggle this help
 
-  q / Ctrl+C    Quit
+   q / Ctrl+C    Quit
 
-  Press ? to close
-"#
+   Press ? to close
+ "#
         }
         LayoutMode::TwoColumn => {
             r#"
-  SOLARIS - Keyboard Shortcuts
+   SOLARIS - Keyboard Shortcuts
 
-  Navigation
-  ----------
-  j / Down      Move selection down
-  k / Up        Move selection up
-  h / Left      Focus previous panel
-  l / Right     Focus next panel
-  Enter         Purchase selected item
+   Navigation
+   ----------
+   j / Down      Move selection down
+   k / Up        Move selection up
+   h / Left      Focus previous panel
+   l / Right     Focus next panel
+   Enter         Purchase selected item
 
-  Panels
-  ------
-  p             Focus Producers panel
-  u             Focus Upgrades panel
-  v             Focus Visualization panel
-  a             Toggle Ascension panel
-  x             Toggle Achievements panel
+   Panels
+   ------
+   p             Focus Producers panel
+   u             Focus Upgrades panel
+   v             Focus Visualization panel
+   a             Toggle Ascension panel
+   x             Toggle Achievements panel
 
-  Actions
-  -------
-  Space         Manual mine
-  Tab           Cycle buy amount (1/10/Max)
-  d             Toggle producer detail (in Producers)
-  b             Toggle boss mode
-  ?             Toggle this help
+   Actions
+   -------
+   Space         Manual mine
+   Tab           Cycle buy amount (1/10/Max)
+   d             Toggle producer detail (in Producers)
+   i             Show purchase hint
+   b             Toggle boss mode
+   ?             Toggle this help
 
-  q / Ctrl+C    Quit
+   q / Ctrl+C    Quit
 
-  Press ? to close
-"#
+   Press ? to close
+ "#
         }
     };
 
