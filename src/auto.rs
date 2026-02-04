@@ -137,6 +137,7 @@ impl AutoPlayer {
 
         match self.state.clone() {
             AutoState::Idle { ticks_remaining } => {
+                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::Idle {
                         ticks_remaining: ticks_remaining - 1,
@@ -234,6 +235,7 @@ impl AutoPlayer {
             }
 
             AutoState::CooldownAfterPurchase { ticks_remaining } => {
+                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::CooldownAfterPurchase {
                         ticks_remaining: ticks_remaining - 1,
@@ -244,6 +246,7 @@ impl AutoPlayer {
             }
 
             AutoState::WaitingForFunds { ticks_remaining } => {
+                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::WaitingForFunds {
                         ticks_remaining: ticks_remaining - 1,
