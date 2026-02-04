@@ -7,7 +7,11 @@ use crate::format::format_cost;
 pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let available = app.game.available_upgrades();
 
-    let border_color = if focused { Color::Magenta } else { Color::DarkGray };
+    let border_color = if focused {
+        Color::Magenta
+    } else {
+        Color::DarkGray
+    };
     let title = if focused { " Upgrades *" } else { " Upgrades " };
 
     let block = Block::default()
@@ -91,18 +95,25 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     // Render header
     let header = format!(
         "{:<name_width$} {:>cost_width$}  {}",
-        "Upgrade", "Cost", "Effect",
+        "Upgrade",
+        "Cost",
+        "Effect",
         name_width = name_width,
         cost_width = cost_width
     );
-    let header_widget = Paragraph::new(header)
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+    let header_widget = Paragraph::new(header).style(
+        Style::default()
+            .fg(Color::Cyan)
+            .add_modifier(Modifier::BOLD),
+    );
     frame.render_widget(header_widget, chunks[0]);
 
     // Render list
     let list = List::new(items);
     let mut state = ListState::default();
-    state.select(Some(app.selected_upgrade.min(available.len().saturating_sub(1))));
+    state.select(Some(
+        app.selected_upgrade.min(available.len().saturating_sub(1)),
+    ));
     frame.render_stateful_widget(list, chunks[1], &mut state);
 
     // Render tooltip if hover timer has reached threshold
@@ -118,7 +129,11 @@ fn render_tooltip(frame: &mut Frame, parent_area: Rect, upgrade: &crate::game::U
 
     // Position at bottom of the upgrades panel area
     let x = parent_area.x + (parent_area.width.saturating_sub(tooltip_width)) / 2;
-    let y = parent_area.y + parent_area.height.saturating_sub(tooltip_height).saturating_sub(1);
+    let y = parent_area.y
+        + parent_area
+            .height
+            .saturating_sub(tooltip_height)
+            .saturating_sub(1);
 
     let tooltip_area = Rect::new(x, y, tooltip_width, tooltip_height);
 

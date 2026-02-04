@@ -102,13 +102,25 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
         achievement_bonus,
         stellar_chips,
         potential_chips,
-        if app.game.can_ascend() { " (Ready!)" } else { "" },
+        if app.game.can_ascend() {
+            " (Ready!)"
+        } else {
+            ""
+        },
         ascensions,
         prestige_upgrades
     );
 
-    let border_color = if focused { Color::Blue } else { Color::DarkGray };
-    let title = if focused { " Statistics *" } else { " Statistics " };
+    let border_color = if focused {
+        Color::Blue
+    } else {
+        Color::DarkGray
+    };
+    let title = if focused {
+        " Statistics *"
+    } else {
+        " Statistics "
+    };
 
     let block = Block::default()
         .title(title)

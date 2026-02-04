@@ -35,8 +35,8 @@ nothing to commit, working tree clean
 
 $ _"#;
 
-    let paragraph = Paragraph::new(fake_output)
-        .style(Style::default().fg(Color::White).bg(Color::Black));
+    let paragraph =
+        Paragraph::new(fake_output).style(Style::default().fg(Color::White).bg(Color::Black));
 
     frame.render_widget(paragraph, area);
 }
