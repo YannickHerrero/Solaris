@@ -81,6 +81,7 @@ pub struct App {
     pub auto_speed: f64,
     pub hint_message: Option<Vec<String>>,
     pub hint_timer: u32,
+    pub save_label: String,
 }
 
 pub struct OfflineReport {
@@ -89,7 +90,7 @@ pub struct OfflineReport {
 }
 
 impl App {
-    pub fn new() -> Self {
+    pub fn new(save_label: String) -> Self {
         Self {
             game: GameState::new(),
             selected_producer: 0,
@@ -117,6 +118,7 @@ impl App {
             auto_speed: 1.0,
             hint_message: None,
             hint_timer: 0,
+            save_label,
         }
     }
 
@@ -400,11 +402,11 @@ impl App {
             game_state: self.game.clone(),
             last_save: Utc::now(),
         };
-        save::save_game(&save_data)
+        save::save_game(&self.save_label, &save_data)
     }
 
     pub fn load(&mut self) -> io::Result<()> {
-        if let Some(save_data) = save::load_game()? {
+        if let Some(save_data) = save::load_game(&self.save_label)? {
             let now = Utc::now();
             let elapsed = now.signed_duration_since(save_data.last_save);
             let elapsed_secs = elapsed.num_seconds().max(0) as u64;
