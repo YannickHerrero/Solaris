@@ -10,6 +10,7 @@ mod ui;
 use std::io::{self, Write};
 use std::time::{Duration, Instant};
 
+use chrono::{DateTime, Utc};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -30,23 +31,55 @@ fn main() -> io::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let mut auto_mode = false;
     let mut auto_speed: f64 = 1.0;
+    let mut explicit_label: Option<String> = None;
+    let mut create_new: Option<String> = None;
 
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--reset" => {
-                return handle_reset();
+            "--reset" | "--delete" => {
+                // Get optional label
+                let label = if i + 1 < args.len() && !args[i + 1].starts_with('-') {
+                    i += 1;
+                    Some(args[i].clone())
+                } else {
+                    None
+                };
+                return handle_delete(label);
+            }
+            "--list" => {
+                return handle_list();
+            }
+            "--new" => {
+                i += 1;
+                if i >= args.len() {
+                    eprintln!("Error: --new requires a label (e.g. --new my-save)");
+                    return Ok(());
+                }
+                match save::validate_label(&args[i]) {
+                    Ok(sanitized) => create_new = Some(sanitized),
+                    Err(e) => {
+                        eprintln!("Error: {}", e);
+                        return Ok(());
+                    }
+                }
+            }
+            "--load" => {
+                i += 1;
+                if i >= args.len() {
+                    eprintln!("Error: --load requires a label (e.g. --load my-save)");
+                    return Ok(());
+                }
+                match save::validate_label(&args[i]) {
+                    Ok(sanitized) => explicit_label = Some(sanitized),
+                    Err(e) => {
+                        eprintln!("Error: {}", e);
+                        return Ok(());
+                    }
+                }
             }
             "--help" | "-h" => {
-                println!("Solaris - Terminal-based idle game");
-                println!();
-                println!("Usage: solaris [OPTIONS]");
-                println!();
-                println!("Options:");
-                println!("  --auto           Enable auto-play mode (buys producers and upgrades)");
-                println!("  --speed <N>      Set auto-play speed multiplier (default: 1, max effective: ~10)");
-                println!("  --reset          Reset the save file (with confirmation)");
-                println!("  --help           Show this help message");
+                print_help();
                 return Ok(());
             }
             "--auto" => {
@@ -82,22 +115,59 @@ fn main() -> io::Result<()> {
         auto_mode = true;
     }
 
+    // Migrate legacy save if it exists
+    if let Ok(Some(migrated_label)) = save::migrate_legacy_save() {
+        println!("Migrated existing save to '{}'", migrated_label);
+    }
+
+    // Determine which save to use
+    let is_new_save = create_new.is_some();
+    let save_label = if let Some(label) = create_new {
+        // Creating a new save
+        if save::save_exists(&label)? {
+            eprintln!(
+                "Error: Save '{}' already exists. Use --load to load it.",
+                label
+            );
+            return Ok(());
+        }
+        label
+    } else if let Some(label) = explicit_label {
+        // Loading a specific save
+        if !save::save_exists(&label)? {
+            eprintln!(
+                "Error: Save '{}' not found. Use --list to see available saves.",
+                label
+            );
+            return Ok(());
+        }
+        label
+    } else {
+        // Auto-resolve: last used > "main" > create "main"
+        save::resolve_save_label(None)?.unwrap_or_else(|| "main".to_string())
+    };
+
+    // Create app
+    let mut app = App::new(save_label);
+    app.auto_mode = auto_mode;
+    app.auto_speed = auto_speed;
+
+    // Load saved game if exists (for existing saves), or save immediately for new saves
+    if is_new_save {
+        // Save immediately so the save file exists
+        if let Err(e) = app.save() {
+            eprintln!("Warning: Could not create save file: {}", e);
+        }
+    } else if let Err(e) = app.load() {
+        eprintln!("Warning: Could not load save file: {}", e);
+    }
+
     // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-
-    // Create app and run
-    let mut app = App::new();
-    app.auto_mode = auto_mode;
-    app.auto_speed = auto_speed;
-
-    // Load saved game if exists
-    if let Err(e) = app.load() {
-        eprintln!("Warning: Could not load save file: {}", e);
-    }
 
     let mut auto_player = if auto_mode {
         Some(AutoPlayer::new(auto_speed))
@@ -123,18 +193,161 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_reset() -> io::Result<()> {
-    let save_path = save::get_save_path()?;
+fn print_help() {
+    println!("Solaris - Terminal-based idle game");
+    println!();
+    println!("Usage: solaris [OPTIONS]");
+    println!();
+    println!("Save Management:");
+    println!("  --new <label>    Create a new save with the given label");
+    println!("  --load <label>   Load a specific save");
+    println!("  --list           List all available saves");
+    println!("  --delete <label> Delete a specific save (with confirmation)");
+    println!();
+    println!("  Without options, loads the last used save or creates 'main' if none exist.");
+    println!();
+    println!("Game Options:");
+    println!("  --auto           Enable auto-play mode (buys producers and upgrades)");
+    println!("  --speed <N>      Set auto-play speed multiplier (default: 1, max effective: ~10)");
+    println!("  --help           Show this help message");
+}
 
-    if !save_path.exists() {
-        println!("No save file found. Nothing to reset.");
+fn handle_list() -> io::Result<()> {
+    // Migrate legacy save first if needed
+    if let Ok(Some(migrated_label)) = save::migrate_legacy_save() {
+        println!("Migrated existing save to '{}'", migrated_label);
+        println!();
+    }
+
+    let saves = save::list_saves()?;
+    let last_used = save::get_last_used()?.unwrap_or_default();
+
+    if saves.is_empty() {
+        println!("No saves found.");
+        println!();
+        println!("Create a new save with: solaris --new <label>");
         return Ok(());
     }
 
-    println!("This will permanently delete your save file:");
+    println!("Available saves:");
+    println!();
+
+    for save_info in &saves {
+        let marker = if save_info.label == last_used {
+            " *"
+        } else {
+            ""
+        };
+
+        // Try to read the save to get last save time
+        if let Ok(Some(save_data)) = save::load_game(&save_info.label) {
+            let time_ago = format_time_ago(save_data.last_save);
+            println!(
+                "  {}{} (last played: {})",
+                save_info.label, marker, time_ago
+            );
+        } else {
+            println!("  {}{}", save_info.label, marker);
+        }
+    }
+
+    println!();
+    println!("* = last used");
+    println!();
+    println!("Load a save with: solaris --load <label>");
+
+    Ok(())
+}
+
+fn format_time_ago(time: DateTime<Utc>) -> String {
+    let now = Utc::now();
+    let duration = now.signed_duration_since(time);
+
+    let secs = duration.num_seconds();
+    if secs < 60 {
+        return "just now".to_string();
+    }
+
+    let mins = duration.num_minutes();
+    if mins < 60 {
+        return format!("{} minute{} ago", mins, if mins == 1 { "" } else { "s" });
+    }
+
+    let hours = duration.num_hours();
+    if hours < 24 {
+        return format!("{} hour{} ago", hours, if hours == 1 { "" } else { "s" });
+    }
+
+    let days = duration.num_days();
+    if days < 30 {
+        return format!("{} day{} ago", days, if days == 1 { "" } else { "s" });
+    }
+
+    let months = days / 30;
+    format!("{} month{} ago", months, if months == 1 { "" } else { "s" })
+}
+
+fn handle_delete(label: Option<String>) -> io::Result<()> {
+    // Migrate legacy save first if needed
+    if let Ok(Some(migrated_label)) = save::migrate_legacy_save() {
+        println!("Migrated existing save to '{}'", migrated_label);
+        println!();
+    }
+
+    let label = match label {
+        Some(l) => match save::validate_label(&l) {
+            Ok(sanitized) => sanitized,
+            Err(e) => {
+                eprintln!("Error: {}", e);
+                return Ok(());
+            }
+        },
+        None => {
+            // If no label provided, show available saves and ask
+            let saves = save::list_saves()?;
+            if saves.is_empty() {
+                println!("No saves found. Nothing to delete.");
+                return Ok(());
+            }
+
+            println!("Available saves:");
+            for save_info in &saves {
+                println!("  {}", save_info.label);
+            }
+            println!();
+            print!("Enter the label of the save to delete: ");
+            io::stdout().flush()?;
+
+            let mut input = String::new();
+            io::stdin().read_line(&mut input)?;
+            let input = input.trim();
+
+            if input.is_empty() {
+                println!("Delete cancelled.");
+                return Ok(());
+            }
+
+            match save::validate_label(input) {
+                Ok(sanitized) => sanitized,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return Ok(());
+                }
+            }
+        }
+    };
+
+    let save_path = save::get_save_path(&label)?;
+
+    if !save_path.exists() {
+        println!("Save '{}' not found.", label);
+        return Ok(());
+    }
+
+    println!("This will permanently delete the save '{}':", label);
     println!("  {}", save_path.display());
     println!();
-    print!("Are you sure you want to reset? [y/N] ");
+    print!("Are you sure you want to delete this save? [y/N] ");
     io::stdout().flush()?;
 
     let mut input = String::new();
@@ -142,11 +355,11 @@ fn handle_reset() -> io::Result<()> {
 
     let response = input.trim().to_lowercase();
     if response == "y" || response == "yes" {
-        if save::delete_save()? {
-            println!("Save file deleted. Your progress has been reset.");
+        if save::delete_save(&label)? {
+            println!("Save '{}' deleted.", label);
         }
     } else {
-        println!("Reset cancelled.");
+        println!("Delete cancelled.");
     }
 
     Ok(())
