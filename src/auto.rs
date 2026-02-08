@@ -10,6 +10,10 @@ const SAVE_THRESHOLD_MULTIPLIER: f64 = 0.8;
 /// Duration in ticks to pause auto-player when user interacts (5 seconds at 10 Hz)
 const PAUSE_TICKS: u32 = 50;
 
+/// When the best purchase costs less than this fraction of current energy,
+/// the bot buys max instead of 1. (0.01 = purchase costs less than 1% of energy)
+const BULK_BUY_THRESHOLD: f64 = 0.01;
+
 // ============ State Machine ============
 
 #[derive(Debug, Clone)]
@@ -265,7 +269,13 @@ impl AutoPlayer {
                         ticks_remaining: ticks_remaining - 1,
                     };
                 } else {
+                    // Bulk-buy when the purchase is trivially cheap relative to energy
+                    if self.should_bulk_buy(app) {
+                        app.buy_amount = BuyAmount::Max;
+                    }
                     app.purchase_selected();
+                    app.buy_amount = BuyAmount::One;
+
                     let delay = self.scaled_range(5, 10);
                     self.state = AutoState::CooldownAfterPurchase {
                         ticks_remaining: delay,
@@ -328,6 +338,24 @@ impl AutoPlayer {
                 app.move_selection_up();
             }
         }
+    }
+
+    /// Returns true if the currently selected item is a producer cheap enough
+    /// to warrant buying in bulk (max) instead of one at a time.
+    /// This kicks in when energy far outpaces spending (e.g. after ascension).
+    fn should_bulk_buy(&self, app: &App) -> bool {
+        if app.active_panel != Panel::Producers {
+            return false; // Upgrades are one-time purchases, no bulk buying
+        }
+        let visible = app.game.visible_producers();
+        if app.selected_producer >= visible.len() {
+            return false;
+        }
+        let (_, producer) = &visible[app.selected_producer];
+        let owned = app.game.producer_count(producer.id);
+        let cost_of_one = calculate_bulk_cost(producer.base_cost, owned, 1, producer.id);
+
+        cost_of_one < app.game.energy * BULK_BUY_THRESHOLD
     }
 }
 
