@@ -145,6 +145,14 @@ impl AutoPlayer {
         self.state = AutoState::Idle { ticks_remaining: 0 };
     }
 
+    /// Mine once. Called from the frame loop (~60 FPS) so the bot mines
+    /// at the same rate as a player holding the space bar.
+    pub fn mine(&self, app: &mut App) {
+        if self.pause_ticks_remaining == 0 {
+            app.manual_mine();
+        }
+    }
+
     /// Returns true if the auto-player is currently paused.
     pub fn is_paused(&self) -> bool {
         self.pause_ticks_remaining > 0
@@ -174,7 +182,6 @@ impl AutoPlayer {
 
         match self.state.clone() {
             AutoState::Idle { ticks_remaining } => {
-                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::Idle {
                         ticks_remaining: ticks_remaining - 1,
@@ -284,7 +291,6 @@ impl AutoPlayer {
             }
 
             AutoState::CooldownAfterPurchase { ticks_remaining } => {
-                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::CooldownAfterPurchase {
                         ticks_remaining: ticks_remaining - 1,
@@ -295,7 +301,6 @@ impl AutoPlayer {
             }
 
             AutoState::WaitingForFunds { ticks_remaining } => {
-                app.manual_mine();
                 if ticks_remaining > 0 {
                     self.state = AutoState::WaitingForFunds {
                         ticks_remaining: ticks_remaining - 1,
