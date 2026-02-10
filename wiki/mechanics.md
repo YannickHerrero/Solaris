@@ -452,25 +452,41 @@ At 260 achievements with all upgrades: **~49.75x** multiplier
 
 ## Number Formatting
 
-The game uses these suffixes for large numbers:
+The game uses named suffixes for large numbers, covering the full short-scale naming system up to **centillion** (10^303). Beyond centillion, numbers fall back to scientific notation.
 
-| Suffix | Value | Full Name |
-|--------|-------|-----------|
-| K | 10^3 | Thousand |
-| M | 10^6 | Million |
-| B | 10^9 | Billion |
-| T | 10^12 | Trillion |
-| Q | 10^15 | Quadrillion |
-| Qi | 10^18 | Quintillion |
-| Sx | 10^21 | Sextillion |
-| Sp | 10^24 | Septillion |
-| Oc | 10^27 | Octillion |
-| No | 10^30 | Nonillion |
-| Dc | 10^33 | Decillion |
-| Un | 10^36 | Undecillion |
-| Du | 10^39 | Duodecillion |
-| Tr | 10^42 | Tredecillion |
-| Qa | 10^45 | Quattuordecillion |
+| Value | Full Name |
+|-------|-----------|
+| 10^3 | Thousand |
+| 10^6 | Million |
+| 10^9 | Billion |
+| 10^12 | Trillion |
+| 10^15 | Quadrillion |
+| 10^18 | Quintillion |
+| 10^21 | Sextillion |
+| 10^24 | Septillion |
+| 10^27 | Octillion |
+| 10^30 | Nonillion |
+| 10^33 | Decillion |
+| 10^36 | Undecillion |
+| 10^39 | Duodecillion |
+| 10^42 | Tredecillion |
+| 10^45 | Quattuordecillion |
+| 10^48 | Quindecillion |
+| 10^51 | Sexdecillion |
+| 10^54 | Septendecillion |
+| 10^57 | Octodecillion |
+| 10^60 | Novemdecillion |
+| 10^63 | Vigintillion |
+| 10^93 | Trigintillion |
+| 10^123 | Quadragintillion |
+| 10^153 | Quinquagintillion |
+| 10^183 | Sexagintillion |
+| 10^213 | Septuagintillion |
+| 10^243 | Octogintillion |
+| 10^273 | Nonagintillion |
+| 10^303 | Centillion |
+
+All intermediate names (e.g., unvigintillion, duovigintillion, etc.) are also supported between each major milestone listed above.
 
 ---
 
