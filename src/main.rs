@@ -377,11 +377,6 @@ fn run_app<B: Backend>(
         // Render every frame (~60 FPS)
         terminal.draw(|f| ui::render(f, app))?;
 
-        // Auto-player mines every frame (~60 FPS), matching space-bar repeat rate
-        if let Some(ref player) = auto_player {
-            player.mine(app);
-        }
-
         // Handle events with short timeout for responsiveness
         let timeout = Duration::from_millis(FRAME_RATE_MS);
 
