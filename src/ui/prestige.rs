@@ -2,7 +2,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Clear, List, ListItem, ListState, Paragraph};
 
 use crate::app::App;
-use crate::format::format_energy;
+use crate::format::{format_duration, format_energy};
 use crate::game::{PrestigeRequirement, PrestigeUpgrade};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &App) {
@@ -25,7 +25,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(10), // Info section
+            Constraint::Length(11), // Info section
             Constraint::Min(1),     // Upgrade list
         ])
         .split(inner);
@@ -54,6 +54,20 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
         "Need ~1 trillion total energy to earn first chip".to_string()
     };
 
+    let next_chip_str = match app.game.energy_for_next_chip() {
+        Some((energy_needed, Some(secs))) => {
+            format!(
+                "  Next chip: {} E needed (est. {})",
+                format_energy(energy_needed),
+                format_duration(secs)
+            )
+        }
+        Some((energy_needed, None)) => {
+            format!("  Next chip: {} E needed", format_energy(energy_needed))
+        }
+        None => String::new(), // Already has potential chips
+    };
+
     let info_text = format!(
         r#"
   Stellar Chips: {}     |     Total Ascensions: {}
@@ -62,10 +76,16 @@ fn render_prestige_info(frame: &mut Frame, area: Rect, app: &App) {
 
   Potential Chips on Ascension: {}
   {}
-
+{}
   Ascension resets your progress but grants permanent bonuses!
 "#,
-        stellar_chips, ascensions, energy_this_run, energy_all_time, potential_chips, ascend_status
+        stellar_chips,
+        ascensions,
+        energy_this_run,
+        energy_all_time,
+        potential_chips,
+        ascend_status,
+        next_chip_str
     );
 
     let style = if can_ascend {
