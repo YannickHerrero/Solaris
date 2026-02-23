@@ -774,6 +774,55 @@ impl GameState {
         self.calculate_potential_stellar_chips() >= 1
     }
 
+    /// Calculate energy needed for the next stellar chip and estimated time.
+    /// Returns None if the player already has potential chips (can ascend).
+    /// Returns Some((energy_needed, estimated_seconds)) otherwise.
+    /// estimated_seconds is None if the production rate is zero.
+    pub fn energy_for_next_chip(&self) -> Option<(f64, Option<u64>)> {
+        let current_potential = self.calculate_potential_stellar_chips();
+        if current_potential >= 1 {
+            return None; // Already can ascend
+        }
+
+        let chip_multiplier = self.get_chip_multiplier();
+
+        // Check if the guaranteed minimum chip would trigger first
+        // (reaching last_ascension_energy when formula gives 0 chips)
+        let guarantee_energy = if self.last_ascension_energy > 0.0
+            && self.total_energy_earned < self.last_ascension_energy
+        {
+            Some(self.last_ascension_energy)
+        } else {
+            None
+        };
+
+        // Calculate energy needed via the normal formula for the next chip
+        // Normal formula: net_chips = floor(cbrt(energy / 1e12) * multiplier) - total_earned
+        // We need: floor(cbrt(energy / 1e12) * multiplier) - total_earned >= 1
+        // => cbrt(energy / 1e12) >= (total_earned + 1) / multiplier
+        // => energy >= ((total_earned + 1) / multiplier)^3 * 1e12
+        let target_total = self.total_stellar_chips_earned + 1;
+        let target_base = (target_total as f64 / chip_multiplier).ceil();
+        let formula_energy = target_base.powi(3) * 1_000_000_000_000.0;
+
+        // Pick whichever threshold is reached first
+        let target_energy = match guarantee_energy {
+            Some(ge) if ge < formula_energy => ge,
+            _ => formula_energy,
+        };
+
+        let energy_remaining = (target_energy - self.total_energy_earned).max(0.0);
+
+        let rate = self.actual_energy_per_second();
+        let estimated_seconds = if rate > 0.0 {
+            Some((energy_remaining / rate).ceil() as u64)
+        } else {
+            None
+        };
+
+        Some((energy_remaining, estimated_seconds))
+    }
+
     /// Perform ascension - reset game state but keep prestige progress
     pub fn perform_ascension(&mut self) {
         let chips_earned = self.calculate_potential_stellar_chips();
