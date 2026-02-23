@@ -33,6 +33,7 @@ fn main() -> io::Result<()> {
     let mut auto_speed: f64 = 1.0;
     let mut explicit_label: Option<String> = None;
     let mut create_new: Option<String> = None;
+    let mut unlock_ascension = false;
 
     let mut i = 1;
     while i < args.len() {
@@ -84,6 +85,9 @@ fn main() -> io::Result<()> {
             }
             "--auto" => {
                 auto_mode = true;
+            }
+            "--unlock-ascension" => {
+                unlock_ascension = true;
             }
             "--speed" => {
                 i += 1;
@@ -162,6 +166,16 @@ fn main() -> io::Result<()> {
         eprintln!("Warning: Could not load save file: {}", e);
     }
 
+    // Grant a free stellar chip if --unlock-ascension was used
+    if unlock_ascension {
+        app.game.stellar_chips += 1;
+        app.game.total_stellar_chips_earned += 1;
+        println!("Granted 1 free Stellar Chip to unlock ascension progress.");
+        if let Err(e) = app.save() {
+            eprintln!("Warning: Could not save after granting chip: {}", e);
+        }
+    }
+
     // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -207,9 +221,14 @@ fn print_help() {
     println!("  Without options, loads the last used save or creates 'main' if none exist.");
     println!();
     println!("Game Options:");
-    println!("  --auto           Enable auto-play mode (buys producers and upgrades)");
-    println!("  --speed <N>      Set auto-play speed multiplier (default: 1, max effective: ~10)");
-    println!("  --help           Show this help message");
+    println!("  --auto              Enable auto-play mode (buys producers and upgrades)");
+    println!(
+        "  --speed <N>         Set auto-play speed multiplier (default: 1, max effective: ~10)"
+    );
+    println!(
+        "  --unlock-ascension  Grant 1 free Stellar Chip (for stuck saves after large ascensions)"
+    );
+    println!("  --help              Show this help message");
 }
 
 fn handle_list() -> io::Result<()> {
