@@ -55,6 +55,10 @@ pub struct GameState {
     // Per-producer lifetime energy tracking (resets on ascension)
     #[serde(default)]
     pub producer_lifetime_energy: HashMap<u32, f64>,
+
+    // Total energy earned at the time of the last ascension (for guaranteed min chip)
+    #[serde(default)]
+    pub last_ascension_energy: f64,
 }
 
 fn default_manual_click_power() -> f64 {
@@ -85,6 +89,7 @@ impl GameState {
             new_achievements: Vec::new(),
             all_time_energy_earned: 0.0,
             producer_lifetime_energy: HashMap::new(),
+            last_ascension_energy: 0.0,
         }
     }
 
@@ -733,7 +738,20 @@ impl GameState {
         let chip_multiplier = self.get_chip_multiplier();
         let total_chips = (base_chips as f64 * chip_multiplier) as u64;
 
-        total_chips.saturating_sub(self.total_stellar_chips_earned)
+        let net_chips = total_chips.saturating_sub(self.total_stellar_chips_earned);
+
+        // Guaranteed minimum chip: if the player has reached at least the same
+        // total energy as their last ascension, grant at least 1 chip.
+        // This prevents players from getting stuck after a large ascension
+        // where the formula would require exponentially more energy for new chips.
+        if net_chips == 0
+            && self.last_ascension_energy > 0.0
+            && self.total_energy_earned >= self.last_ascension_energy
+        {
+            return 1;
+        }
+
+        net_chips
     }
 
     /// Get the chip earning multiplier from prestige upgrades
@@ -775,6 +793,9 @@ impl GameState {
         self.stellar_chips += chips_earned;
         self.total_stellar_chips_earned += chips_earned;
         self.total_ascensions += 1;
+
+        // Track energy for guaranteed min chip on next ascension
+        self.last_ascension_energy = self.total_energy_earned;
 
         // Reset game state
         self.energy = starting_energy + kept_energy;
