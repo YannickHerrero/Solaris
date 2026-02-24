@@ -9,7 +9,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let total_earned = format_energy(app.game.total_energy_earned);
     let current = format_energy(app.game.energy);
     let rate = format_rate(app.game.actual_energy_per_second());
-    let time_played = format_duration(app.game.time_played_seconds());
+    let time_played = format_duration(app.game.all_time_played_seconds());
 
     // Find top producer
     let top_producer = Producer::all()
@@ -44,7 +44,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &App, focused: bool) {
     let achievement_bonus = (app.game.get_achievement_multiplier() - 1.0) * 100.0;
 
     // Manual mining stats
-    let manual_clicks = app.game.total_manual_clicks;
+    let manual_clicks = app.game.all_time_manual_clicks;
     let manual_power = format_energy(app.game.effective_manual_power());
 
     // Prestige stats

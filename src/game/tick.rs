@@ -5,6 +5,7 @@ impl GameState {
     /// Process one game tick (called 10 times per second)
     pub fn tick(&mut self) {
         self.ticks_played += 1;
+        self.all_time_ticks_played += 1;
 
         // Calculate and track per-producer energy production
         let global_mult = self.get_global_multiplier();

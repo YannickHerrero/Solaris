@@ -417,6 +417,14 @@ impl App {
 
             self.game = save_data.game_state;
 
+            // Migrate old saves: seed all-time counters from current per-ascension values
+            if self.game.all_time_ticks_played == 0 && self.game.ticks_played > 0 {
+                self.game.all_time_ticks_played = self.game.ticks_played;
+            }
+            if self.game.all_time_manual_clicks == 0 && self.game.total_manual_clicks > 0 {
+                self.game.all_time_manual_clicks = self.game.total_manual_clicks;
+            }
+
             if capped_secs > 60 {
                 // Only show report if offline for more than a minute
                 let energy_per_tick = self.game.total_energy_per_second() / TICKS_PER_SECOND;

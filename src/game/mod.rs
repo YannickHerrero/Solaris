@@ -59,6 +59,12 @@ pub struct GameState {
     // Total energy earned at the time of the last ascension (for guaranteed min chip)
     #[serde(default)]
     pub last_ascension_energy: f64,
+
+    // All-time counters (never reset, persist across ascensions)
+    #[serde(default)]
+    pub all_time_ticks_played: u64,
+    #[serde(default)]
+    pub all_time_manual_clicks: u64,
 }
 
 fn default_manual_click_power() -> f64 {
@@ -90,6 +96,8 @@ impl GameState {
             all_time_energy_earned: 0.0,
             producer_lifetime_energy: HashMap::new(),
             last_ascension_energy: 0.0,
+            all_time_ticks_played: 0,
+            all_time_manual_clicks: 0,
         }
     }
 
@@ -602,8 +610,8 @@ impl GameState {
             .sum()
     }
 
-    pub fn time_played_seconds(&self) -> u64 {
-        self.ticks_played / 10 // 10 ticks per second
+    pub fn all_time_played_seconds(&self) -> u64 {
+        self.all_time_ticks_played / 10 // 10 ticks per second
     }
 
     pub fn get_manual_multiplier(&self) -> f64 {
@@ -655,6 +663,7 @@ impl GameState {
         self.total_energy_earned += energy_gained;
         self.all_time_energy_earned += energy_gained;
         self.total_manual_clicks += 1;
+        self.all_time_manual_clicks += 1;
 
         // Add to current tick's tracking for rate display
         if let Some(last) = self.energy_produced_history.back_mut() {
@@ -704,11 +713,13 @@ impl GameState {
                 AchievementRequirement::TotalEnergyEarned(amount) => {
                     self.total_energy_earned >= amount
                 }
-                AchievementRequirement::TotalClicks(clicks) => self.total_manual_clicks >= clicks,
+                AchievementRequirement::TotalClicks(clicks) => {
+                    self.all_time_manual_clicks >= clicks
+                }
                 AchievementRequirement::UpgradesPurchased(count) => {
                     self.upgrades_purchased.len() >= count as usize
                 }
-                AchievementRequirement::TimePlayed(secs) => self.time_played_seconds() >= secs,
+                AchievementRequirement::TimePlayed(secs) => self.all_time_played_seconds() >= secs,
                 AchievementRequirement::TotalProducers(count) => {
                     self.total_producers_owned() >= count
                 }
