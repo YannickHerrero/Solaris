@@ -10,18 +10,13 @@ impl GameState {
         self.all_time_ticks_played += 1;
 
         // Calculate and track per-producer energy production
-        let global_mult = self.get_global_multiplier();
         let mut total_energy_per_tick = 0.0;
 
         for producer in Producer::all() {
-            let count = self.producer_count(producer.id);
-            if count == 0 {
+            if self.producer_count(producer.id) == 0 {
                 continue;
             }
-            let producer_mult = self.get_producer_multiplier(producer.id);
-            let producer_energy_per_tick =
-                producer.base_energy_per_second * count as f64 * producer_mult * global_mult
-                    / TICKS_PER_SECOND;
+            let producer_energy_per_tick = self.producer_total_rate(producer.id) / TICKS_PER_SECOND;
 
             total_energy_per_tick += producer_energy_per_tick;
 
@@ -76,5 +71,26 @@ impl GameState {
 
         self.add_energy(energy_earned);
         Some((capped_secs, energy_earned))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ticks_produce_the_displayed_rate_including_thousand_rays() {
+        let mut game = GameState::new();
+        game.producers_owned.insert(1, 10);
+        game.producers_owned.insert(2, 5);
+        game.upgrades_purchased.push(104); // Thousand Rays
+        assert!(game.get_thousand_rays_bonus() > 0.0);
+        let rate = game.total_energy_per_second();
+
+        for _ in 0..TICKS_PER_SECOND as u64 {
+            game.tick();
+        }
+
+        assert!((game.energy - rate).abs() < 1e-9 * rate);
     }
 }
