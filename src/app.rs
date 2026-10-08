@@ -1,10 +1,9 @@
 use std::io;
 
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use chrono::Utc;
 
 use crate::game::{GameState, PrestigeUpgrade, Producer};
-use crate::save;
+use crate::save::{self, SaveData};
 use crate::ui::animation::AnimationState;
 use crate::TICKS_PER_SECOND;
 
@@ -46,12 +45,6 @@ impl BuyAmount {
             BuyAmount::Max => "Max",
         }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SaveData {
-    pub game_state: GameState,
-    pub last_save: DateTime<Utc>,
 }
 
 pub struct App {

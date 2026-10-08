@@ -1,10 +1,7 @@
 mod app;
 mod auto;
-mod format;
-mod game;
 mod hint;
 mod input;
-mod save;
 mod ui;
 
 use std::io::{self, Write};
@@ -20,9 +17,8 @@ use ratatui::prelude::*;
 
 use app::App;
 use auto::AutoPlayer;
+use solaris::{format, game, save, TICKS_PER_SECOND, TICK_RATE_MS};
 
-pub const TICK_RATE_MS: u64 = 100; // 10 ticks/second for game logic
-pub const TICKS_PER_SECOND: f64 = 1000.0 / TICK_RATE_MS as f64;
 const FRAME_RATE_MS: u64 = 16; // ~60 FPS for rendering
 const AUTOSAVE_INTERVAL_SECS: u64 = 30;
 

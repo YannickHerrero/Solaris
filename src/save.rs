@@ -5,7 +5,15 @@ use std::path::PathBuf;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-use crate::app::SaveData;
+use chrono::{DateTime, Utc};
+
+use crate::game::GameState;
+
+#[derive(Serialize, Deserialize)]
+pub struct SaveData {
+    pub game_state: GameState,
+    pub last_save: DateTime<Utc>,
+}
 
 /// Metadata tracking which save was last used
 #[derive(Serialize, Deserialize, Default)]
