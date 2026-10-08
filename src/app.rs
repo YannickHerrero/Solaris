@@ -5,7 +5,6 @@ use chrono::Utc;
 use crate::game::{GameState, PrestigeUpgrade, Producer};
 use crate::save::{self, SaveData};
 use crate::ui::animation::AnimationState;
-use crate::TICKS_PER_SECOND;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Panel {
@@ -404,33 +403,15 @@ impl App {
             let elapsed = now.signed_duration_since(save_data.last_save);
             let elapsed_secs = elapsed.num_seconds().max(0) as u64;
 
-            // Calculate offline progress (capped at 8 hours)
-            let max_offline_secs = 8 * 60 * 60;
-            let capped_secs = elapsed_secs.min(max_offline_secs);
-
             self.game = save_data.game_state;
 
-            // Migrate old saves: seed all-time counters from current per-ascension values
-            if self.game.all_time_ticks_played == 0 && self.game.ticks_played > 0 {
-                self.game.all_time_ticks_played = self.game.ticks_played;
-            }
-            if self.game.all_time_manual_clicks == 0 && self.game.total_manual_clicks > 0 {
-                self.game.all_time_manual_clicks = self.game.total_manual_clicks;
-            }
+            self.game.migrate_all_time_counters();
 
-            if capped_secs > 60 {
-                // Only show report if offline for more than a minute
-                let energy_per_tick = self.game.total_energy_per_second() / TICKS_PER_SECOND;
-                let ticks = capped_secs * TICKS_PER_SECOND as u64;
-
-                // Apply offline bonus from prestige upgrades
-                let offline_bonus = self.game.get_offline_bonus_multiplier();
-                let energy_earned = energy_per_tick * ticks as f64 * offline_bonus;
-
-                self.game.add_energy(energy_earned);
-
+            if let Some((duration_secs, energy_earned)) =
+                self.game.apply_offline_progress(elapsed_secs)
+            {
                 self.offline_report = Some(OfflineReport {
-                    duration_secs: capped_secs,
+                    duration_secs,
                     energy_earned,
                 });
             }

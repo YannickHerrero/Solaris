@@ -17,7 +17,7 @@ use ratatui::prelude::*;
 
 use app::App;
 use auto::AutoPlayer;
-use solaris::{format, game, save, TICKS_PER_SECOND, TICK_RATE_MS};
+use solaris::{format, game, save, TICK_RATE_MS};
 
 const FRAME_RATE_MS: u64 = 16; // ~60 FPS for rendering
 const AUTOSAVE_INTERVAL_SECS: u64 = 30;
