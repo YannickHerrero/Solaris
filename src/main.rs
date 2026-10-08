@@ -4,6 +4,7 @@ mod hint;
 mod input;
 mod ui;
 
+use std::fs::File;
 use std::io::{self, Write};
 use std::time::{Duration, Instant};
 
@@ -147,6 +148,17 @@ fn main() -> io::Result<()> {
         save::resolve_save_label(None)?.unwrap_or_else(|| "main".to_string())
     };
 
+    let _save_lock = match acquire_save_lock(&save_label)? {
+        Some(lock) => lock,
+        None => {
+            eprintln!(
+                "Error: Save '{}' is already open in another Solaris.",
+                save_label
+            );
+            return Ok(());
+        }
+    };
+
     // Create app
     let mut app = App::new(save_label);
     app.auto_mode = auto_mode;
@@ -201,6 +213,17 @@ fn main() -> io::Result<()> {
     }
 
     Ok(())
+}
+
+fn acquire_save_lock(label: &str) -> io::Result<Option<File>> {
+    // Other front ends, such as the Illium applet, only hold it for a moment.
+    for _ in 0..40 {
+        if let Some(lock) = save::lock_save(label)? {
+            return Ok(Some(lock));
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    Ok(None)
 }
 
 fn print_help() {

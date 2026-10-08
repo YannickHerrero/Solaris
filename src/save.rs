@@ -1,4 +1,4 @@
-use std::fs;
+use std::fs::{self, File, OpenOptions, TryLockError};
 use std::io;
 use std::path::PathBuf;
 
@@ -90,6 +90,22 @@ pub fn validate_label(label: &str) -> Result<String, String> {
 pub fn get_save_path(label: &str) -> io::Result<PathBuf> {
     let sanitized = sanitize_label(label);
     Ok(get_saves_dir()?.join(format!("{}.json", sanitized)))
+}
+
+/// Lock a save for as long as the returned file lives, so that two front ends
+/// never write the same save at once. Returns None while someone else holds it.
+pub fn lock_save(label: &str) -> io::Result<Option<File>> {
+    let path = get_saves_dir()?.join(format!("{}.lock", sanitize_label(label)));
+    let file = OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .write(true)
+        .open(path)?;
+    match file.try_lock() {
+        Ok(()) => Ok(Some(file)),
+        Err(TryLockError::WouldBlock) => Ok(None),
+        Err(TryLockError::Error(e)) => Err(e),
+    }
 }
 
 /// Load the save metadata
